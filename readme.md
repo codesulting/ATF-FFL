@@ -1,8 +1,9 @@
 
 ## Why own a gun?
 
-![raw notes 01](http://pi.mozzarella.website/ATF-FFL/ffl-domain-notes.jpg)
+Initial notes on a broad question, in an attempt to understand an issue and find supporting data.
 
+![raw notes 01](http://pi.mozzarella.website/ATF-FFL/ffl-domain-notes.jpg)
 
 ## Data - Federal Firearms Licenses
 
