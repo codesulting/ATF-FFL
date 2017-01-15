@@ -14,6 +14,7 @@ Other notes:
 
 - 2016: .pdf for 'FFL Type by State' for April is actually for Explosives, not Firearms
 - 2015: no data for September, October (no explanation)
+- 2014: January through May, and September are missing Expiration variable
 - 2013: no data for October (government shutdown)
 
 Glimpse of the data:
