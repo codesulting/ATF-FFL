@@ -39,7 +39,7 @@ ggplot(f16, aes(reorder(PremiseStateFull, LicCount), fill = LicCount)) +
        y = "number of licenses", x = "", fill = "") +
   coord_flip()
 ```
-![count by state 01](plots/2016-LicCountByState.png)
+![count by state 01](R_plots/2016-LicCountByState.png)
 
 Texas appears to have twice as many license holders than Florida - but it is also the largest state in the continental US. Square mileage per state might be misleading here; but what about each state's population? 
 
