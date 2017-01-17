@@ -21,3 +21,39 @@ Glimpse of the data:
 
 ![June 2016 ATF data](http://pi.mozzarella.website/ATF-FFL/ffl-2016-glimpse-01.png)
 
+## Variables Provided
+
+- Region
+- District
+- County
+- Firearm Type
+- Expiration
+- `Seqn`
+- License Name
+- Business Name
+- Premise Street, City, State, ZIP
+- Mailing Street, City, State, ZIP
+- Phone number
+
+## Variables Derived
+
+- year
+- month
+- License holder count
+- State population
+- Latitude and Longitude coordinates
+
+## Variables to derive
+
+Total cost of Licenses by Type can be calculated as:
+- 01 - $200 - Dealer (01), Including Pawnbroker (02), in Firearms Other Than Destructive Devices (Includes: Rifles, Shotguns, Pistols,
+Revolvers, Gunsmith activities and National Firearms Act (NFA) Weapons)
+- 02 - $200 - see above (pawnbroker)
+- 06 - $30 - Manufacturer of Ammunition for Firearms Other Than Ammunition for Destructive Devices or Armor Piercing Ammunition
+- 07 - $150 - Manufacturer of Firearms Other Than Destructive Devices
+- 08 - $150 - Importer of Firearms Other Than Destructive Devices or Ammunition for Firearms Other Than Destructive Devices, or
+Ammunition Other Than Armor Piercing Ammunition
+- 09 - $3000 - Dealer in Destructive Devices
+- 10 - $3000 - Manufacturer of Destructive Devices, Ammunition for Destructive Devices or Armor Piercing Ammunition
+- 11 - $3000 - Importer of Destructive Devices, Ammunition for Destructive Devices or Armor Piercing Ammunition
+
