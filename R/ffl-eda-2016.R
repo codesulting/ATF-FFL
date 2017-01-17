@@ -143,72 +143,16 @@ f16_regions2 <- f16 %>%
   group_by(Region) %>%
   count(PremiseState)
 
-# facet plots by firearms type ------------------------------------------------
-getwd()
-type <- read.csv("data/type.tsv", sep = "\t")
 
-levels(as.factor(f16$Type))
-f16$Type <- as.numeric(f16$Type)
-
-f16_typ <- f16 %>%
-  gather()
-
-
-# What percentage of the population has a Federal Firearms License? -----------
-
-# data sourced from Wikipedia: 
-# https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_population#States_and_territories
-
-# load and cleanse population data
-statepop <- read.csv("data/population-state-estimate.csv", stringsAsFactors = F)
-str(statepop)
-
-statepop <- statepop %>% select(X.State.or.territory., Population.estimate..July.1..2016, Estimated.pop..per.House.seat..2016,
-                    Percent.of.total.U.S..pop...2016.note.1.)
-
-colnames(statepop) <- c("state", "EstPop2016", "EstPopPerHouseSeat", "PercentUS")
-
-# add state abbreviation to statepop dataframe
-statepop$PremiseState <- state.abb[match(statepop$state, state.name)]
-
-# merge license count df with population df 
-FFL16_pop <- merge(FFL16_Regions, statepop, by = "PremiseState")
-
-# convert population numbers to int and double
-
-FFL16_pop$EstPop2016 <- gsub(",", "", FFL16_pop$EstPop2016)
-FFL16_pop$EstPop2016 <- as.integer(FFL16_pop$EstPop2016)
-
-FFL16_pop$EstPopPerHouseSeat <- gsub(",", "", FFL16_pop$EstPopPerHouseSeat)
-FFL16_pop$EstPopPerHouseSeat <- as.integer(FFL16_pop$EstPopPerHouseSeat)
-
-FFL16_pop$PercentUS <- gsub("%", "", FFL16_pop$PercentUS)
-FFL16_pop$PercentUS <- as.double(FFL16_pop$PercentUS)
-
-# create new column with proportion of FFL holding pop to total pop per state
-FFL16_pop <- FFL16_pop %>%
-  mutate(percentFFL = LicCount/EstPop2016)
-
-# write.csv(FFL16_pop, file = "data/2016-FFL-population", row.names = F)
+# What percentage of population holds a firearms license? ---------------------
 
 # explore ratio of FFL:total population
-summary(FFL16_pop$percentFFL)
+summary(f16$percentFFL)
+# at the maximum, there's 1.3% of a states population holding firearms licenses.
 
-FFL16_pop$state <- factor(FFL16_pop$state)
-FFL16_pop$Region <- factor(FFL16_pop$Region)
-
-ggplot(data = FFL16_pop) +
-  geom_point(mapping = aes(state, LicCount, fill = Region), size = 3) +
-  scale_fill_manual(values = region.pal) +
-  theme_minimal(base_size = 14, base_family = "FranklinGothicSSK") +
-  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
-  labs(title = "2016: Federal Firearms License count by state", x = "", y = "")
-
-
-sum(FFL16_pop$LicCount)
+sum(f16$LicCount)
 # 794562
-sum(as.numeric(FFL16_pop$EstPop2016))
+sum(as.numeric(f16$EstPop2016))
 # 3224463440
 
 794562/3224463440
