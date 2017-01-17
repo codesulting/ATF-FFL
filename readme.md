@@ -1,7 +1,7 @@
 
 ## Why own a gun?
 
-Initial notes on a broad question, in an attempt to understand an issue and find supporting data.
+Initial notes on a broad question, in an attempt to understand an issue, describe particular data, and note correlations across other data.
 
 ![raw notes 01](http://pi.mozzarella.website/ATF-FFL/ffl-domain-notes.jpg)
 
