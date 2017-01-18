@@ -1,5 +1,7 @@
 
-## Why own a gun?
+## Entitlement, Protection, and Recreation
+
+_Why Own a Gun? an examination of ATF Federal Firearms License data_
 
 Initial notes on a broad question, in an attempt to understand an issue, describe particular data, and note correlations across other data. Who, What, When, and Where are easily answered by summary statistics in this case; can these fields provide any clues as to _Why?_
 
@@ -34,6 +36,19 @@ Glimpse of the data:
 - Premise Street, City, State, ZIP
 - Mailing Street, City, State, ZIP
 - Phone number
+
+Further Breakdowns:
+- Region
+
+|  Region  |      States     							   |
+|----------|:---------------------------------------------:|
+|    1	   | AL, FL, GA, MS, NC, SC, TN, VA
+|    3     | IL, MN, ND, SD, WI  
+|    4     | IN, KY, MI, OH, WV
+|    5     | AR, CO, IA, KS, LA, MO, NE, NM, OK, TX, WY
+|    6     | CT, MA, ME, NH, NY, RI, VT
+|    8     | DE, MD, NJ, PA
+|    9     | AK, AZ, CA, HI, ID, MT, NV, OR, UT, WA
 
 ## Variables Derived
 
