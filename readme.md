@@ -1,7 +1,7 @@
 
 ## Entitlement, Protection, and Recreation
 
-_Why Own a Gun? an examination of ATF Federal Firearms License data_
+_Why Own a Gun?_ An examination of ATF Federal Firearms License data.
 
 Initial notes on a broad question, in an attempt to understand an issue, describe particular data, and note correlations across other data. Who, What, When, and Where are easily answered by summary statistics in this case; can these fields provide any clues as to _Why?_
 
@@ -30,7 +30,7 @@ Glimpse of the data:
 - County
 - Firearm Type
 - Expiration
-- `Seqn`
+- Seqn
 - License Name
 - Business Name
 - Premise Street, City, State, ZIP
