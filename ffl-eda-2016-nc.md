@@ -1,9 +1,11 @@
-_Why Own a Gun?_ an examination of ATF Federal Firearms License data
+# Why Own a Gun?
 
-Protection, Recreation, and Entitlement: these are 3 reasons commonly cited for owning a firearm in the United States. A Pew Research poll actually asked the question "Why Own a Gun?", and their survey shows an interesting figure in people's primary reasons for doing so. 
+_an examination of ATF Federal Firearms License data_
+
+Protection, Recreation, and Entitlement: these are 3 reasons commonly cited for owning a firearm in the United States. A Pew Research poll<sup>[1](#Works-Cited)</sup> actually asked the question "Why Own a Gun?", and their survey shows an interesting figure in people's primary reasons for doing so. 
 
 - In 1999, 49% of those surveyed cited "Hunting" as a primary reason, and 26% claimed "Protection. 
-- In 2013, 48% claimed "Protection", while 32% cited "Hunting" as a primary reason.<sup>[1](works-cited)</sup>. 
+- In 2013, 48% claimed "Protection", while 32% cited "Hunting" as a primary reason. 
 
 # ATF - Federal Firearms Licenses 2016
 
@@ -21,7 +23,8 @@ f16 <- fread("data/ffl-2016-V2.csv", stringsAsFactors = T)
 f16 <- as.data.frame(f16)
 ```
 
-### License Count by State
+## License Count by State
+
 So the first broad question that comes to mind: Which states had the most firearms licenses? A license count variable for each state was computed while munging.
 
 ```{r}
@@ -35,7 +38,7 @@ summary(f16$LicCount)
 
 Texas appears to have twice as many license holders than Florida - but it is also the largest state in the continental US. Square mileage per state might be misleading here; although at the lower end of scale are where much smaller states such as Rhode Island and Delaware appear. 
 
-### License Count by Region
+## License Count by Region
 
 Are there any trends by region? Could state population be tell us more about license holders? 
 
@@ -45,7 +48,7 @@ Are there any trends by region? Could state population be tell us more about lic
 
 So most regions have less than 40,000 licenses per state, but appear _generally_ similar. Region 8 has just 4 states and a low number of licenses, other than Pennsylvania. Region 6 appears to have the lowest number of licenses by region overall; most states here have less than 10,000, with the outlier of New York at about 20,000. Perhaps a summary of each region by state would be easier to read than this plot. 
 
-### License Count By Month
+## License Count By Month
 
 Was there much variance in the number of licenses in each state, from month to month?
 
@@ -59,11 +62,11 @@ More certainly it appears that license counts remained stable from month to mont
 
 ![Lic Count Total by Month 2015-16](R_plots/2016-LicCountMonthlyFacet.png)
 
-### Entitlement
+## Entitlement
 
 While 'Constitutional Right' only made up 4- and 2-percent of the surveyed population's main reason for owning a gun, 2016 
 
-### State Populations
+## State Populations
 
 Back to an earlier question brought up after barplotting by state: Could state population be tell us more about license holders? First to merge in population data by state:
 
