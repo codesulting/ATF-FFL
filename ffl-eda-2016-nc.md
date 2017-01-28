@@ -46,7 +46,7 @@ Are there any trends by region? Could state population be tell us more about lic
 
 (For whatever reason, it's difficult to find the ATF's Region codes online, but the states belonging to each region can be found by simply filtering the data.)
 
-![count by state by region](R_plots/2016-LicCountRegion.png)
+![count by state by region](R_plots/2016-CountByRegion.png)
 
 So most regions have less than 40,000 licenses per state, but appear _generally_ similar. Region 8 has just 4 states and a low number of licenses, other than Pennsylvania. Region 6 appears to have the lowest number of licenses by region overall; most states here have less than 10,000, with the outlier of New York at about 20,000. Perhaps a summary of each region by state would be easier to read than this plot. 
 
