@@ -2,10 +2,12 @@
 
 _an examination of ATF Federal Firearms License data_
 
-Protection, Recreation, and Entitlement: these are 3 reasons commonly cited for owning a firearm in the United States. A Pew Research poll<sup>[1](#Works-Cited)</sup> actually asked the question "Why Own a Gun?", and their survey shows an interesting figure in people's primary reasons for doing so. 
+Protection, Recreation, and Entitlement: these are 3 reasons commonly cited for owning a firearm in the United States. A Pew Research poll<sup>[1](#works-cited)</sup> actually asked the question "Why Own a Gun?", and their survey shows an interesting figure in people's primary reasons for doing so. 
 
-- In 1999, 49% of those surveyed cited "Hunting" as a primary reason, and 26% claimed "Protection. 
-- In 2013, 48% claimed "Protection", while 32% cited "Hunting" as a primary reason. 
+- In 1999, 49% of those surveyed cited 'Hunting' as a primary reason, and 26% claimed 'Protection'. 
+- In 2013, 48% claimed 'Protection', while 32% cited 'Hunting' as a primary reason. 
+
+The question of _Why?_ is beyond the direct scope of Federal Firearms License data alone; FFL covers not individual owners but rather dealers, manufacturers, and suppliers of firearms. However, by looking at patterns and outliers in federally licensed firearm trade, 
 
 # ATF - Federal Firearms Licenses 2016
 
@@ -60,11 +62,9 @@ It doesn't appear there was much variance...but just to be a bit more sure:
 
 More certainly it appears that license counts remained stable from month to month. A likely guess for this would be that most licenses did not expire - but also that there were no significant increases or decreases in license ownership from month to month. How does this look specifically, from 2015 to 2016? 
 
-![Lic Count Total by Month 2015-16](R_plots/2016-LicCountMonthlyFacet.png)
+![Lic Count Total by Month 2015-16](R_plots/2015-16-LicTotalByMonth.png)
 
 ## Entitlement
-
-While 'Constitutional Right' only made up 4- and 2-percent of the surveyed population's main reason for owning a gun, 2016 
 
 ## State Populations
 
@@ -139,8 +139,7 @@ f16$FullType <- factor(f16$FullType)
 ```
 
 
-
-# Work Cited
+# Works Cited
 
 <sup>1</sup> ["Why Own a Gun? Protection Is Now Top Reason"](http://www.pewresearch.org/daily-number/why-own-a-gun-protection-is-now-top-reason/). Pew Research. May 9th, 2013.
 
