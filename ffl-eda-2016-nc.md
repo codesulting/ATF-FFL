@@ -36,7 +36,7 @@ summary(f16$LicCount)
 #    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #      20   14630   20580   25220   29630   75960
 ```
-![count by state 01](R_plots/2016-LicCountByMonthByState.png)
+![count by state 01](R_plots/2016-LicCountByState.png)
 
 Texas appears to have twice as many license holders than Florida - but it is also the largest state in the continental US. Square mileage per state might be misleading here; although at the lower end of scale are where much smaller states such as Rhode Island and Delaware appear. 
 
