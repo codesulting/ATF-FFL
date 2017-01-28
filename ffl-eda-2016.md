@@ -1,3 +1,7 @@
+_Why Own a Gun? an examination of ATF Federal Firearms License data_
+
+Entitlement, Protection, and Recreation
+
 # ATF - Federal Firearms Licenses 2016
 
 Here's a walkthrough of initial exploratory plots and analysis for Federal Firearms Licenses in 2016. 
@@ -40,7 +44,7 @@ ggplot(f16, aes(reorder(PremiseStateFull, LicCount), fill = LicCount)) +
        y = "number of licenses", x = "", fill = "") +
   coord_flip()
 ```
-![count by state 01](R_plots/2016-LicCountByState.png)
+![count by state 01](R_plots/2016-LicCountByMonthByState.png)
 
 Texas appears to have twice as many license holders than Florida - but it is also the largest state in the continental US. Square mileage per state might be misleading here; although at the lower end of scale are where much smaller states such as Rhode Island and Delaware appear. 
 
@@ -100,6 +104,33 @@ It doesn't appear so...but just to be a bit more sure:
 ![Lic by Month facet](R_plots/2016-LicCountMonthlyFacet.png)
 
 More certainly it appears that license counts remained stable from month to month. A likely guess for this would be that most licenses did not expire - but also that there were no significant increases or decreases in license ownership from month to month. 
+
+In that case, how many licenses were there each month? 
+
+```{r}
+# How many licenses were there each month? 
+
+months16 <- f16 %>%
+  group_by(month) %>%
+  count()
+
+months16 
+
+    month     n
+   <fctr> <int>
+# 1      01 78776
+# 2      02 79015
+# 3      03 79021
+# 4      04 79193
+# 5      05 79346
+# 6      06 79525
+# 7      07 79662
+# 8      08 79906
+# 9      11 80071
+# 10     12 80047
+```
+
+It appears that the number of licenses grew over the course of the year.
 
 ### State Populations ---------------------------------------------------------
 
