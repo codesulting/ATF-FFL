@@ -55,15 +55,15 @@ It doesn't appear there was much variance...but just to be a bit more sure:
 
 ![Lic by Month facet](R_plots/2016-LicCountMonthlyFacet.png)
 
-More certainly it appears that license counts remained stable from month to month. A likely guess for this would be that most licenses did not expire - but also that there were no significant increases or decreases in license ownership from month to month. 
+More certainly it appears that license counts remained stable from month to month. A likely guess for this would be that most licenses did not expire - but also that there were no significant increases or decreases in license ownership from month to month. How does this look specifically, from 2015 to 2016? 
 
-Perhaps it's worth looking at a single month's data. 
+![Lic Count Total by Month 2015-16](R_plots/2016-LicCountMonthlyFacet.png)
 
 ### Entitlement
 
-While 'Constitutional Right' only made up 4- and 2-percent of the surveyed population's main reason for owning a gun, 
+While 'Constitutional Right' only made up 4- and 2-percent of the surveyed population's main reason for owning a gun, 2016 
 
-### State Populations ---------------------------------------------------------
+### State Populations
 
 Back to an earlier question brought up after barplotting by state: Could state population be tell us more about license holders? First to merge in population data by state:
 
