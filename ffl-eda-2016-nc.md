@@ -58,8 +58,6 @@ Was there much variance in the number of licenses in each state, from month to m
 
 It doesn't appear there was much variance...but just to be a bit more sure:
 
-![Lic by Month facet](R_plots/2016-LicCountMonthlyFacet.png)
-
 More certainly it appears that license counts remained stable from month to month. A likely guess for this would be that most licenses did not expire - but also that there were no significant increases or decreases in license ownership from month to month. How does this look specifically, from 2015 to 2016? 
 
 ![Lic Count Total by Month 2015-16](R_plots/2015-16-LicTotalByMonth.png)
