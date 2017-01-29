@@ -78,30 +78,24 @@ ggplot(f16, aes(PremiseStateFull, LicCount, color = LicCount)) +
 
 # facet plots by region -------------------------------------------------------
 
-f16 %>% group_by(Region)
+f16 <- f16 %>% group_by(Region)
 
 ggplot(f16, aes(LicCount, PremiseState, color = LicCount)) +
+  geom_segment(aes(yend = PremiseState, color = LicCount), xend = 0) +
   geom_point(size = 3) +
   facet_grid(. ~ Region) +
-  scale_color_gradient(low = "deepskyblue3", high = muted("firebrick4"),
-                        guide = FALSE) +
-  theme_gray(base_size = 12, base_family = "GillSans") +
-  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-        axis.title = element_text(family = "Times", face = "italic")) +
-  labs(title = "2016: Federal Firearms Licenses by State ~ Region",
-       x = "number of licenses", y = "premise state")
-
-# by region, without state
-ggplot(f16, aes(LicCount, color = LicCount)) +
-  geom_bar() +
-  facet_grid(. ~ Region) +
-  scale_color_gradient(low = "deepskyblue3", high = muted("firebrick4"),
+  scale_color_gradient(low = "deepskyblue3", 
+                       high = "firebrick3",
                        guide = FALSE) +
-  theme_gray(base_size = 12, base_family = "GillSans") +
+  theme_minimal(base_size = 12, base_family = "GillSans") +
   theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-        axis.title = element_text(family = "Times", face = "italic")) +
-  labs(title = "2016: Federal Firearms Licenses by Region",
-       x = "number of licenses", y = "premise state")
+        axis.title = element_text(family = "Times", face = "italic"),
+        axis.text.x = element_text(angle = 45, size = 10, 
+                                   hjust = 1, vjust = 1),
+        panel.border = element_rect(fill = NA, color = "black", size = 0.5),
+        strip.background = element_rect(fill = NA, color = "black", size = 1)) +
+  labs(title = "2016: Federal Firearms Licenses by State ~ Region",
+       x = "number of licenses", y = "")
 
 # Was there much variance from month to month? --------------------------------
 
