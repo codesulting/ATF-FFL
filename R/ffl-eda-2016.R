@@ -7,12 +7,11 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(data.table)
-library(RColorBrewer)
 library(scales)
 
 # 2016 data -------------------------------------------------------------------
 
-f16 <- fread("data/ffl-2016-V3.csv", stringsAsFactors = T)
+f16 <- fread("~/Documents/ATF-FFL/data/ffl-2016-V3.csv", stringsAsFactors = T)
 f16 <- as.data.frame(f16)
 
 # Exploratory Plots -----------------------------------------------------------
@@ -173,6 +172,8 @@ ggplot(months16, aes(month, n, group = 1)) +
        y = "number of licenses") +
   pd.theme
 
+# License Counts: 2015-2016 ---------------------------------------------------
+
 # How does this compare to 2015?
 f15 <- fread("data/ffl-2015.csv")
 
@@ -216,11 +217,4 @@ ggplot(m1516, aes(monthyear, n, group = 1)) +
        y = "number of licenses")
 
 # from 2015 through 2016, approximately 2000 more licenses were issued.
-
-jan16 <- f16 %>% filter(month == "01")
-
-
-
-
-
 
