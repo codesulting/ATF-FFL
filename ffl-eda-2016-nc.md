@@ -7,7 +7,7 @@ Protection, Recreation, and Entitlement: these are 3 reasons commonly cited for 
 - In 1999, 49% of those surveyed cited 'Hunting' as a primary reason, and 26% claimed 'Protection'. 
 - In 2013, 48% claimed 'Protection', while 32% cited 'Hunting' as a primary reason. 
 
-The question of _Why?_ is beyond the direct scope of Federal Firearms License data alone; FFL covers not individual owners but rather dealers, manufacturers, and suppliers of firearms. However, by looking at patterns and outliers in federally licensed firearm trade, 
+The question of _Why?_ is beyond the direct scope of Federal Firearms License data alone; FFL covers not individual owners but rather dealers, manufacturers, and suppliers of firearms. However, by looking at patterns and outliers in federally licensed firearm trade...
 
 # ATF - Federal Firearms Licenses 2016
 
@@ -39,6 +39,17 @@ summary(f16$LicCount)
 ![count by state 01](R_plots/2016-LicCountByState.png)
 
 Texas appears to have twice as many license holders than Florida - but it is also the largest state in the continental US. Square mileage per state might be misleading here; although at the lower end of scale are where much smaller states such as Rhode Island and Delaware appear. 
+
+Also what might be misleading is that the above plot is for _raw counts_, that doesn't take into account each state's population. After binding US Census population data for each state, License count can be normalized per 100,000 residents. This shows a different picture of FFL holders across the states:
+
+![per capita count by state](R_plots/2016-FFL-byState-perCapita.png)
+
+- Texas, while leading the raw count in FFLs, has less than 25 FFLs per capita. 
+- Wyoming, with the lowest population in the US, has over 100 FFLs per 100,000 residents. 
+
+Alaska (3rd least populous) along with North and South Dakota (4th and 5th least populous) appear to be part of a trend of more FFLs despite lower population.
+
+
 
 ## License Count by Region
 
