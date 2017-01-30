@@ -5,12 +5,17 @@ _Why Own a Gun?_ An examination of ATF Federal Firearms License data.
 
 Initial notes on a broad question, in an attempt to understand an issue, describe particular data, and note correlations across other data. Who, What, When, and Where are easily answered by summary statistics in this case; can these fields provide any clues as to _Why?_
 
+## Exploratory Questions
+
+- Does having more seats in Congress increase the number of FFLs?
+- Does state financial health play a role in the number of FFLs?
+- Are there more active hunting grounds (fish and game) in states with more FFLs?
+
 ![raw notes 01](http://pi.mozzarella.website/ATF-FFL/ffl-domain-notes.jpg)
 
 ## Data - Federal Firearms Licenses
 
 The Bureau of Alcohol, Tobacco, Firearms, and Explosives ([ATF](https://www.atf.gov/)) maintains [listings of Federal Firearms licensees](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) online, dating back to 2013. This detailed data comes in the form of .xlsx or .txt files.
-
 
 Other notes:
 
