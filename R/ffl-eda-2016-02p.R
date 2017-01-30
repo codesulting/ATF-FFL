@@ -51,9 +51,52 @@ pd.classic <- theme_classic(base_size = 14, base_family = "GillSans") +
         axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
         axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
 
-# Are there more in certain states than others? 
+# Are there more FFLsin certain states than others? 
 # And what factors might influence why there would or wouldnt be more?
 
-ggplot()
+perCapita.16 %>% 
+  arrange(desc(perCapitaFFL)) %>%
+  ggplot(aes(reorder(NAME, perCapitaFFL), perCapitaFFL, fill = perCapitaFFL)) +
+    geom_bar(stat = "identity") + 
+    scale_fill_gradient2(low = "deepskyblue4",
+                         mid = "antiquewhite3",
+                         high = "coral4",
+                         midpoint = 52, guide = F) +
+    scale_y_discrete(limits = c(0, 10, 25, 50, 75, 100, 125)) +
+    labs(title = "2016: Federal Firearms Licenses by State (per 100,000 residents)",
+         x = "", y = "FFLs per 100k") +
+    pd.theme +
+    coord_flip()
+
+# How does this relate to population ranking across the states?
+# First look at the expected population values overall, then plot.
+
+summary(perCapita.16$EstPop16.Wiki)
+#    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+# 585500  1850000  4559000  6449000  7199000 39250000
+
+perCapita.16 <- perCapita.16 %>%
+  mutate(perCapPop = EstPop16.Wiki / 100000)
+
+summary(perCapita.16$perCapPop)
+#     Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   5.855  18.500  45.590  64.490  71.990 392.500 
+
+# plot FFLs by state with population mapped to color. 
+perCapita.16 %>% 
+  arrange(desc(EstPop16.Wiki)) %>%
+  ggplot(aes(reorder(NAME, perCapitaFFL), perCapitaFFL, fill = perCapPop)) +
+  geom_bar(stat = "identity") + 
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite3",
+                       high = "coral4", midpoint = 200) +
+  scale_y_discrete(limits = c(0, 10, 25, 50, 75, 100, 125)) +
+  labs(title = "2016: Federal Firearms Licenses by State (per 100,000 residents)",
+       x = "", y = "FFLs per 100k", fill = "Population / 100k") +
+  pd.theme +
+  coord_flip()
+
+
+
 
 
