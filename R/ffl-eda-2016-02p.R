@@ -64,7 +64,7 @@ perCapita.16 %>%
                          midpoint = 52, guide = F) +
     scale_y_discrete(limits = c(0, 10, 25, 50, 75, 100, 125)) +
     labs(title = "2016: Federal Firearms Licenses by State (per 100,000 residents)",
-         x = "", y = "FFLs per 100k") +
+         x = "", y = "number of licenses per 100k residents") +
     pd.theme +
     coord_flip()
 
@@ -92,7 +92,7 @@ perCapita.16 %>%
                        high = "coral4", midpoint = 200) +
   scale_y_discrete(limits = c(0, 10, 25, 50, 75, 100, 125)) +
   labs(title = "2016: Federal Firearms Licenses by State (per 100,000 residents)",
-       x = "", y = "FFLs per 100k", fill = "Population / 100k") +
+       x = "", y = "number of licenses per 100k residents", fill = "Population / 100k") +
   pd.theme +
   coord_flip()
 
