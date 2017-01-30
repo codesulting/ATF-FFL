@@ -49,6 +49,10 @@ Also what might be misleading is that the above plot is for _raw counts_, that d
 
 Alaska (3rd least populous) along with North and South Dakota (4th and 5th least populous) appear to be part of a trend of more FFLs despite lower population.
 
+The same plot, but with each state's population mapped to the color fill:
+
+![per capita count by state](R_plots/2016-FFL-byState-perCapitaPopulation.png)
+
 
 
 ## License Count by Region
