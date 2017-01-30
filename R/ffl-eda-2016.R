@@ -217,4 +217,3 @@ ggplot(m1516, aes(monthyear, n, group = 1)) +
        y = "number of licenses")
 
 # from 2015 through 2016, approximately 2000 more licenses were issued.
-

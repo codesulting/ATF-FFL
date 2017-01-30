@@ -22,31 +22,35 @@ pop <- as.data.frame(pop)
 str(pop)
 
 # 2016 population: US Census --------------------------------------------------
+
+# select out 2016 variables
 p16 <- pop %>%
   select(REGION, DIVISION, STATE, NAME, contains("2016")) %>%
   arrange(desc(POPESTIMATE2016))
 
-p16u <- p16[-c(1, 2, 3, 4, 5), ]
+# remove regional observations
+p16 <- p16[-c(1, 2, 3, 4, 5), ]
 
 # data: US Census Congressional Apportionment ----------------------------------
 house <- read.csv("~/Documents/ATF-FFL/data/census/HouseSeats.csv")
 
 # rename columns
-years <- seq(2010, 1910, -10)
-colnames(house) <- c("State", "Total", "resident.pop", "overseas.pop", years)
+# years <- seq(2010, 1910, -10)
+# colnames(house) <- c("State", "Total", "resident.pop", "overseas.pop", years)
 
-# clean observations
+# clean observations - remove '...' and trailing whitespace
 house$State <- as.character(house$State)
 house$State <- gsub("\\.", "", house$State)
 house$State <- gsub("\\s+$", "", house$State)
 levels(as.factor(house$State))
 
+# remove 'Total' observation
+house <- house[-1, ]
+rownames(house) <- 1:50
+
 # data: ATF Firearms Commerce -------------------------------------------------
 
 commerce.FFL.total <- read.csv("~/Documents/ATF-FFL/data/commerce/10-FFL-total.csv")
-
-
-
 
 
 # Per Capita FFLs -------------------------------------------------------------
@@ -65,13 +69,25 @@ lic.month <- f16 %>%
 
 colnames(lic.month) <- c("month", "PremiseStateFull", "NumFFLs")  
 
-# accurate mean from the data
+# 'accurate' mean from the data
 lic.month <- lic.month %>% group_by(PremiseStateFull) %>%
   mutate(meanFFL = sum(NumFFLs) / 10)
 
 avgMonthlyFFL <- lic.month %>% 
   select(PremiseStateFull, meanFFL) %>%
   distinct(meanFFL)
+
+# But this doesn't take into account missing values from 09/2016 and 10/2016.
+# What is a good way of dealing with these missing values?
+# It can be noted that number of licenses increases from 08/2016 to 11/2016. 
+
+# What is the difference in values from 08/2016 to 11/2016?
+nrow(f16[f16$month == "11", ]) - nrow(f16[f16$month == "08", ])
+# 165 more licenses were issued between August 2016 and November 2016
+# It might be possible to take 165 and divide by the number of months,
+# then add that to August total to obtain an average number of licenses. 
+# Check on this.
+
 
 # 2:
 # Using Census 2016 data, find license counts per 100,000 residents
@@ -95,23 +111,7 @@ colnames(f16u) <- c("NAME", "LicCount", "EstPop16.Wiki", "EstPopPerHouseSeat",
 f16u <- f16u[, c(1, 2, 7, 6, 8, 3, 4, 5)]
 
 # merge FFL and Census Population data
-fp16 <- left_join(f16u, p16u, by = as.character("NAME"))
-summary(fp16)
+perCapita.16 <- left_join(f16u, p16, by = as.character("NAME"))
+summary(perCapita.16)
 
-
-# Exploratory Plots -----------------------------------------------------------
-
-# define a theme for plotting
-# modifies theme_minimal() with type set in Gill Sans
-# and italic axis titles in Times
-pd.theme <- theme_minimal(base_size = 14, base_family = "GillSans") +
-  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
-
-pd.classic <- theme_classic(base_size = 14, base_family = "GillSans") +
-  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
+# write.csv(fp16, file = "~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv", row.names = F)
