@@ -170,7 +170,10 @@ summary(perCapitaMap$POPESTIMATE2016)
 #   585500  4093000  6651000  9828000 10310000 39250000
 
 # bar plot of population by state
-ggplot(perCapita.16, aes(reorder(NAME, POPESTIMATE2016), POPESTIMATE2016, fill = POPESTIMATE2016)) +
+
+perCapita.16 %>%
+  arrange(desc(POPESTIMATE2016)) %>%
+ggplot(aes(reorder(NAME, desc(POPESTIMATE2016)), POPESTIMATE2016, fill = POPESTIMATE2016)) +
   geom_bar(stat = "identity") +
   scale_fill_gradient2(low = "deepskyblue3",
                        mid = "antiquewhite1",
@@ -178,7 +181,7 @@ ggplot(perCapita.16, aes(reorder(NAME, POPESTIMATE2016), POPESTIMATE2016, fill =
   pd.theme +
   theme(axis.text.x = element_text(angle = 45, size = 9.5, hjust = 1, vjust = 1,
                                    lineheight = 1.5)) +
-  labs(title = "2016: US Census Population ~ State", x = "", y = "", fill = "") 
+  labs(title = "2016: US Census Population ~ State", x = "", y = "", fill = "")
 
 # map of population by state
 ggplot(perCapitaMap, aes(lon, lat, group = group, fill = POPESTIMATE2016)) +
@@ -200,7 +203,9 @@ ggplot(perCapitaMap, aes(lon, lat, group = group, fill = POPESTIMATE2016)) +
 
 # Almost tempted to say there's an inverse relationship between a state's population
 # and the number of Federal Firearms License holders.
-# two new rank variables can be created to specifically look at this condition.
+# two new rank variables can be created to specifically look at this possibility.
+
+
 
 
 
