@@ -53,7 +53,11 @@ The same plot, but with each state's population mapped to the color fill:
 
 ![per capita count by state](R_plots/2016-FFL-byState-perCapitaPopulation.png)
 
-Broadly speaking, it appears that the most populous states have less firearms license holders than the least populous states.
+Broadly speaking, it appears that the most populous states have less firearms license holders per capita than the least populous states.
+
+![mapbar01](R_plots/mapbar-2016-FFL-by-State.jpg)
+
+![mapbar02](R_plots/mapbar-2016-pop-by-State.jpg)
 
 
 
