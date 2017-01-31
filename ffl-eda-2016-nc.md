@@ -57,8 +57,9 @@ Broadly speaking, it appears that the most populous states have less firearms li
 
 ![mapbar01](R_plots/mapbar-2016-FFL-by-State.jpg)
 
-![mapbar02](R_plots/mapbar-2016-pop-by-State.jpg)
+![mapbar02](R_plots/mapbar-2016-pop-by-State-desc.jpg)
 
+Looking at these maps...it's tempting to want to say that the number of Fedeally Licensed Firearms dealers is inversely proportional to a state's population. We can create two rank variables to specifically look at this possibility.
 
 
 ## License Count by Region

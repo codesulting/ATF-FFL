@@ -65,10 +65,10 @@ perCapita.16 %>%
                          high = "coral4",
                          midpoint = 52, guide = F) +
     scale_y_discrete(limits = c(0, 10, 25, 50, 75, 100, 125)) +
-    labs(title = "2016: Federal Firearms Licenses by State (per 100,000 residents)",
+    labs(title = "",
          x = "", y = "number of licenses per 100k residents") +
     pd.theme +
-    coord_flip()
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 10))
 
 # How does this relate to population ranking across the states?
 # First look at the expected population values overall, then plot.
@@ -145,24 +145,23 @@ ggplot(perCapitaMap, aes(lon, lat, group = group, fill = perCapitaFFL)) +
 
 summary(perCapitaMap$perCapitaFFL)
 
-
 # FFL Per 100k map
 ggplot(perCapitaMap, aes(lon, lat, group = group, fill = perCapitaFFL)) +
   geom_polygon() +
-  scale_fill_gradient2(low = "steelblue4",
+  scale_fill_gradient2(low = "deepskyblue4",
                        mid = "antiquewhite1",
-                       high = "coral3", midpoint = 52) +
+                       high = "coral4", midpoint = 52) +
   coord_map("polyconic") + pd.theme +
-  theme(legend.position = "bottom",
+  theme(legend.position = "right",
         panel.border = element_rect(linetype = "solid", 
                                     fill = NA, 
-                                    color = "gray18"),
+                                    color = "white"),
         panel.grid = element_blank(),
         axis.text = element_blank(),
         legend.title = element_text(size = 12),
         legend.text = element_text(size = 12, hjust = 1, vjust = 1)) +
-  labs(title = "2016: Federal Firearms License ~ State (per 100k residents)", 
-       x = "", y = "", fill = "FFLs / 100k")
+  labs(title = "2016: Federal Firearms Licenses ~ State (per 100k residents)", 
+       x = "", y = "", fill = "")
 
 # Map 03: Raw population data, divergent color fill ----------------------------
 
@@ -175,7 +174,7 @@ ggplot(perCapita.16, aes(reorder(NAME, POPESTIMATE2016), POPESTIMATE2016, fill =
   geom_bar(stat = "identity") +
   scale_fill_gradient2(low = "deepskyblue3",
                        mid = "antiquewhite1",
-                       high = "coral3", midpoint = 15000000) +
+                       high = "coral3", midpoint = 15000000, guide = F) +
   pd.theme +
   theme(axis.text.x = element_text(angle = 45, size = 9.5, hjust = 1, vjust = 1,
                                    lineheight = 1.5)) +
@@ -198,6 +197,10 @@ ggplot(perCapitaMap, aes(lon, lat, group = group, fill = POPESTIMATE2016)) +
         legend.text = element_text(angle = 45, size = 12, hjust = 1, vjust = 1)) +
   labs(title = "2016: US Census Population ~ State", 
        x = "", y = "", fill = "population")
+
+# Almost tempted to say there's an inverse relationship between a state's population
+# and the number of Federal Firearms License holders.
+# two new rank variables can be created to specifically look at this condition.
 
 
 
