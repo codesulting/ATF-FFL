@@ -5,6 +5,8 @@ _Why Own a Gun?_ An examination of ATF Federal Firearms License data.
 
 Initial notes on a broad question, in an attempt to understand an issue, describe particular data, and note correlations across other data. Who, What, When, and Where are easily answered by summary statistics in this case; can these fields provide any clues as to _Why?_
 
+_write-ups of exploratory anaylses_:
+
 - [Exploratory Plots](ffl-eda-2016-nc.md)
 - [cross-reference: House of Representatives Expenditure Data](house-expenditure-EDA.md)
 
