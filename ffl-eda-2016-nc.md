@@ -61,6 +61,10 @@ Broadly speaking, it appears that the most populous states have less firearms li
 
 Looking at these maps...it's tempting to want to say that the number of Fedeally Licensed Firearms dealers is inversely proportional to a state's population. We can create two rank variables to specifically look at this possibility. Or - put FFLs and population on a scatterplot, and fit an exploratory linear regression there appears to be a pattern.
 
+![pop-ffl scatterplot](R_plots/Population-FFL-01.png)
+
+Looking at the scatterplot of FFLs per 100k residents vs population...it is still tempting to see an inverse relationship between the two. Why would a higher population have less FFLs? 
+
 
 ## License Count by Region
 
