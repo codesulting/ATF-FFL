@@ -9,6 +9,9 @@ library(ggplot2)
 library(data.table)
 library(scales)
 
+library(maps)
+library(mapproj)
+
 # 2016 data -------------------------------------------------------------------
 
 # data: Federal Firearms Licenses 2016 ----------------------------------------
@@ -18,7 +21,6 @@ str(f16)
 
 # data: Census Population and License Counts ----------------------------------
 perCapita.16 <- read.csv("~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv")
-perCapita.16 <- as.data.frame(perCapita.16)
 str(perCapita.16)
 
 # from earlier cleansing/binding script, we now have
@@ -39,13 +41,13 @@ summary(perCapita.16$perCapitaFFL)
 # define a theme for plotting
 # modifies theme_minimal() with type set in Gill Sans
 # and italic axis titles in Times
-pd.theme <- theme_minimal(base_size = 14, base_family = "GillSans") +
+pd.theme <- theme_minimal(base_size = 12, base_family = "GillSans") +
   theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
         axis.title = element_text(family = "Times", face = "italic", size = 12),
         axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
         axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
 
-pd.classic <- theme_classic(base_size = 14, base_family = "GillSans") +
+pd.classic <- theme_classic(base_size = 12, base_family = "GillSans") +
   theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
         axis.title = element_text(family = "Times", face = "italic", size = 12),
         axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
@@ -103,7 +105,6 @@ perCapita.16 %>%
 
 library(maps)
 library(mapproj)
-
 
 # load map data for US
 usa <- map_data("state")
@@ -203,16 +204,113 @@ ggplot(perCapitaMap, aes(lon, lat, group = group, fill = POPESTIMATE2016)) +
 
 # Almost tempted to say there's an inverse relationship between a state's population
 # and the number of Federal Firearms License holders.
-# two new rank variables can be created to specifically look at this possibility.
+# Two new rank variables can be created to specifically look at this possibility.
+# Or first - a scatterplot.
 
+# create a new dataframe with only FFLs and population
+ffl.pop <- perCapita.16 %>%
+  select(NAME, POPESTIMATE2016, LicCount, LicCountMonthly, perCapitaFFL) %>%
+  mutate(pop100k = POPESTIMATE2016/100000)
 
+# assign state names as row names
+rownames(ffl.pop) <- ffl.pop$NAME
+ffl.pop$NAME <- NULL
 
+# by raw counts
+ggplot(ffl.pop, aes(LicCountMonthly, POPESTIMATE2016, label = rownames(ffl.pop))) +
+  geom_text(size = 3, position = "jitter", alpha = 0.75, hjust = 1, vjust = 1,
+            check_overlap = T)
 
+# per 100k
+pop.ffl <- ggplot(ffl.pop, aes(perCapitaFFL, pop100k, label = rownames(ffl.pop))) +
+  geom_text(size = 3.5, alpha = 0.95, hjust = -0.1, vjust = 1, 
+            check_overlap = T, family = "GillSans") +
+  geom_point(aes(perCapitaFFL, pop100k), size = 0.75, data = ffl.pop, alpha = 0.25) +
+  pd.classic + expand_limits(x = c(-5, 120)) +
+  labs(x = "Federal Firearms Licenses per 100k", y = "population / 100k")
 
+pop.ffl
 
+ggplot(ffl.pop, aes(perCapitaFFL, pop100k, label = rownames(ffl.pop))) +
+  geom_text(size = 3.5, alpha = 0.95, hjust = -0.05, vjust = -0.25, 
+            check_overlap = T, family = "GillSans") +
+  geom_point(aes(perCapitaFFL, pop100k), size = 0.75, 
+             data = ffl.pop, alpha = 0.25) +
+  pd.theme + expand_limits(x = c(0, 120)) +
+  labs(x = "Federal Firearms Licenses per 100k", y = "population / 100k")
 
+# per 100k - log scale
+pop.ffl <- ggplot(ffl.pop, aes(perCapitaFFL, pop100k, label = rownames(ffl.pop))) +
+  geom_text(size = 3.75, alpha = 0.95, hjust = -0.05, vjust = 1, check_overlap = T,
+            family = "GillSans") +
+  geom_point(aes(perCapitaFFL, pop100k), size = 0.75, data = ffl.pop, alpha = 0.25) +
+  pd.classic + expand_limits(x = c(-5, 120)) +
+  labs(x = "log(Federal Firearms Licenses per 100k)", y = "log(population / 100k)")
+  
+pop.ffl + scale_x_log10() + scale_y_log10()
+pop.ffl + scale_x_log10() + scale_y_log10() + geom_rug(size = 0.25, alpha = 0.3)
 
+ggplot(ffl.pop, aes(perCapitaFFL, pop100k, label = rownames(ffl.pop))) +
+  geom_text(size = 3.75, alpha = 0.95, hjust = -0.05, vjust = 1, 
+            check_overlap = T, family = "GillSans") +
+  geom_point(aes(perCapitaFFL, pop100k), size = 0.75, data = ffl.pop, alpha = 0.25) +
+  scale_x_log10() + 
+  scale_y_log10() + 
+  expand_limits(x = c(0, 120)) +
+  theme(axis.title = element_text(family = "Times", face = "italic", size = 12),
+        axis.text = element_text(size = 12),
+        panel.background = element_rect(fill = "gray92")) +
+  labs(x = "log(Federal Firearms Licenses per 100k)", y = "log(population / 100k)")
 
+# holy shit it does look inversely proportional
 
+# Exploratory Models ----------------------------------------------------------
 
+library(broom)
+
+# model 01:  on raw counts
+pop.model.01 <- lm(LicCountMonthly ~ POPESTIMATE2016, data = ffl.pop)
+summary(pop.model.01)
+
+tidy(pop.model.01)
+pm01.fitted <- augment(pop.model.01)
+
+ggplot(pm01.fitted, aes(POPESTIMATE2016, .fitted, label = .rownames)) +
+  geom_line(linetype = "dashed", color = "red3") +
+  geom_text(aes(POPESTIMATE2016, LicCountMonthly), size = 3,
+            hjust = 1, vjust = 1, check_overlap = T) +
+  geom_point(aes(y = LicCountMonthly), color = "black", 
+             alpha = 0.25, data = pm01.fitted) +
+  expand_limits(x = c(-2000000, 4000000)) +
+  pd.theme +
+  scale_x_log10() +
+  labs(x = "log(2016 population)", y = "fitted FFL count ~ population",
+       title = "Raw Counts: Monthly Licenses by State Population")
+
+# model 02: on per capita
+pm02 <- lm(perCapitaFFL ~ pop100k, data = ffl.pop)
+summary(pm02)
+tidy(pm02)
+
+pm02.fitted <- augment(pm02)
+
+ggplot(pm02.fitted, aes(pop100k, .fitted, label = .rownames)) +
+  geom_line(linetype = "dashed", color = "red3") +
+  geom_text(aes(pop100k, perCapitaFFL), size = 3,
+            hjust = 1, vjust = 1, check_overlap = T) +
+  geom_point(aes(y = perCapitaFFL), color = "black", 
+             alpha = 0.25, data = pm02.fitted) +
+  expand_limits(x = c(-2000000, 4000000)) +
+  pd.theme + scale_x_log10() +
+  labs(x = "log(2016 population)", y = "fitted FFL count ~ population",
+       title = "Raw Counts: Monthly Licenses by State Population")
+
+# It appears in both models that an FFL count commensurate to population
+# leads to high residuals in the outliers.
+
+# on log transformed per capita
+pm03 <- lm(log(perCapitaFFL) ~ log(pop100k), data = ffl.pop)
+summary(pm03)
+tidy(pm03)
+pm03.fitted <- augment(pm03)
 

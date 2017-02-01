@@ -44,7 +44,7 @@ summary(f16$LicCount)
 texas <- f16 %>% filter(PremiseState == "TX")
 nrow(texas)
 
-# A look at license count by state, filled by region
+# A look at license count by state, filled by LicCount
 ggplot(f16, aes(reorder(PremiseStateFull, LicCount), fill = LicCount)) + 
   geom_bar() +
   scale_fill_gradient2(low = "deepskyblue4", mid = "gray96", high = muted("firebrick4"),
