@@ -207,6 +207,8 @@ ggplot(perCapitaMap, aes(lon, lat, group = group, fill = POPESTIMATE2016)) +
 # Two new rank variables can be created to specifically look at this possibility.
 # Or first - a scatterplot.
 
+# Pattern? : FFLs by Population -----------------------------------------------
+
 # create a new dataframe with only FFLs and population
 ffl.pop <- perCapita.16 %>%
   select(NAME, POPESTIMATE2016, LicCount, LicCountMonthly, perCapitaFFL) %>%
@@ -246,9 +248,10 @@ pop.ffl <- ggplot(ffl.pop, aes(perCapitaFFL, pop100k, label = rownames(ffl.pop))
   geom_point(aes(perCapitaFFL, pop100k), size = 0.75, data = ffl.pop, alpha = 0.25) +
   pd.classic + expand_limits(x = c(-5, 120)) +
   labs(x = "log(Federal Firearms Licenses per 100k)", y = "log(population / 100k)")
-  
+
+# FFL ~ Population w/ log scales  
 pop.ffl + scale_x_log10() + scale_y_log10()
-pop.ffl + scale_x_log10() + scale_y_log10() + geom_rug(size = 0.25, alpha = 0.3)
+
 
 ggplot(ffl.pop, aes(perCapitaFFL, pop100k, label = rownames(ffl.pop))) +
   geom_text(size = 3.75, alpha = 0.95, hjust = -0.05, vjust = 1, 
@@ -294,23 +297,48 @@ tidy(pm02)
 
 pm02.fitted <- augment(pm02)
 
+# plot per capita 
+ggplot(pm02.fitted, aes(pop100k, .fitted, label = .rownames)) +
+  geom_line(linetype = "dashed", color = "red3") +
+  geom_text(aes(pop100k, perCapitaFFL), size = 3,
+            hjust = 1.1, vjust = 1.1, check_overlap = T) +
+  geom_point(aes(y = perCapitaFFL), color = "black", 
+             alpha = 0.25, data = pm02.fitted) +
+  expand_limits(x = c(-25, 425), y = c(0, 110)) +
+  pd.classic +
+  labs(x = "2016 population", y = "FFL rate per 100k",
+       title = "Per Capita FFL Counts: Monthly Licenses by State Population")
+
+# plot per capita on log scale
 ggplot(pm02.fitted, aes(pop100k, .fitted, label = .rownames)) +
   geom_line(linetype = "dashed", color = "red3") +
   geom_text(aes(pop100k, perCapitaFFL), size = 3,
             hjust = 1, vjust = 1, check_overlap = T) +
   geom_point(aes(y = perCapitaFFL), color = "black", 
              alpha = 0.25, data = pm02.fitted) +
-  expand_limits(x = c(-2000000, 4000000)) +
-  pd.theme + scale_x_log10() +
-  labs(x = "log(2016 population)", y = "fitted FFL count ~ population",
-       title = "Raw Counts: Monthly Licenses by State Population")
+  scale_x_log10() + scale_y_log10() +
+  expand_limits(x = c(log(1), log(200))) +
+  pd.classic +
+  labs(x = "log(2016 population)", y = "FFL rate per 100k",
+       title = "Per Capita FFL Counts: Monthly Licenses by State Population (log scale)")
 
 # It appears in both models that an FFL count commensurate to population
 # leads to high residuals in the outliers.
 
 # on log transformed per capita
-pm03 <- lm(log(perCapitaFFL) ~ log(pop100k), data = ffl.pop)
+pm03 <- lm(perCapitaFFL ~ POPESTIMATE2016, data = ffl.pop)
 summary(pm03)
 tidy(pm03)
+
 pm03.fitted <- augment(pm03)
 
+ggplot(pm03.fitted, aes(POPESTIMATE2016, .fitted, label = .rownames)) +
+  geom_line(linetype = "dashed", color = "red3") +
+  geom_text(aes(POPESTIMATE2016, perCapitaFFL), size = 3,
+            hjust = -0.1, vjust = 1.1, check_overlap = T) +
+  geom_point(aes(y = perCapitaFFL), color = "black", 
+             alpha = 0.25, data = pm03.fitted) +
+  expand_limits(x = c(0, 5000000), y = c(0, 110)) +
+  pd.classic +
+  labs(x = "2016 population", y = "FFL rate per 100k",
+       title = "Per Capita FFL Counts: Monthly Licenses by State Population")
