@@ -35,7 +35,8 @@ FFLs <- commerce.FFL.total %>%
 summary(FFLs)
 # 'n' variable has commas and is reading as character string
 
-# function to remove commas from numeric variables
+# Function: remove commas from numeric variables ------------------------------
+
 commas <- function(x) {
   x <- gsub(",", "", x)
   x <- as.integer(x)
@@ -45,35 +46,60 @@ commas <- function(x) {
 FFLs$n <- commas(FFLs$n)
 colnames(FFLs)[3] <- "FFL.Rate"
 
+# Plot: Tufte Style sparklines for historic FFL data --------------------------
+# http://motioninsocial.com/tufte/#range-frame-plot
+
+# compute mins, maxes, ends, and quartile ranges for plot
 mins <- group_by(FFLs, LicenseType) %>% slice(which.min(FFL.Rate))
 maxs <- group_by(FFLs, LicenseType) %>% slice(which.max(FFL.Rate))
 ends <- group_by(FFLs, LicenseType) %>% filter(Fiscal.Year == max(Fiscal.Year))
+start <- group_by(FFLs, LicenseType) %>% filter(Fiscal.Year == min(Fiscal.Year))
+
 quarts <- FFLs %>% group_by(LicenseType) %>%
   summarize(quart1 = quantile(FFL.Rate, 0.25),
             quart2 = quantile(FFL.Rate, 0.75)) %>%
   right_join(FFLs)
 
-# plot
+# plot : Tufte Style Sparklines, Tufte theme
 ggplot(FFLs, aes(Fiscal.Year, FFL.Rate, group = LicenseType)) +
-  facet_grid(LicenseType ~ .) +
-  geom_ribbon(data = quarts, aes(ymin = quart1, max = quart2), fill = 'grey90') +
+  facet_grid(LicenseType ~ ., scales = "free_y") +
+  geom_ribbon(data = quarts, aes(ymin = quart1, max = quart2), fill = "gray96") +
   geom_line(size = 0.25) +
-  geom_point(data = mins, col = 'red') +
-  geom_point(data = maxs, col = 'blue') +
+  geom_point(data = mins, col = "firebrick3") +
+  geom_point(data = maxs, col = "deepskyblue") +
   geom_text(data = mins, aes(label = FFL.Rate), vjust = -1, size = 2.75) +
   geom_text(data = maxs, aes(label = FFL.Rate), vjust = -1, size = 2.75) +
-  geom_text(data = ends, aes(label = FFL.Rate), hjust = 0, nudge_x = 1) +
-  geom_text(data = ends, aes(label = LicenseType), hjust = 0, nudge_x = 5) +
+  geom_text(data = ends, aes(label = FFL.Rate), hjust = 0, nudge_x = 1,
+            family = "GillSans", size = 3.5) +
+  geom_text(data = ends, aes(label = LicenseType), hjust = 0, nudge_x = 4, 
+            family = "GillSans", size = 5) +
   expand_limits(x = max(FFLs$Fiscal.Year) + (0.25 * (max(FFLs$Fiscal.Year) - min(FFLs$Fiscal.Year)))) +
-  scale_x_continuous(breaks = seq(1975, 2015, 10)) +
-  scale_y_continuous(expand = c(0.1, 0)) +
+  scale_x_continuous(breaks = seq(1975, 2015, 5)) +
+  scale_y_continuous(expand = c(0.25, 0)) +
   theme_tufte(base_size = 10, base_family = "GillSans") +
   theme(axis.title = element_blank(), axis.text.y = element_blank(), 
         axis.ticks = element_blank(), strip.text = element_blank(),
-        axis.text.x = element_text(angle = 45, size = 11,
-                                   hjust = 1, vjust = 1),
+        axis.text.x = element_text(size = 10),
         plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))
 
-
-
+# Plot: Tufte Style, Classic Theme
+ggplot(FFLs, aes(Fiscal.Year, FFL.Rate, group = LicenseType)) +
+  facet_grid(LicenseType ~ ., scales = "free_y") +
+  geom_ribbon(data = quarts, aes(ymin = quart1, max = quart2), fill = "gray96") +
+  geom_line(size = 0.25) +
+  geom_point(data = mins, col = "firebrick3") +
+  geom_point(data = maxs, col = "deepskyblue") +
+  geom_text(data = mins, aes(label = FFL.Rate), vjust = -1, size = 2.75) +
+  geom_text(data = maxs, aes(label = FFL.Rate), vjust = -1, size = 2.75) +
+  geom_text(data = ends, aes(label = FFL.Rate), hjust = 0, nudge_x = 1, size = 3.5) +
+  expand_limits(x = max(FFLs$Fiscal.Year) + (0.05 * (max(FFLs$Fiscal.Year) - min(FFLs$Fiscal.Year)))) +
+  scale_x_continuous(breaks = seq(1975, 2015, 5)) +
+  scale_y_continuous(expand = c(0.25, 0)) +
+  theme_classic(base_size = 10, base_family = "GillSans") +
+  theme(axis.title = element_blank(), 
+        axis.text.y = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12),
+        plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))
 
