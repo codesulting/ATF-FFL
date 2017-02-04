@@ -15,17 +15,15 @@ The ATF has 9 'types' of FFLs:
 - Manufacturer of Destructive Devices
 - Importer of Destructive Devices
 
-'Destructive Devices' constitute their own class, and are [defined by the National Firearms Act](https://www.atf.gov/firearms/firearms-guides-importation-verification-firearms-national-firearms-act-definitions-1), [26 U.S.C. § 5845(F) (page 82)](https://www.atf.gov/firearms/docs/guide/atf-guidebook-importation-verification-firearms-ammunition-and-implements-war/download). The ATF bullet points defining Destructive Device are: 
+'Destructive Devices' constitute their own class, and are [defined by the National Firearms Act](https://www.atf.gov/firearms/firearms-guides-importation-verification-firearms-national-firearms-act-definitions-1), [26 U.S.C. § 5845(F) (page 82)](https://www.atf.gov/firearms/docs/guide/atf-guidebook-importation-verification-firearms-ammunition-and-implements-war/download). Three examples, as shown in an illustration from the ATF Guidebook:
+
+![destructive devices](indd/assets/dd-definition.png)
+
+The ATF bullet points defining Destructive Device are: 
 
 - A missile having an explosive or incendiary charge of more than 1/4 oz. (**1/4 oz explosive/incendiary**)
 - Any type of weapon by whatever name known which will, or which may readily be converted to expel a projectile, by the action of an explosive or other propellant, the barrel or barrels of which have a bore greater than one-half inch in diameter. (**1/2" bore**)
 - A combination of parts designed and intended for use in converting a device into a destructive device and from which a destructive device can be readily assembled.
-
-
-
-
-
-
 
 # ATF - Federal Firearms Licenses 2016
 
