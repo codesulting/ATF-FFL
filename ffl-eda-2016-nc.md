@@ -1,16 +1,14 @@
 # What is a Federal Firearms License?
 
-A Federal Firearms License (FFL) is a requirement for those who engage in the business of firearms - generally **dealers**, **manufacturers**, and **importers**. It's not actually a license to carry a firearm; it's strictly for the business of firearms. Even so, it's not necessary to have one if selling at gun shows, or for purchasing guns for personal reasons. 
+A Federal Firearms License (FFL) is a requirement for those who engage in the business of firearms - generally **dealers**, **manufacturers**, and **importers**. It's not actually a license to carry a firearm; it's strictly for the conducting business involving firearms. It's not necessary to have one if selling at gun shows, or when purchasing guns for personal reasons. 
 
-The ATF has 9 'types' of FFLs: 
+The ATF considers 9 'types' of FFLs: 
 
 - Dealer
 - Pawnbroker
 - Collector
-
 - Manufacturer of Ammunition
 - Manufacturer of Firearms
-
 - Dealer in Destructive Devices
 - Manufacturer of Destructive Devices
 - Importer of Destructive Devices
@@ -25,6 +23,8 @@ The ATF bullet points defining Destructive Device are:
 - Any type of weapon by whatever name known which will, or which may readily be converted to expel a projectile, by the action of an explosive or other propellant, the barrel or barrels of which have a bore greater than one-half inch in diameter. (**1/2" bore**)
 - A combination of parts designed and intended for use in converting a device into a destructive device and from which a destructive device can be readily assembled.
 
+Back to FFLs - the ATF [publishes data on this FFL holders](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) monthly, from 2013 to present. Additionally, an [annual commerce report](https://www.atf.gov/resource-center/data-statistics) is released, which contains numbers on weapons registrations, imports and taxes, and historical FFL data. 
+
 # ATF - Federal Firearms Licenses 2016
 
 Here's a walkthrough of initial exploratory plots and analysis for Federal Firearms Licenses in 2016. 
@@ -34,10 +34,8 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(data.table)
-library(RColorBrewer)
-library(scales)
 
-f16 <- fread("data/ffl-2016-V2.csv", stringsAsFactors = T)
+f16 <- fread("data/ffl-2016-V3.csv", stringsAsFactors = T)
 f16 <- as.data.frame(f16)
 ```
 
