@@ -42,16 +42,12 @@ Texas appears to have twice as many license holders than Florida - but it is als
 
 Also what might be misleading is that the above plot is for _raw counts_, that doesn't take into account each state's population. After binding US Census population data for each state, License count can be normalized per 100,000 residents. This shows a different picture of FFL holders across the states:
 
-![per capita count by state](R_plots/2016-FFL-byState-perCapita.png)
+![per capita count by state](R_plots/2016-FFL-byState-perCapitaPopulation.png)
 
 - Texas, while leading the raw count in FFLs, has less than 25 FFLs per capita. 
 - Wyoming, with the lowest population in the US, has over 100 FFLs per 100,000 residents. 
 
 Alaska (3rd least populous) along with North and South Dakota (4th and 5th least populous) appear to be part of a trend of more FFLs despite lower population.
-
-The same plot, but with each state's population mapped to the color fill:
-
-![per capita count by state](R_plots/2016-FFL-byState-perCapitaPopulation.png)
 
 Broadly speaking, it appears that the most populous states have less firearms license holders per capita than the least populous states.
 
