@@ -1,6 +1,7 @@
 # ATF - Federal Firearms Licenses
 # Exploratory Data Analysis
 # Firearms Commerce Data - Exhibit 08
+# National Firearms Act - firearms registration data
 
 # load data -------------------------------------------------------------------
 

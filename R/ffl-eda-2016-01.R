@@ -11,209 +11,107 @@ library(scales)
 
 # 2016 data -------------------------------------------------------------------
 
+# data: Federal Firearms Licenses 2016 ----------------------------------------
 f16 <- fread("~/Documents/ATF-FFL/data/ffl-2016-V3.csv", stringsAsFactors = T)
 f16 <- as.data.frame(f16)
+str(f16)
 
-# Exploratory Plots -----------------------------------------------------------
+# data: US Census Population estimates 2010-2016 ------------------------------
+pop <- fread("~/Documents/ATF-FFL/data/census/nst-est2016-alldata.csv")
+pop <- as.data.frame(pop)
+str(pop)
 
-# define a theme for plotting
-# modifies theme_minimal() with type set in Gill Sans
-# and italic axis titles in Times
-pd.theme <- theme_minimal(base_size = 14, base_family = "GillSans") +
-  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
+# 2016 population: US Census --------------------------------------------------
 
-pd.classic <- theme_classic(base_size = 14, base_family = "GillSans") +
-  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
+# select out 2016 variables
+p16 <- pop %>%
+  select(REGION, DIVISION, STATE, NAME, contains("2016")) %>%
+  arrange(desc(POPESTIMATE2016))
 
+# remove regional observations
+p16 <- p16[-c(1, 2, 3, 4, 5), ]
 
-# Broadly: which states had the most firearms licenses? -----------------------
+# data: US Census Congressional Apportionment ----------------------------------
+house <- read.csv("~/Documents/ATF-FFL/data/census/HouseSeats.csv")
 
-display.brewer.all()
+# rename columns
+# years <- seq(2010, 1910, -10)
+# colnames(house) <- c("State", "Total", "resident.pop", "overseas.pop", years)
 
-# define a palette for each region (7 total)
-region.pal <- brewer.pal(7, "RdBu")
+# clean observations - remove '...' and trailing whitespace
+house$State <- as.character(house$State)
+house$State <- gsub("\\.", "", house$State)
+house$State <- gsub("\\s+$", "", house$State)
+levels(as.factor(house$State))
 
-summary(f16$LicCount)
+# remove 'Total' observation
+house <- house[-1, ]
+rownames(house) <- 1:50
 
-texas <- f16 %>% filter(PremiseState == "TX")
-nrow(texas)
+# data: ATF Firearms Commerce -------------------------------------------------
 
-# A look at license count by state, filled by LicCount
-ggplot(f16, aes(reorder(PremiseStateFull, LicCount), fill = LicCount)) + 
-  geom_bar() +
-  scale_fill_gradient2(low = "deepskyblue4", mid = "gray96", high = muted("firebrick4"),
-                       midpoint = 25220) +
-  scale_y_discrete(limits = c(0, 5000, 10000, 20000, 40000, 80000)) +
-  theme_minimal(base_size = 13.75, base_family = "GillSans") +
-  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
-        axis.title.x = element_text(family = "Times", face = "italic", size = 12,
-                                    margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")),
-        axis.text.x = element_text(size = 12),
-        panel.grid.major = element_line(color = "gray96")) +
-  labs(title = "2016: Federal Firearms Licenses by State",
-       y = "number of licenses", x = "", fill = "") +
-  coord_flip()
-
-# same variables; points instead of bar
-ggplot(f16, aes(PremiseStateFull, LicCount, color = LicCount)) + 
-  geom_point(alpha = 0.85, size = 3) +
-  scale_color_gradient(low = "antiquewhite2", high = "firebrick4") +
-  theme_minimal(base_size = 13.75, base_family = "GillSans") +
-  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
-        axis.title.x = element_text(family = "Times", face = "italic", size = 12,
-                                    margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")),
-        axis.text.x = element_text(size = 13.25),
-        panel.grid.major = element_line(color = "gray92")) +
-  labs(title = "2016: Federal Firearms Licenses by State",
-       y = "number of licenses", x = "", color = "") +
-  coord_flip()
+commerce.FFL.total <- read.csv("~/Documents/ATF-FFL/data/commerce/10-FFL-total.csv")
 
 
-# facet plots by region -------------------------------------------------------
+# Per Capita FFLs -------------------------------------------------------------
 
-f16 <- f16 %>% group_by(Region)
+# 1. find monthly average of FFLs per state
+# 2. calculate number of FFLs per 100,000 people
 
-ggplot(f16, aes(LicCount, PremiseState, color = LicCount)) +
-  geom_segment(aes(yend = PremiseState, color = LicCount), xend = 0) +
-  geom_point(size = 3) +
-  facet_grid(. ~ Region) +
-  scale_color_gradient(low = "deepskyblue3", 
-                       high = "firebrick3",
-                       guide = FALSE) +
-  theme_minimal(base_size = 12, base_family = "GillSans") +
-  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-        axis.title = element_text(family = "Times", face = "italic"),
-        axis.text.x = element_text(angle = 45, size = 10, 
-                                   hjust = 1, vjust = 1),
-        panel.border = element_rect(fill = NA, color = "black", size = 0.5),
-        strip.background = element_rect(fill = NA, color = "black", size = 1)) +
-  labs(title = "2016: Federal Firearms Licenses by State ~ Region",
-       x = "number of licenses", y = "")
+# 1:
+# monthly license count: sum monthly counts, divide by 12. 
+# monthly license count (from data): sum monthly counts, divide by number of months
 
-# Was there much variance from month to month? --------------------------------
-
-# define a palette for each month
-month_pal <- c("deepskyblue4", "deepskyblue3", "lightblue2", "bisque2", "bisque3",
-               "firebrick2", "firebrick3", "firebrick4", "lightblue4", "lightblue3")
-
-# license holder count by state, stack by month
-ggplot(f16, aes(reorder(PremiseStateFull, LicCount), fill = month)) + 
-  geom_bar() +
-  scale_fill_manual(values = month_pal) +
-  theme_minimal(base_size = 14, base_family = "GillSans") +
-  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12,
-                                  margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0))) +
-  labs(title = "2016: Federal Firearms Licenses per month, by State/Territory", 
-       x = "", y = "number of licenses") +
-  coord_flip()
-
-# facet by month
-ggplot(f16, aes(reorder(PremiseStateFull, LicCount), fill = LicCount)) + 
-  geom_bar() +
-  facet_grid(. ~ month) +
-  scale_fill_gradient2(low = "deepskyblue4", mid = "antiquewhite1", high = "firebrick4",
-                        midpoint = 25220, guide = F) +
-  scale_y_continuous(limits = c(0, 8000), breaks = c(2000, 4000, 6000, 8000)) +
-  theme_gray(base_size = 14, base_family = "GillSans") +
-  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12,
-                                  margin = unit(c(0.5, 0, 0, 0), "cm")),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 10),
-        legend.title = element_text(family = "Times", face = "italic", size = 12)) +
-  labs(title = "2016: Federal Firearms Licenses per month, by State/Territory", 
-       x = "", y = "number of licenses", fill = "annual total") +
-  coord_flip()
-
-# There was not much variance from month to month.
-# this is likely due to licenses not expiring.
-
-# There's a Dealer in Destructive Devices in each region.
-
-#### The following two sections may warrant their own script
-#### 1. Summary by Region and 2. Percentage of Population
-
-
-# What percentage of population holds a firearms license? ---------------------
-
-# explore ratio of FFL:total population
-summary(f16$percentFFL)
-# at the maximum, there's 1.3% of a states population holding firearms licenses.
-
-sum(f16$LicCount)
-# 794562
-sum(as.numeric(f16$EstPop2016))
-# 3224463440
-
-794562/3224463440
-
-# Single Month Exploration ----------------------------------------------------
-
-# How many licenses were there each month? 
-
-months16 <- f16 %>%
-  group_by(month) %>%
+lic.month <- f16 %>%
+  group_by(month, PremiseStateFull) %>%
+  distinct(LicenseName) %>%
   count()
 
-ggplot(months16, aes(month, n, group = 1)) +
-  geom_line(linetype = "dashed", size = 1) +
-  geom_point(size = 4, shape = 21, aes(fill = n)) +
-  scale_fill_gradient(low = "antiquewhite2", 
-                      high = "firebrick3",
-                       guide = F) +
-  labs(title = "2016: Number of Licenses by Month", x = "month",
-       y = "number of licenses") +
-  pd.theme
+colnames(lic.month) <- c("month", "PremiseStateFull", "NumFFLs")  
 
-# License Counts: 2015-2016 ---------------------------------------------------
+# 'accurate' mean from the data
+lic.month <- lic.month %>% group_by(PremiseStateFull) %>%
+  mutate(meanFFL = sum(NumFFLs) / 10)
 
-# How does this compare to 2015?
-f15 <- fread("data/ffl-2015.csv")
+avgMonthlyFFL <- lic.month %>% 
+  select(PremiseStateFull, meanFFL) %>%
+  distinct(meanFFL)
 
-months15 <- f15 %>%
-  group_by(month) %>%
-  count()
+# But this doesn't take into account missing values from 09/2016 and 10/2016.
+# What is a good way of dealing with these missing values?
+# It can be noted that number of licenses increases from 08/2016 to 11/2016. 
 
-ggplot(months15, aes(month, n, group = 1)) +
-  geom_line(linetype = "dashed", size = 1) +
-  geom_point(size = 4, shape = 21, aes(fill = n)) +
-  scale_fill_gradient(low = "antiquewhite2", 
-                      high = "firebrick3",
-                      guide = F) +
-  labs(title = "2015: Number of Licenses by Month", x = "month",
-       y = "number of licenses") +
-  pd.theme
+# What is the difference in values from 08/2016 to 11/2016?
+nrow(f16[f16$month == "11", ]) - nrow(f16[f16$month == "08", ])
+# 165 more licenses were issued between August 2016 and November 2016
+# It might be possible to take 165 and divide by the number of months,
+# then add that to August total to obtain an average number of licenses. 
+# Check on this.
 
-# There's a dip in the number of licenses in December - 
-# perhaps some expire at the end of the year.
 
-# How does the overall from 2015 through 2016 count look?
-months15$year <- "2015"
-months16$year <- "2016"
+# 2:
+# Using Census 2016 data, find license counts per 100,000 residents
+# (number of FFLS / population) * 100,000
 
-m1516 <- rbind(months15, months16)
-m1516$monthyear <- paste(m1516$year, m1516$month, "01", sep = "/")
-m1516$monthyear <- as.Date(m1516$monthyear)
-datebreaks <- m1516$monthyear
+f16u <- f16 %>%
+  select(PremiseStateFull, LicCount, EstPop2016, EstPopPerHouseSeat) %>%
+  arrange(desc(EstPop2016)) %>%
+  distinct() %>%
+  mutate(HouseRate = EstPop2016/EstPopPerHouseSeat,
+         LicCountMonthly = LicCount/12,
+         perCapFFLyear = (LicCount/EstPop2016)*100000,
+         perCapitaFFL = (LicCountMonthly/EstPop2016)*100000)
 
-ggplot(m1516, aes(monthyear, n, group = 1)) +
-  geom_line(linetype = "dashed", size = 1) +
-  geom_point(size = 4, shape = 21, aes(fill = n)) +
-  scale_x_date(breaks = datebreaks) +
-  scale_fill_gradient(low = "antiquewhite2", 
-                      high = "firebrick3",
-                      guide = F) +
-  pd.theme + theme(axis.text.x = element_text(angle = 45, hjust = 1,
-                                              vjust = 1, size = 10)) +
-  labs(title = "2015-2016: Number of Licenses by Month", 
-       x = "month (gap indicates no data provided)",
-       y = "number of licenses")
+# 'perCapitaFFL' is the truer number of FFLs per 100,000: 
+# it takes the mean of FFLs monthly.
+# The annual FFL count has many duplicates, repeat businesses.
+colnames(f16u) <- c("NAME", "LicCount", "EstPop16.Wiki", "EstPopPerHouseSeat",
+                    "HouseRate", "LicCountMonthly", "perCapFFLyear", "perCapitaFFL")
 
-# from 2015 through 2016, approximately 2000 more licenses were issued.
+f16u <- f16u[, c(1, 2, 7, 6, 8, 3, 4, 5)]
+
+# merge FFL and Census Population data
+perCapita.16 <- left_join(f16u, p16, by = as.character("NAME"))
+summary(perCapita.16)
+
+# write.csv(fp16, file = "~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv", row.names = F)
