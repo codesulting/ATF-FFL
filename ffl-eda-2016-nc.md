@@ -73,9 +73,44 @@ Looking at these maps...it's tempting to want to say that the number of Fedeally
 
 ![pop-ffl scatterplot](R_plots/Population-FFL-01.png)
 
-Looking at the scatterplot of FFLs per 100k residents vs population...it is still tempting to see an inverse relationship between the two. Why would a higher population have less FFLs? It can also be noted that there's possibly 3 very general clusters that form on the scatterplot - the most populous states, least populous states, and states in general (which very much looks like would follow f(x) = 1/x to me.)
+Looking at the scatterplot of FFLs per 100k residents vs population...it is still tempting to see an inverse relationship between the two. Why would a higher population have less FFLs? It can also be noted that there's possibly 3 very general clusters that form on the scatterplot - the most populous states, least populous states, and states in general (which very much looks like would follow f(x) = 1/x to me.) 
 
-TODO: compare urban density across US to FFL density.
+How does this look on a log scale? 
+
+![pop-ffl scatterplot (log)](log-Population-FFL-01.png)
+
+And with fitted values from `lm(FFL.rate ~ Population)`?
+
+![percapFFL-pop](perCapitaFFL-RawPop.png)
+
+![perCapFFL-log](perCapitaFFL-Pop-log.png)
+
+
+**TODO**: compare urban density across US to FFL density.
+
+
+## License Count By Month
+
+Was there much variance in the number of licenses in each state, from month to month? How does this look specifically, from 2015 to 2016? 
+
+![Lic Count Total by Month 2015-16](R_plots/2015-16-LicTotalByMonth.png)
+
+# FFL History: 1975-2015
+
+By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015? 
+
+![FFL-History-02]()
+
+
+# Edit
+
+The sections below are likely to be edited out.
+
+## License Count By Month
+
+Was there much variance in the number of licenses in each state, from month to month?
+
+![Lic by Month](R_plots/2016-LicCountMonthly.png)
 
 ## License Count by Region
 
@@ -86,18 +121,6 @@ Are there any trends by region? Could state population be tell us more about lic
 ![count by state by region](R_plots/2016-CountByRegion.png)
 
 So most regions have less than 40,000 licenses per state, but appear _generally_ similar. Region 8 has just 4 states and a low number of licenses, other than Pennsylvania. Region 6 appears to have the lowest number of licenses by region overall; most states here have less than 10,000, with the outlier of New York at about 20,000. Perhaps a summary of each region by state would be easier to read than this plot. 
-
-## License Count By Month
-
-Was there much variance in the number of licenses in each state, from month to month?
-
-![Lic by Month](R_plots/2016-LicCountMonthly.png)
-
-It doesn't appear there was much variance...but just to be a bit more sure:
-
-More certainly it appears that license counts remained stable from month to month. A likely guess for this would be that most licenses did not expire - but also that there were no significant increases or decreases in license ownership from month to month. How does this look specifically, from 2015 to 2016? 
-
-![Lic Count Total by Month 2015-16](R_plots/2015-16-LicTotalByMonth.png)
 
 
 # Why Own a Gun?
