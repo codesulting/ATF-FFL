@@ -1,6 +1,6 @@
 # ATF - Federal Firearms Licenses
 # Exploratory Data Analysis
-# Firearms Commerce Data
+# Firearms Commerce Data - Exhibit 08
 
 # load data -------------------------------------------------------------------
 
@@ -15,29 +15,21 @@ library(mapproj)
 library(sp)
 library(rgdal)
 
-# 2016 data -------------------------------------------------------------------
-
-# data: Federal Firearms Licenses 2016 ----------------------------------------
-# f16 <- fread("~/Documents/ATF-FFL/data/ffl-2016-V3.csv", stringsAsFactors = T)
-# f16 <- as.data.frame(f16)
-# str(f16)
-
 # data: Census Population and License Counts ----------------------------------
+
+# This is FFL counts per 100k residents:
+# A merging of 2016 ATF-FFL data and 2016 US Census Data.
 perCapita.16 <- read.csv("~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv")
 str(perCapita.16)
 
-# data: ATF Firearms Commerce -------------------------------------------------
-# in the ATF Commerce report, there are numerous tables relating to:
-# manufacturing, exports, imports, firearms by ATF form type, 
-# registered weapons by state, taxpayers by state, total FFLs, FFL actions, and FFL  
-
-commerce.FFL.total <- read.csv("~/Documents/ATF-FFL/data/commerce/10-FFL-total.csv",
-                               stringsAsFactors = T)
-str(commerce.FFL.total)
-summary(commerce.FFL.total)
-
 # data: National Firearms Act registration by state ---------------------------
-reg.by.state <- read.csv("~/Documents/ATF-FFL/data/commerce/08-registrastion-by-state.csv",
+
+# 2016 ATF Firearms Commerce Report, Exhibit 8
+# This data was collected in February 2016, 
+# and details counts of firearms registrations by type by state.
+# Variables: Any Other Weapon, Destructive Device, Machine Gun, Silencer, Rifle, Shotgun
+
+reg.by.state <- read.csv("~/Documents/ATF-FFL/data/commerce/08-registrastion-by-state-V2.csv",
                                   stringsAsFactors = T)
 
 # add month and year variables to registration data
@@ -66,35 +58,7 @@ summary(reg.by.state)
 # write.csv(reg.by.state, file = "~/Documents/ATF-FFL/data/08-registrastion-by-state-V2.csv",
 #          row.names = F)
 
-# Exploratory Plots -----------------------------------------------------------
-
-# define a theme for plotting
-# modifies theme_minimal() with type set in Gill Sans
-# and italic axis titles in Times
-pd.theme <- theme_minimal(base_size = 14, base_family = "GillSans") +
-  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
-
-pd.classic <- theme_classic(base_size = 14, base_family = "GillSans") +
-  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
-
-
-# Destructive Device is defined for firearms as those having a bore larger than 1/2",
-# or 12.7mm. A 9mm pistol would not fall into this category.
-
-# raw counts of Destructive Devices -------------------------------------------
-
-reg.by.state %>% arrange(desc(DestructiveDevice)) %>%
-  ggplot(aes(reorder(NAME, DestructiveDevice), DestructiveDevice)) +
-  geom_point() +
-  pd.theme + coord_flip()
-
-# calculate per capita counts for each type of registered firearm -------------
+# Wrangle: per capita counts for each type of registered firearm --------------
 
 # remove DC and 'Other Territories'
 reg.by.state <- reg.by.state[-c(8, 52), ]
@@ -133,9 +97,35 @@ registered.pop$Total.per100k <- perCap(registered.pop$Total)
 
 # write.csv(registered.pop, file = "~/Documents/ATF-FFL/data/2016-firearms-per100k.csv", row.names = F)
 
-# plot per 100k observations of registered firearms ---------------------------
+# Exploratory Plots -----------------------------------------------------------
 
-# registered.pop <- read.csv("~/Documents/ATF-FFL/data/2016-firearms-per100k.csv")
+# define a theme for plotting
+# modifies theme_minimal() with type set in Gill Sans
+# and italic axis titles in Times
+pd.theme <- theme_minimal(base_size = 14, base_family = "GillSans") +
+  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+        axis.title = element_text(family = "Times", face = "italic", size = 12),
+        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
+        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
+
+pd.classic <- theme_classic(base_size = 14, base_family = "GillSans") +
+  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
+        axis.title = element_text(family = "Times", face = "italic", size = 12),
+        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
+        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
+
+# raw counts of Destructive Devices -------------------------------------------
+
+# Destructive Device is defined for firearms as those having a bore larger than 1/2",
+# or 12.7mm. A 9mm pistol would not fall into this category.
+
+reg.by.state %>% arrange(desc(DestructiveDevice)) %>%
+  ggplot(aes(reorder(NAME, DestructiveDevice), DestructiveDevice)) +
+  geom_point() +
+  pd.theme + coord_flip()
+
+
+# plot per 100k observations of registered firearms ---------------------------
 
 # total firearms per capita
 registered.pop %>% arrange(desc(Total.per100k)) %>%
@@ -165,3 +155,4 @@ ggplot(firearms.perCapita, aes(reorder(NAME, DestructiveDevice.per100k), Destruc
 # Wyoming is off the chart. Per 100k statistics for Destructive Devices actually eclipses the 
 # actual number, and population of the state. The actual rate is about 20.6% - 
 # 1 in 5 people in Wyoming have a Destructive Device.  
+
