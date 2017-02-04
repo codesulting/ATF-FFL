@@ -1,13 +1,31 @@
-# Why Own a Gun?
+# What is a Federal Firearms License?
 
-_an examination of ATF Federal Firearms License data_
+A Federal Firearms License (FFL) is a requirement for those who engage in the business of firearms - generally **dealers**, **manufacturers**, and **importers**. It's not actually a license to carry a firearm; it's strictly for the business of firearms. Even so, it's not necessary to have one if selling at gun shows, or for purchasing guns for personal reasons. 
 
-Protection, Recreation, and Entitlement: these are 3 reasons commonly cited for owning a firearm in the United States. A Pew Research poll<sup>[1](#works-cited)</sup> actually asked the question "Why Own a Gun?", and their survey shows an interesting figure in people's primary reasons for doing so. 
+The ATF has 9 'types' of FFLs: 
 
-- In 1999, 49% of those surveyed cited 'Hunting' as a primary reason, and 26% claimed 'Protection'. 
-- In 2013, 48% claimed 'Protection', while 32% cited 'Hunting' as a primary reason. 
+- Dealer
+- Pawnbroker
+- Collector
 
-The question of _Why?_ is beyond the direct scope of Federal Firearms License data alone; FFL covers not individual owners but rather dealers, manufacturers, and suppliers of firearms. However, by looking at patterns and outliers in federally licensed firearm trade...
+- Manufacturer of Ammunition
+- Manufacturer of Firearms
+
+- Dealer in Destructive Devices
+- Manufacturer of Destructive Devices
+- Importer of Destructive Devices
+
+'Destructive Devices' constitute their own class, and are [defined by the National Firearms Act](https://www.atf.gov/firearms/firearms-guides-importation-verification-firearms-national-firearms-act-definitions-1), [26 U.S.C. § 5845(F) (page 82)](https://www.atf.gov/firearms/docs/guide/atf-guidebook-importation-verification-firearms-ammunition-and-implements-war/download). The ATF bullet points defining Destructive Device are: 
+
+- A missile having an explosive or incendiary charge of more than 1/4 oz. (**1/4 oz explosive/incendiary**)
+- Any type of weapon by whatever name known which will, or which may readily be converted to expel a projectile, by the action of an explosive or other propellant, the barrel or barrels of which have a bore greater than one-half inch in diameter. (**1/2" bore**)
+- A combination of parts designed and intended for use in converting a device into a destructive device and from which a destructive device can be readily assembled.
+
+
+
+
+
+
 
 # ATF - Federal Firearms Licenses 2016
 
@@ -38,9 +56,9 @@ summary(f16$LicCount)
 ```
 ![count by state 01](R_plots/2016-LicCountByState.png)
 
-Texas appears to have twice as many license holders than Florida - but it is also the largest state in the continental US. Square mileage per state might be misleading here; although at the lower end of scale are where much smaller states such as Rhode Island and Delaware appear. 
+Texas appears to have twice as many license holders than Florida - but it is also the largest state in the continental US. A state's total land area might be misleading here; although at the lower end of scale are where much smaller states such as Rhode Island and Delaware appear. 
 
-Also what might be misleading is that the above plot is for _raw counts_, that doesn't take into account each state's population. After binding US Census population data for each state, License count can be normalized per 100,000 residents. This shows a different picture of FFL holders across the states:
+Also what might be misleading is that the above plot is for _raw counts_, that doesn't take into account each state's population. After binding US Census population data for each state, license count can be normalized **per 100,000 residents**. This shows a different picture of FFL holders across the states:
 
 ![per capita count by state](R_plots/2016-FFL-byState-perCapitaPopulation.png)
 
@@ -85,6 +103,16 @@ More certainly it appears that license counts remained stable from month to mont
 ![Lic Count Total by Month 2015-16](R_plots/2015-16-LicTotalByMonth.png)
 
 
+# Why Own a Gun?
+
+_an examination of ATF Federal Firearms License data_
+
+Protection, Recreation, and Entitlement: these are 3 reasons commonly cited for owning a firearm in the United States. A Pew Research poll<sup>[1](#works-cited)</sup> actually asked the question "Why Own a Gun?", and their survey shows an interesting figure in people's primary reasons for doing so. 
+
+- In 1999, 49% of those surveyed cited 'Hunting' as a primary reason, and 26% claimed 'Protection'. 
+- In 2013, 48% claimed 'Protection', while 32% cited 'Hunting' as a primary reason. 
+
+The question of _Why?_ is beyond the direct scope of Federal Firearms License data alone; FFL covers not individual owners but rather dealers, manufacturers, and suppliers of firearms. However, by looking at patterns and outliers in federally licensed firearm trade...
 
 # Works Cited
 
