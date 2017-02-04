@@ -99,7 +99,7 @@ Was there much variance in the number of licenses in each state, from month to m
 
 By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015? 
 
-![FFL-History-02]()
+![FFL-History-02](R_plots/FFL-History-02.png)
 
 
 # Edit
