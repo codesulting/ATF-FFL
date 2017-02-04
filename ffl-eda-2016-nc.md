@@ -77,13 +77,13 @@ Looking at the scatterplot of FFLs per 100k residents vs population...it is stil
 
 How does this look on a log scale? 
 
-![pop-ffl scatterplot (log)](log-Population-FFL-01.png)
+![pop-ffl scatterplot (log)](R_plots/log-Population-FFL-01.png)
 
 And with fitted values from `lm(FFL.rate ~ Population)`?
 
-![percapFFL-pop](perCapitaFFL-RawPop.png)
+![percapFFL-pop](R_plots/perCapitaFFL-RawPop.png)
 
-![perCapFFL-log](perCapitaFFL-Pop-log.png)
+![perCapFFL-log](R_plots/perCapitaFFL-Pop-log.png)
 
 
 **TODO**: compare urban density across US to FFL density.
