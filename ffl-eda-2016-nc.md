@@ -97,9 +97,14 @@ Was there much variance in the number of licenses in each state, from month to m
 
 # FFL History: 1975-2015
 
-By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015? 
+By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015? **'dd'** stands for Destructive Device, **'mfg'** for manufacturer.
 
 ![FFL-History-02](R_plots/FFL-History-02.png)
+
+- Looking specifically at dd's, the number has increased heavily.
+- Manufacturers of Ammo have gone down dramatically
+- around 2010, manufacturers of firearms began to increase steadily.
+- peak of all FFL types happened in the early 1990s.
 
 
 # Edit
