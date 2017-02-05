@@ -341,4 +341,4 @@ ggplot(pm03.fitted, aes(POPESTIMATE2016, .fitted, label = .rownames)) +
   expand_limits(x = c(0, 5000000), y = c(0, 110)) +
   pd.classic +
   labs(x = "2016 population", y = "FFL rate per 100k",
-       title = "Per Capita FFL Counts: Monthly Licenses by State Population")
+       title = "Per Capita FFL ~ State Populations")
