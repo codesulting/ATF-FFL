@@ -77,12 +77,6 @@ ffl.cor16 <- ffl.16 %>%
 # create correlation matrix
 ffl.cor16 <- cor(ffl.cor16)
 
-# plot correlation matrix
-par(mfrow = c(1, 1), family = "GillSans")
-corrplot(ffl.cor16, method = "shade", shade.col = NA, tl.col = "gray23",
-         tl.srt = 45, tl.cex = 0.75, addCoef.col = "black", number.cex = 0.5,
-         order = "hclust", mar = c(2, 2, 2, 2))
-
 # define a new palette
 ffl.pal <- colorRampPalette(c("firebrick4",
                               "firebrick2",
@@ -92,6 +86,7 @@ ffl.pal <- colorRampPalette(c("firebrick4",
                               "deepskyblue2",
                               "deepskyblue4"))
 
+# plot correlation matrix
 par(mfrow = c(1, 1), family = "GillSans")
 corrplot(ffl.cor16, method = "shade", shade.col = NA, col = ffl.pal(100),
          tl.col = "gray23", tl.srt = 45, tl.cex = 0.75,
