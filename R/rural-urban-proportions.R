@@ -15,7 +15,9 @@
 
 library(dplyr)
 library(tidyr)
+library(ggplot2)
 library(corrplot)
+library(scales)
 
 # State Level Rural-Urban Proportions
 rural.urban <- read.csv("~/Documents/ATF-FFL/data/census/PctUrbanRural_State.csv")
@@ -78,8 +80,8 @@ ffl.cor16 <- ffl.16 %>%
 ffl.cor16 <- cor(ffl.cor16)
 
 # define a new palette
-ffl.pal <- colorRampPalette(c("firebrick4",
-                              "firebrick2",
+ffl.pal <- colorRampPalette(c(muted("deeppink4"),
+                              muted("deeppink2"),
                               "antiquewhite1",
                               "white",
                               "antiquewhite1",
@@ -92,3 +94,17 @@ corrplot(ffl.cor16, method = "shade", shade.col = NA, col = ffl.pal(100),
          tl.col = "gray23", tl.srt = 45, tl.cex = 0.75,
          addCoef.col = "black", number.cex = 0.5,
          order = "hclust", mar = c(2, 2, 2, 2))
+
+# After examining the matrix, there's a certain number of variables 
+# that might be meaningfully correlated to Monthly License Counts and
+# Per100k FFLs. 
+
+# Each has to do with the divide between Urban and Rural  
+# - be it in population, population density, area - 
+# but also in the space *between* Urban and Rural. 
+# The US Census defines this as "Urban Cluster". 
+# but especially the scale between. 
+
+# Urbanized Areas are defined as having a population of over 50,000.
+# Urban Clusters have a population 5,000 < n < 50,000.
+# Rural Areas have a population less than 5,000.
