@@ -20,13 +20,13 @@ library(corrplot)
 library(scales)
 
 # State Level Rural-Urban Proportions
-rural.urban <- read.csv("~/Documents/ATF-FFL/data/census/PctUrbanRural_State.csv")
+rural.urban <- read.csv("~/GitHub/ATF-FFL/data/PctUrbanRural_State.csv")
 summary(rural.urban)
 str(rural.urban)
 names(rural.urban)
 
 # per Capita FFLs 2016
-perCap16 <- read.csv("~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv")
+perCap16 <- read.csv("~/GitHub/ATF-FFL/data/ffl-2016-perCapita.csv")
 str(perCap16)
 
 # Correlations ----------------------------------------------------------------
@@ -108,3 +108,22 @@ corrplot(ffl.cor16, method = "shade", shade.col = NA, col = ffl.pal(100),
 # Urbanized Areas are defined as having a population of over 50,000.
 # Urban Clusters have a population 5,000 < n < 50,000.
 # Rural Areas have a population less than 5,000.
+
+# TODO: stratifying Urbanized Areas and Urbanized Clusters into further intervals.
+# Lists of UAs and UCs:
+# https://www.census.gov/geo/reference/ua/ualists_layout.html
+
+# Additionally, there are spatial definitions that separate rural and urban. 
+# A table in the article 'Life Off the Highway' shows the relationship between 
+# Relationship Between Land Area and Population in the United States
+
+highway.table <- data.frame(Urban.Areas = c(3.0, 80.7),
+                            Rural.Areas = c(97.0, 19.3))
+
+rownames(highway.table) <- c("Urban.Areas", "Rural.Areas")
+colnames(highway.table) <- c("Land.Area", "Population")
+
+ggplot(highway.table, aes(Land.Area, Population)) +
+  geom_bar(stat = "identity")
+
+# the table needs to be spread.
