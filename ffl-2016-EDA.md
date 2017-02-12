@@ -95,7 +95,7 @@ According to the U.S. Census:
 - Urban Clusters have a population 5,000 < n < 50,000.
 - Rural Areas have a population less than 5,000.
 
-Further, there appears again to be an inverted relationship between Land Area and Population when looking at Urban vs Rural Areas - i.e., while Urban Areas comprise only 3 percent of United States Land Area, they also count for 80.7 percent of the population. Rural Areas, by contrast, make up 97% of US Land Area while only 19.3 percent of the population.<sup>2</sup> 
+Further, there appears again to be an inverted relationship between Land Area and Population when looking at Urban vs Rural Areas - i.e., while Urban Areas comprise only 3 percent of United States Land Area, they also count for 80.7 percent of the population. Rural Areas, by contrast, make up 97% of US Land Area while only 19.3 percent of the population.<sup>[2](#works-cited)</sup> 
 
 Given the observation of an inverse relationship between FFLs vs Population by state, what can be learned from differences in rural- and urban-defined areas in the United States in regard to FFLs? 
 
