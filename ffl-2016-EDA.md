@@ -1,6 +1,8 @@
 # What is a Federal Firearms License?
 
-In the United States, a Federal Firearms License (FFL) is a requirement for those who engage in the business of firearms - generally **dealers**, **manufacturers**, and **importers**. It's not actually a license to carry a firearm; it's strictly for the conducting business involving firearms. It's not necessary to have one if selling at gun shows, or when purchasing guns for personal reasons. 
+In the United States, a Federal Firearms License (FFL) is a requirement for those who engage in the business of firearms - generally **dealers**, **manufacturers**, and **importers**. 
+
+It's not actually a license to carry a firearm; it's strictly for the conducting business involving firearms. It's not necessary to have one if selling at gun shows, or when purchasing guns for personal reasons. 
 
 The ATF considers 9 __types__ of FFLs: 
 
@@ -99,8 +101,23 @@ Further, there appears again to be an inverted relationship between Land Area an
 
 Given the observation of an inverse relationship between FFLs vs Population by state, what can be learned from differences in rural- and urban-defined areas in the United States in regard to FFLs? 
 
-After combining rural-urban proportions data with per capita FFL data, we can look for correlation amonst the variables. 
+After combining rural-urban proportions data with per capita FFL data, we can look for correlation amongst the variables. 
 
+# What variables strongly correlate with license counts? 
+
+From the initial correlation matrix, about a dozen variables were selected for showing strong postive/negative correlation to raw and adjusted license counts. 
+
+They all relate to the stratified population categories (Urbanized Areas, Urban Clusters, and Rural), but across variables of population, population percentage, and area)
+
+``` {R}
+# Filter for variables across the 3 population classes:
+# Population Percentage, Population, Area
+rural.urban.filter <- ffl.16 %>%
+  select(STATE, LicCount, LicCountMonthly, perCapFFLyear, perCapitaFFL, 
+         POPPCT_RURAL, POPPCT_UC, POPPCT_UA, POPPCT_URBAN, 
+         POP_RURAL, POP_UC, POP_UA, AREA_RURAL, AREA_UC, AREA_URBAN,
+         NPOPCHG_2016, NETMIG2016)
+```
 
 
 ## License Count By Month
@@ -119,7 +136,6 @@ By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1
 - Manufacturers of Ammo have gone down dramatically
 - around 2010, manufacturers of firearms began to increase steadily.
 - peak of all FFL types happened in the early 1990s.
-
 
 # Edit
 
