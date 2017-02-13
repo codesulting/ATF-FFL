@@ -7,7 +7,7 @@ Initial notes on a broad question, in an attempt to understand an issue, describ
 
 _write-ups of exploratory anaylses_:
 
-- [Exploratory Plots](ffl-eda-2016-nc.md)
+- [Exploratory Questions](ffl-eda-2016.md)
 - [cross-reference: House of Representatives Expenditure Data](house-expenditure-EDA.md)
 
 ## Exploratory Questions
