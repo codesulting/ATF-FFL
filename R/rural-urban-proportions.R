@@ -91,13 +91,16 @@ ffl.pal <- colorRampPalette(c(muted("deeppink4"),
 # plot correlation matrix
 par(mfrow = c(1, 1), family = "GillSans")
 corrplot(ffl.cor16, method = "shade", shade.col = NA, col = ffl.pal(100),
-         tl.col = "gray23", tl.srt = 45, tl.cex = 0.75,
+         tl.col = "gray23", tl.srt = 45, tl.cex = 0.50, 
          addCoef.col = "black", number.cex = 0.5,
-         order = "hclust", mar = c(2, 2, 2, 2))
+         order = "hclust", mar = c(1, 1, 1, 1))
 
 # After examining the matrix, there's a certain number of variables 
 # that might be meaningfully correlated to Monthly License Counts and
 # Per100k FFLs. 
+
+# Population and Area across the different stratifications:
+# Urbanized Areas, Urban Clusters, and Rural Areas.
 
 # Each has to do with the divide between Urban and Rural  
 # - be it in population, population density, area - 
@@ -117,6 +120,29 @@ corrplot(ffl.cor16, method = "shade", shade.col = NA, col = ffl.pal(100),
 # A table in the article 'Life Off the Highway' shows the relationship between 
 # Relationship Between Land Area and Population in the United States
 
+# Filter: Correlated Variables ------------------------------------------------
+
+# Filter for variables across the 3 population classes:
+# Population Percentage, Population, Area
+rural.urban.filter <- ffl.16 %>%
+  select(STATE, LicCount, LicCountMonthly, perCapFFLyear, perCapitaFFL, 
+         POPPCT_RURAL, POPPCT_UC, POPPCT_UA, POPPCT_URBAN, 
+         POP_RURAL, POP_UC, POP_UA, AREA_RURAL, AREA_UC, AREA_URBAN,
+         NPOPCHG_2016, NETMIG2016)
+
+rural.urban.f.corr <- cor(rural.urban.filter)
+# For raw average of monthly license counts, area and population of Urban Clusters
+# show the highest positive correlation (r^2 = 0.90 & 0.88). 
+# Area of Urbanized Areas and Rural Population also are strong (r^2 = 0.83 & 0.82)
+
+# For monthly per capita FFL counts, Population Percentage of Urban Clusters
+# show the highest positive correlation (r^2 = 0.82). Population Percentage 
+# of Urbanized Areas shows strong negative correlation (-0.75)
+
+
+
+# Life Off the Highway: Rural-Urban Simple Table ------------------------------
+
 highway.table <- data.frame(Urban.Areas = c(3.0, 80.7),
                             Rural.Areas = c(97.0, 19.3))
 
@@ -127,3 +153,8 @@ ggplot(highway.table, aes(Land.Area, Population)) +
   geom_bar(stat = "identity")
 
 # the table needs to be spread.
+
+
+
+
+
