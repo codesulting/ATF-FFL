@@ -118,18 +118,33 @@ According to the U.S. Census:
 
 Again there appears again to be an inverse relationship - this time, between Land Area and Population when looking at Urban vs Rural Areas. While Urban Areas comprise only 3 percent of United States Land Area, they also account for 80.7 percent of the population. Rural Areas, by contrast, make up 97% of US Land Area while only 19.3 percent of the population.<sup>[2](#works-cited)</sup> 
 
+![life on the highway table](indd/assets/LandArea-Population-US-2010.png)
+
 Given the observation of an inverse relationship between FFLs vs Population by state, what can be learned from differences in rural- and urban-defined areas in the United States in regard to FFLs? 
 
-After combining Rural-Urban Proportions data with Per Capita FFL data from earlier, we can look for correlations between per capita License Counts and other variables. (_link to a_ [higher-resolution plot](R_plots/rural-urban-corr-matrix-01-hires.png)_, and_ [annotated printout](R_plots/rural-urban-corr-matrix-annotated.jpg).)
+After combining Rural-Urban Proportions data with Per Capita FFL data from earlier, we can look for correlations between per capita License Counts and other variables. ([higher-resolution plot](R_plots/rural-urban-corr-matrix-01-hires.png), [annotated printout](R_plots/rural-urban-corr-matrix-annotated.jpg))
 
 ![rural-urban-corr-matrix-01](R_plots/rural-urban-corr-matrix-01.png)
 
 
 ## Which variables strongly correlate with license counts? 
 
-From the initial correlation matrix, about a dozen variables were selected for showing strong postive/negative correlation to raw and adjusted license counts. "Strong" in this case refers to variables with a correlation coefficient above 0.5 (preferably even higher) in relation to: 1) total FFLs, 2) monthly FFLs, 3) per capita total FFLs, and 4) per capita monthly FFLs.
+From the initial correlation matrix, about a dozen variables were selected for showing strong postive/negative correlation to raw and adjusted license counts. "Strong" in this case refers to variables with a correlation coefficient above 0.5 (preferably even higher) in relation to: 
 
-They all relate to the stratified population categories (Urbanized Areas, Urban Clusters, and Rural), but across variables of population, population percentage, and area. For example, the **Land Area of an Urban Cluster** has a rather strong correlation coefficient of __0.90__ in relation to monthly license counts. The **Population Percentage living in Urban Clusters** has shows a coefficient of __0.82__.
+- total FFLs
+- monthly FFLs
+- per capita total FFLs
+- per capita monthly FFLs
+
+Strongly correlated variables tended to relate to the stratified population categories:
+
+- Urbanized Areas, Urban Clusters, and Rural Areas
+
+but across variables of 
+
+- Population, Population Percentage, and Land Area
+
+For example, the **Land Area** of an **Urban Cluster** has a rather strong correlation coefficient of __0.90__ in relation to monthly license counts. The **Population Percentage** living in **Urban Clusters** has shows a coefficient of __0.82__, in relation to monthly per capita FFL counts. Filtering for these variables, would a more specific correlation matrix be helpful before trying out a model?
 
 ``` {R}
 # Filter for variables across the 3 population classes:
@@ -142,6 +157,7 @@ rural.urban.filter <- ffl.16 %>%
 
 rural.urban.f.corr <- cor(rural.urban.filter)
 ```
+
 
 
 
