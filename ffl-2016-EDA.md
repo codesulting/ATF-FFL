@@ -1,3 +1,8 @@
+
+- [What is a Federal Firearms License?](#what-is-a-federal-firearms-license)
+- [License Counts by State](#license-counts-by-state)
+- [Rural-Urban Proportions](#rural-to-urban-proportions)
+
 # What is a Federal Firearms License?
 
 In the United States, a Federal Firearms License (FFL) is a requirement for those who engage in the business of firearms - generally **dealers**, **manufacturers**, and **importers**. 
@@ -27,7 +32,7 @@ The ATF bullet points defining Destructive Device are:
 
 Back to FFLs - the ATF [publishes data on this FFL holders](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) monthly, from 2013 to present. Additionally, an [annual commerce report](https://www.atf.gov/resource-center/data-statistics) is released, which contains numbers on weapons registrations, imports and taxes, and historical FFL data. 
 
-# ATF - Federal Firearms Licenses 2016
+# License Counts by State
 
 Here's a walkthrough of initial exploratory plots and analysis for Federal Firearms Licenses in 2016. 
 
