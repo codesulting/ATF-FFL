@@ -2,7 +2,7 @@
 - [What is a Federal Firearms License?](#what-is-a-federal-firearms-license)
 - [License Counts by State](#license-counts-by-state)
 - [Rural-Urban Proportions](#rural-urban-proportions)
-- [Federal Firearms Licenses over time](#ffl-history-1975-2015)
+- [Exploratory Model Bulding](#exploratory-model-building)
 
 # What is a Federal Firearms License?
 
@@ -108,6 +108,8 @@ And with fitted values from `lm(FFL.rate ~ Population)`?
 
 # Rural-Urban Proportions
 
+_script:_ [rural-urban-proportions.R](R/rural-urban-proportions.R)
+
 Since there appears to be an inverse relationship between a state's population and the number of Federal Firearms Licenses, it seemed a good idea to drill down further into how populations are comprised. The [US Census](https://www.census.gov/geo/reference/ua/urban-rural-2010.html) provides definitions and data on Rural and Urban across the United States.
 
 According to the U.S. Census:
@@ -139,7 +141,7 @@ From the initial correlation matrix, about a dozen variables were selected for s
 - total FFLs
 - monthly FFLs
 - per capita total FFLs
-- **per capita monthly FFLs**
+- per capita monthly FFLs
 
 **Per Capita Monthly FFLs** might be the most the most accurate metric for FFLs for two reasons:
 
@@ -199,9 +201,13 @@ However, there are some potentially interesting relationships between the Census
 
 **Land Area** and **Population** are highly correlated with regard to **Urbanized Areas** and **Urbanized Clusters** (**> 0.90**), but there's almost no relationship between **Land Area** and **Rural Population** (**-0.02**).
 
-## Exploratory Model Building
+# Exploratory Model Building
 
-model.01 Explanatory Variables:
+_script:_ [rural-urban-proportions.R](R/rural-urban-proportions.R), line 149 onwards.
+
+## Model 01: FFLs ~ Populations and Land Areas across Census categories
+
+Explanatory Variables:
 
 - Population Percentage: Rural, Urban Cluster, Urbanized Area
 - Population: Rural, Urban Cluster, Urbanized Area
@@ -211,6 +217,7 @@ Essentially, will be looking at explanatory power of population and land area ac
 
 
 ```{r}
+library(broom)
 
 model.01 <- lm(perCapitaFFL ~ STATE + POPPCT_UC + POPPCT_UA + POPPCT_RURAL + POP_UC 
                + POP_UA + POP_RURAL + AREA_UC + AREA_UA + AREA_RURAL, data = ffl.16)
@@ -234,6 +241,8 @@ model.01.tidy <- tidy(model.01) %>%
 # 10       POP_UA -5.664944e-07 8.418024e-07 -0.67295411 5.049448e-01
 # 11       POP_UC  1.419485e-06 1.424846e-05  0.09962379 9.211534e-01
 ```
+
+From the model summary, an adjusted r^2 of 0.82 (0.8567 unadjusted) appears promising; AREA_RURAL appears to be the most significant predictor. AREA_UC and AREA_UA are the next most significant, but with much higher p-values. (0.0854/0.0692). But the explanatory variables in this model are highly correlated to the independent variable; what is the effect of this?
 
 Six variables have smaller p-values than the Intercept:
 
@@ -266,6 +275,66 @@ ggplot(model.01.fit, aes(x = reorder(NAME, perCapitaFFL), y = perCapitaFFL)) +
 
 ![model.01 - fitted vs. observed values](R_plots/ru-model-01-fitted-observed.png)
 
+
+## Model 02: Kitchen Sink
+
+For the second model, decided to use all variables (that managed to avoid singularity)
+
+Will adding more variables increase our r^2, or help identify significant variables? 
+
+![model.02 - fitted vs. obsered values](R_plots/ru-model-02-fitted-observed.png)
+
+While this model had higher R-squared (Multiple R-squared:  0.9397,	Adjusted R-squared:  0.8446), none of the p-values (other than AREA_ST/State Land Area) were lower than the common threshold of 0.05 - quite high. Perhaps this could be expected, given the haphazard selection of explanatory variables.
+
+A look at the coefficients, sorted by p.value:
+
+```{r}
+
+ffl.16.02 <- ffl.16 %>%
+  arrange(NAME) %>%
+  select(-c(NAME, LicCountMonthly, POPESTIMATE2016, NATURALINC2016, NETMIG2016,
+            RESIDUAL2016, RNATURALINC2016, RNETMIG2016, POP_UC, AREA_UC, RINTERNATIONALMIG2016,
+            POP_RURAL, POPPCT_RURAL, AREA_RURAL, AREAPCT_RURAL, perCapFFLyear,
+            LicCount))
+
+model.02 <- lm(perCapitaFFL ~ ., data = ffl.16.02)
+
+model.02.tidy <- tidy(model.02) %>%
+  arrange(p.value)
+
+#                    term      estimate    std.error   statistic    p.value
+# 1               AREA_ST  2.804885e-11 1.124740e-11  2.49380753 0.02202596
+# 2    EstPopPerHouseSeat  4.316745e-05 3.479681e-05  1.24055759 0.22987034
+# 3             POPDEN_UA -2.191689e-02 1.919814e-02 -1.14161519 0.26779836
+# 4          POPDEN_URBAN  3.284169e-02 2.910812e-02  1.12826543 0.27325377
+# 5             POP_URBAN -3.878518e-05 3.472640e-05 -1.11687904 0.27797137
+# 6             POPPCT_UC  5.403640e+02 4.908985e+02  1.10076523 0.28474959
+# 7          POPPCT_URBAN -5.379894e+02 4.907855e+02 -1.09618013 0.28670021
+# 8             POPPCT_UA  5.376984e+02 4.907539e+02  1.09565785 0.28692301
+# 9         EstPop16.Wiki -6.933820e-05 6.366898e-05 -1.08904201 0.28975631
+# 10           RBIRTH2016 -2.483531e+00 2.330975e+00 -1.06544716 0.30002655
+# 11               POP_ST  7.280733e-05 7.119737e-05  1.02261255 0.31933585
+# 12               REGION  8.515958e+00 8.758494e+00  0.97230838 0.34311379
+# 13         POPDEN_RURAL  2.346435e-01 2.586347e-01  0.90723892 0.37564368
+# 14           BIRTHS2016  1.221090e-03 1.442639e-03  0.84642746 0.40784909
+# 15               POP_UA  3.014482e-05 3.565988e-05  0.84534288 0.40843921
+# 16              AREA_UA  2.123956e-08 2.631639e-08  0.80708477 0.42960578
+# 17           AREA_URBAN -1.671212e-08 2.277703e-08 -0.73372669 0.47207294
+# 18            HouseRate -5.247376e+00 8.903252e+00 -0.58937740 0.56255143
+# 19             DIVISION -2.278328e+00 3.871030e+00 -0.58855857 0.56308951
+# 20           AREAPCT_UC -1.462883e+02 4.064207e+02 -0.35994309 0.72285966
+# 21           AREAPCT_UA -1.403087e+02 4.057474e+02 -0.34580303 0.73329021
+# 22        AREAPCT_URBAN  1.396621e+02 4.055262e+02  0.34439732 0.73433010
+# 23      DOMESTICMIG2016  2.593707e-04 1.310146e-03  0.19797087 0.84517059
+# 24            POPDEN_UC -2.564857e-03 1.538150e-02 -0.16674953 0.86932894
+# 25          (Intercept) -7.834658e+00 6.585023e+01 -0.11897692 0.90654258
+# 26 INTERNATIONALMIG2016  1.559461e-04 1.400192e-03  0.11137476 0.91248732
+# 27           DEATHS2016 -8.096963e-05 1.346027e-03 -0.06015455 0.95266078
+# 28     RDOMESTICMIG2016 -2.015476e-02 6.392326e-01 -0.03152961 0.97517603
+# 29                STATE -3.163672e-03 1.080499e-01 -0.02927973 0.97694686
+# 30         NPOPCHG_2016 -2.094045e-05 1.255547e-03 -0.01667836 0.98686711
+# 31           RDEATH2016 -4.933205e-02 3.807734e+00 -0.01295575 0.98979817
+```
 
 
 

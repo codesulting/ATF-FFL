@@ -219,6 +219,8 @@ summary(model.02)
 model.02.tidy <- tidy(model.02) %>%
   arrange(p.value)
 
+model.02.tidy
+
 # store fitted values in dataframe, join to include state names
 model.02.fit <- augment(model.02) %>%
   arrange(desc(perCapitaFFL)) %>%
