@@ -140,13 +140,17 @@ Strongly correlated variables tended to relate to the stratified population cate
 
 - Urbanized Areas, Urban Clusters, and Rural Areas
 
-but across variables of 
+and across variables of:
 
 - Population, Population Percentage, and Land Area
 
-For example, the **Land Area** of an **Urban Cluster** has a rather strong correlation coefficient of __0.90__ in relation to monthly license counts. The **Population Percentage** living in **Urban Clusters** has shows a coefficient of __0.82__, in relation to monthly per capita FFL counts. Filtering for these variables, would a more specific correlation matrix be helpful before trying out a model?
+For example, the **Land Area** of an **Urban Cluster** has a rather strong correlation coefficient of __0.90__ in relation to monthly license counts. The **Population Percentage** living in **Urban Clusters** shows a coefficient of __0.82__, in relation to monthly per capita FFL counts. 
+
+Filtering for these variables, would a more specific correlation matrix be helpful before trying out a model?
 
 ``` {R}
+library(corrplot)
+
 # Filter for variables across the 3 population classes:
 # Population Percentage, Population, Area
 rural.urban.filter <- ffl.16 %>%
@@ -156,10 +160,18 @@ rural.urban.filter <- ffl.16 %>%
          NPOPCHG_2016, NETMIG2016)
 
 rural.urban.f.corr <- cor(rural.urban.filter)
+
+corrplot(rural.urban.f.corr, method = "shade", shade.col = NA,
+         tl.col = "gray23", tl.srt = 45, tl.cex = 0.85, 
+         addCoef.col = "black", number.cex = 0.85,
+         order = "hclust", mar = c(1, 1, 1, 1))
 ```
 
+![corrplot-filtered](rural-urban-corr-filter-01.png)
 
+For raw totals of monthly license counts, Land Area and Population of Urban Clusters show the highest positive correlation (r^2 = 0.90 & 0.88). Land Area of Urbanized Areas and Rural Population also are strong (r^2 = 0.83 & 0.82). 
 
+For monthly per capita FFL counts, Population Percentage of Urban Clusters shows the highest positive correlation (r^2 = 0.82). Population Percentage of Urbanized Areas shows a strong negative correlation (-0.75).
 
 
 ## License Count By Month

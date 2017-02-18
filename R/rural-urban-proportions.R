@@ -138,6 +138,11 @@ rural.urban.f.corr <- cor(rural.urban.filter)
 # show the highest positive correlation (r^2 = 0.82). Population Percentage 
 # of Urbanized Areas shows strong negative correlation (-0.75)
 
+corrplot(rural.urban.f.corr, method = "shade", shade.col = NA,
+         tl.col = "gray23", tl.srt = 45, tl.cex = 0.85, 
+         addCoef.col = "black", number.cex = 0.85,
+         order = "hclust", mar = c(1, 1, 1, 1))
+
 
 
 # Life Off the Highway: Rural-Urban Simple Table ------------------------------
