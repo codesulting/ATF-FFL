@@ -117,25 +117,34 @@ According to the U.S. Census:
 - Rural Areas have a population less than 5,000.
 - Urban Areas reflect the sum totals of Urbanized Areas and Urban Clusters.
 
-Again there appears again to be an inverse relationship - this time, between Land Area and Population when looking at Urban vs Rural Areas. While Urban Areas comprise only 3 percent of United States Land Area, they also account for 80.7 percent of the population. Rural Areas, by contrast, make up 97% of US Land Area while only 19.3 percent of the population.<sup>[2](#works-cited)</sup> 
+Again there appears again to be an inverse relationship - this time, between **Land Area** and **Population** when looking at **Urban** vs **Rural Areas**. While **Urban Areas** comprise only 3 percent of United States **Land Area**, they also account for 80.7 percent of the **Population**. **Rural Areas**, by contrast, make up 97% of US **Land Area** while only 19.3 percent of the total **Population**.<sup>[2](#works-cited)</sup> 
 
 ![life on the highway table](indd/assets/LandArea-Population-US-2010.png)
 
-Given the observation of an inverse relationship between FFLs vs Population by state, what can be learned from differences in rural- and urban-defined areas in the United States in regard to FFLs? 
+The raw numbers on these Census definitions tells a similar story, while also showing a slight increase in population for **Urbanized Areas** from 2000 to 2010 (2.9% of population, or approx 20.6 million people).
 
-After combining Rural-Urban Proportions data with Per Capita FFL data from earlier, we can look for correlations between per capita License Counts and other variables. ([higher-resolution plot](R_plots/rural-urban-corr-matrix-01-hires.png), [annotated printout](R_plots/rural-urban-corr-matrix-annotated.jpg))
+![raw census table](indd/assets/rural-urban-table-02-2010.png)
+
+Given the observation of an inverse relationship between FFLs vs Population by state, what can be learned from differences in **Rural-** and **Urban-** defined areas in the United States in regard to FFLs? 
+
+After joining Rural-Urban Proportions data with Per Capita FFL data from earlier, we can look for correlations between per capita License Counts and other variables. ([higher-resolution plot](R_plots/rural-urban-corr-matrix-01-hires.png), [annotated printout](R_plots/rural-urban-corr-matrix-annotated.jpg))
 
 ![rural-urban-corr-matrix-01](R_plots/rural-urban-corr-matrix-01.png)
 
 
-## Which variables strongly correlate with license counts? 
+## Which variables correlate strongly with license counts? 
 
-From the initial correlation matrix, about a dozen variables were selected for showing strong postive/negative correlation to raw and adjusted license counts. "Strong" in this case refers to variables with a correlation coefficient above 0.5 (preferably even higher) in relation to: 
+From the initial correlation matrix, about a dozen variables were selected for showing strong postive or negative correlation to raw and adjusted license counts. "Strong" in this case refers to variables with a correlation coefficient above **0.5** (preferably even higher) in relation to: 
 
 - total FFLs
 - monthly FFLs
 - per capita total FFLs
-- per capita monthly FFLs
+- **per capita monthly FFLs**
+
+**Per Capita Monthly FFLs** might be the most the most accurate metric for FFLs for two reasons:
+
+- the per capita adjustment normalizes for the different populations across states
+- the monthly count captures more unique FFLs than annual totals because of monthly rollover/repetition of license holders. 
 
 Strongly correlated variables tended to relate to the stratified population categories:
 
@@ -170,19 +179,95 @@ corrplot(rural.urban.f.corr, method = "shade", shade.col = NA,
 
 ![corrplot-filtered](R_plots/rural-urban-corr-filter-01.png)
 
-For _raw totals of monthly license counts_ (**LicCount**, **LicCountMonthly**), **Land Area** and **Population** of **Urban Clusters** show the highest positive correlation (r^2 = 0.90 & 0.88). **Land Area** of **Urbanized Areas** and **Rural Population** also are strong (r^2 = 0.83 & 0.82). 
+For _raw totals of monthly license counts_ (**LicCount**, **LicCountMonthly**), **Land Area** and **Population** of **Urban Clusters** show the highest positive correlation (r^2 = **0.90** & **0.88**). **Land Area** of **Urbanized Areas** and **Rural Population** also are strong (r^2 = **0.83** & **0.82**). 
 
-For _monthly per capita FFL counts_ (**perCapitaFFL**), **Population Percentage** of **Urban Clusters** shows the highest positive correlation (r^2 = 0.82). **Population Percentage** of **Urbanized Areas** shows a strong negative correlation (-0.75).
+For _monthly per capita FFL counts_ (**perCapitaFFL**), **Population Percentage** of **Urban Clusters** shows the highest positive correlation (r^2 = **0.82**). **Population Percentage** of **Urbanized Areas** shows a strong negative correlation (**-0.75**).
 
-![corrplot-filtered-annotated](R_plots/rural-urban-corr-filter-02.png)
+![corrplot-filtered-annotated](R_plots/rural-urban-corr-filter-02b.jpg)
 
-Overall - **Urban Clusters** tend to show a high correlation to Per Capita Monthly FFL counts, across all three variable classes (**Population**, **Population Percentage**, and **and Area**). While the assumption might be that **Rural** areas have higher FFL counts, there's actually a weak negative correlation between Population Percentage, Land Area and Monthly Per Capita FFLs. But contradicting this potential pattern is **Rural Population**, correlating with Monthly Per Capita FFLs at a coefficient of 0.82. 
+### Per Capita FFL relationships
 
-Other strong correlations appear, but the strongest of these generally highlight the difference between _Rural_ and _Urban_, e.g. coefficient of -1 for relationship between Rural Population Percentage and Urban Population. However, there are some potentially interesting relationships between the Census-defined variables: such as between the **Rural Population** and **Land Area** of **Urban Clusters** (0.93). Further investigation might show that **"Urban" Clusters** more resemble **Rural Areas**, despite the naming and US Census definition. 
+Overall - **Urban Clusters** tend to show a high correlation to Per Capita Monthly FFL counts, across all three variable classes (**Population**, **Population Percentage**, and **and Area**). 
+
+While the assumption might be that **Rural** areas have higher FFL counts, there's actually a weak negative correlation between Population Percentage, Land Area and Monthly Per Capita FFLs. But contradicting this potential pattern is **Rural Population**, correlating with Monthly Per Capita FFLs at a coefficient of **0.82**. 
+
+### Relationships between Rural-Urban variables
+
+Other strong correlations appear, but the strongest of these generally highlight the difference between _Rural_ and _Urban_, e.g. coefficient of **-1** for relationship between Rural Population Percentage and Urban Population. 
+
+However, there are some potentially interesting relationships between the Census-defined variables: such as between the **Rural Population** and **Land Area** of **Urban Clusters** (**0.93**). Further investigation might show that **"Urban" Clusters** more resemble **Rural Areas**, despite the naming and US Census definition. 
+
+**Land Area** and **Population** are highly correlated with regard to **Urbanized Areas** and **Urbanized Clusters** (**> 0.90**), but there's almost no relationship between **Land Area** and **Rural Population** (**-0.02**).
+
+## Exploratory Model Building
+
+model.01 Explanatory Variables:
+
+- Population Percentage: Rural, Urban Cluster, Urbanized Area
+- Population: Rural, Urban Cluster, Urbanized Area
+- Land Area: Rural, Urban Cluster, Urbanized Area
+
+Essentially, will be looking at explanatory power of population and land area across the 3 classes defined by the US Census. 
+
+
+```{r}
+
+model.01 <- lm(perCapitaFFL ~ STATE + POPPCT_UC + POPPCT_UA + POPPCT_RURAL + POP_UC 
+               + POP_UA + POP_RURAL + AREA_UC + AREA_UA + AREA_RURAL, data = ffl.16)
+
+summary(model.01)
+
+# look at coefficients, sorted by p-value
+model.01.tidy <- tidy(model.01) %>%
+  arrange(p.value)
+
+#            term      estimate    std.error   statistic      p.value
+# 1    AREA_RURAL  3.562443e-11 6.683218e-12  5.33043081 4.394393e-06
+# 2       AREA_UA  2.232194e-09 1.194578e-09  1.86860456 6.920262e-02
+# 3       AREA_UC -1.852561e-08 1.049634e-08 -1.76495790 8.540102e-02
+# 4         STATE  1.384627e-01 9.204794e-02  1.50424518 1.405743e-01
+# 5     POP_RURAL  4.603342e-06 5.647564e-06  0.81510220 4.199638e-01
+# 6     POPPCT_UA -2.121229e+02 3.002846e+02 -0.70640627 4.841346e-01
+# 7   (Intercept)  2.120248e+04 3.002844e+04  0.70607999 4.843353e-01
+# 8  POPPCT_RURAL -2.117348e+02 3.002665e+02 -0.70515630 4.849035e-01
+# 9     POPPCT_UC -2.102720e+02 3.003451e+02 -0.70010125 4.880196e-01
+# 10       POP_UA -5.664944e-07 8.418024e-07 -0.67295411 5.049448e-01
+# 11       POP_UC  1.419485e-06 1.424846e-05  0.09962379 9.211534e-01
+```
+
+Six variables have smaller p-values than the Intercept:
+
+- Land Area for Rural, Urbanized Areas, and Urban Clusters, respectively
+- the STATE index variable (which I don't believe should have predicitive power)
+- Rural Population
+- Urbanized Area Population Percentage
+
+How do the fitted and observed values look? 
+
+```{r}
+# create key-value df for state names and numbers
+state.key <- ffl.16 %>%
+  select(NAME, STATE)
+
+# store fitted values in dataframe, merge to include state names
+model.01.fit <- augment(model.01) %>%
+  arrange(desc(perCapitaFFL)) %>%
+  left_join(state.key)
+
+# plot observed and fitted perCapitaFFL counts
+ggplot(model.01.fit, aes(x = reorder(NAME, perCapitaFFL), y = perCapitaFFL)) +
+  geom_point() +
+  geom_point(aes(x = reorder(NAME, perCapitaFFL), y = .fitted), 
+             color = "red", shape = 15, size = 2, data = model.01.fit) +
+  pd.theme + coord_flip() +
+  labs(x = "State", y = "monthly per capita FFL count", 
+       title = "Per Capita FFL count: Observed and Fitted Values - model.01")
+``` 
+
+![model.01 - fitted vs. observed values](R_plots/ru-model-01-fitted-observed.png)      
 
 
 
-## Exploratory Modeling
 
 
 
