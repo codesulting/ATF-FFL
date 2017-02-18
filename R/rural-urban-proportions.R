@@ -90,9 +90,9 @@ ffl.pal <- colorRampPalette(c(muted("firebrick4"),
 # plot correlation matrix
 par(mfrow = c(1, 1), family = "GillSans")
 corrplot(ffl.cor16, method = "shade", shade.col = NA,
-         tl.col = "gray23", tl.srt = 45, tl.cex = 0.60, 
-         addCoef.col = "black", number.cex = 0.5,
-         order = "hclust", mar = c(1.5, 1.5, 1.5, 1.5))
+         tl.col = "gray23", tl.srt = 45, tl.cex = 0.70, 
+         addCoef.col = "black", number.cex = 0.50,
+         order = "hclust", mar = c(1, 1, 1, 1))
 
 # After examining the matrix, there's a certain number of variables 
 # that might be meaningfully correlated to Monthly License Counts and

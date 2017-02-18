@@ -124,12 +124,14 @@ After combining Rural-Urban Proportions data with Per Capita FFL data from earli
 
 ![rural-urban-corr-matrix-01](R_plots/rural-urban-corr-matrix-01.png)
 
+This could be difficult to read online; here's a link to a [higher-resolution plot](R-plots/rural-urban-corr-matrix-01-hires.png), and [annotated printout](rural-urban-corr-matrix-annotated.jpg).
 
-# What variables strongly correlate with license counts? 
 
-From the initial correlation matrix, about a dozen variables were selected for showing strong postive/negative correlation to raw and adjusted license counts. 
+## Which variables strongly correlate with license counts? 
 
-They all relate to the stratified population categories (Urbanized Areas, Urban Clusters, and Rural), but across variables of population, population percentage, and area)
+From the initial correlation matrix, about a dozen variables were selected for showing strong postive/negative correlation to raw and adjusted license counts. "Strong" in this case refers to variables with a correlation coefficient above 0.5 (preferably even higher) in relation to: 1) total FFLs, 2) monthly FFLs, 3) per capita total FFLs, and 4) per capita monthly FFLs.
+
+They all relate to the stratified population categories (Urbanized Areas, Urban Clusters, and Rural), but across variables of population, population percentage, and area. For example, the **Land Area of an Urban Cluster** has a rather strong correlation coefficient of __0.90__ in relation to monthly license counts. The **Population Percentage living in Urban Clusters** has shows a coefficient of __0.82__.
 
 ``` {R}
 # Filter for variables across the 3 population classes:
@@ -139,7 +141,11 @@ rural.urban.filter <- ffl.16 %>%
          POPPCT_RURAL, POPPCT_UC, POPPCT_UA, POPPCT_URBAN, 
          POP_RURAL, POP_UC, POP_UA, AREA_RURAL, AREA_UC, AREA_URBAN,
          NPOPCHG_2016, NETMIG2016)
+
+rural.urban.f.corr <- cor(rural.urban.filter)
 ```
+
+
 
 
 ## License Count By Month
