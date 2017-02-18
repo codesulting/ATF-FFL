@@ -72,16 +72,15 @@ str(ffl.16)
 ffl.16$NAME.y <- NULL
 colnames(ffl.16)[1] <- "NAME"
 
-# check correlations
+# create correlation matrix
 ffl.cor16 <- ffl.16 %>%
   select(-NAME)
 
-# create correlation matrix
 ffl.cor16 <- cor(ffl.cor16)
 
 # define a new palette
-ffl.pal <- colorRampPalette(c(muted("deeppink4"),
-                              muted("deeppink2"),
+ffl.pal <- colorRampPalette(c(muted("firebrick4"),
+                              muted("firebrick2"),
                               "antiquewhite1",
                               "white",
                               "antiquewhite1",
@@ -90,10 +89,10 @@ ffl.pal <- colorRampPalette(c(muted("deeppink4"),
 
 # plot correlation matrix
 par(mfrow = c(1, 1), family = "GillSans")
-corrplot(ffl.cor16, method = "shade", shade.col = NA, col = ffl.pal(100),
-         tl.col = "gray23", tl.srt = 45, tl.cex = 0.50, 
+corrplot(ffl.cor16, method = "shade", shade.col = NA,
+         tl.col = "gray23", tl.srt = 45, tl.cex = 0.60, 
          addCoef.col = "black", number.cex = 0.5,
-         order = "hclust", mar = c(1, 1, 1, 1))
+         order = "hclust", mar = c(1.5, 1.5, 1.5, 1.5))
 
 # After examining the matrix, there's a certain number of variables 
 # that might be meaningfully correlated to Monthly License Counts and
