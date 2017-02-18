@@ -35,7 +35,7 @@ Back to FFLs - the ATF [publishes data on this FFL holders](https://www.atf.gov/
 
 By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015? (**'dd'** stands for Destructive Device and **'mfg'** for manufacturer)
 
-![FFL-History-02](R_plots/FFL-History-02.png)
+![FFL-History-02](indd/assets/TypesOverTime-V2.jpg)
 
 - Looking specifically at Destructive Devices - the number has increased steadily and heavily since 1975.
 - Manufacturers of Ammunition have gone down dramatically
@@ -167,7 +167,7 @@ corrplot(rural.urban.f.corr, method = "shade", shade.col = NA,
          order = "hclust", mar = c(1, 1, 1, 1))
 ```
 
-![corrplot-filtered](rural-urban-corr-filter-01.png)
+![corrplot-filtered](R_plots/rural-urban-corr-filter-01.png)
 
 For raw totals of monthly license counts, Land Area and Population of Urban Clusters show the highest positive correlation (r^2 = 0.90 & 0.88). Land Area of Urbanized Areas and Rural Population also are strong (r^2 = 0.83 & 0.82). 
 
