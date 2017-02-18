@@ -120,11 +120,9 @@ Again there appears again to be an inverse relationship - this time, between Lan
 
 Given the observation of an inverse relationship between FFLs vs Population by state, what can be learned from differences in rural- and urban-defined areas in the United States in regard to FFLs? 
 
-After combining Rural-Urban Proportions data with Per Capita FFL data from earlier, we can look for correlations between per capita License Counts and other variables. _link to a [higher-resolution plot](R_plots/rural-urban-corr-matrix-01-hires.png), and [annotated printout](R_plots/rural-urban-corr-matrix-annotated.jpg)_
+After combining Rural-Urban Proportions data with Per Capita FFL data from earlier, we can look for correlations between per capita License Counts and other variables. (_link to a_ [higher-resolution plot](R_plots/rural-urban-corr-matrix-01-hires.png)_, and_ [annotated printout](R_plots/rural-urban-corr-matrix-annotated.jpg).)
 
 ![rural-urban-corr-matrix-01](R_plots/rural-urban-corr-matrix-01.png)
-
-This could be difficult to read online; here's a link to a [higher-resolution plot](R_plots/rural-urban-corr-matrix-01-hires.png), and [annotated printout](R_plots/rural-urban-corr-matrix-annotated.jpg).
 
 
 ## Which variables strongly correlate with license counts? 
