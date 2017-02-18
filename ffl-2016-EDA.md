@@ -2,6 +2,7 @@
 - [What is a Federal Firearms License?](#what-is-a-federal-firearms-license)
 - [License Counts by State](#license-counts-by-state)
 - [Rural-Urban Proportions](#rural-to-urban-proportions)
+- [Federal Firearms Licenses over time](#ffl-history-1975-2015)
 
 # What is a Federal Firearms License?
 
@@ -30,7 +31,19 @@ The ATF bullet points defining Destructive Device are:
 - Any type of weapon by whatever name known which will, or which may readily be converted to expel a projectile, by the action of an explosive or other propellant, the barrel or barrels of which have a bore greater than one-half inch in diameter. (**1/2" bore**)
 - A combination of parts designed and intended for use in converting a device into a destructive device and from which a destructive device can be readily assembled.
 
-Back to FFLs - the ATF [publishes data on this FFL holders](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) monthly, from 2013 to present. Additionally, an [annual commerce report](https://www.atf.gov/resource-center/data-statistics) is released, which contains numbers on weapons registrations, imports and taxes, and historical FFL data. 
+Back to FFLs - the ATF [publishes data on this FFL holders](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) monthly, from 2013 to present. Additionally, an [annual commerce report](https://www.atf.gov/resource-center/data-statistics) is released, which contains numbers on weapons registrations, imports and taxes, and historical FFL data. With historical FFL data, we can broadly see how license counts have changed over time - from 1975-2015. 
+
+By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015? **'dd'** stands for Destructive Device, **'mfg'** for manufacturer.
+
+![FFL-History-02](R_plots/FFL-History-02.png)
+
+- Looking specifically at Destructive Devices - the number has increased steadily and heavily since 1975.
+- Manufacturers of Ammunition have gone down dramatically
+- around 2010, Manufacturers of Firearms began to increase steadily.
+- peak of all FFL types appears to have happened in the early 1990s.
+
+
+
 
 # License Counts by State
 
@@ -96,17 +109,22 @@ And with fitted values from `lm(FFL.rate ~ Population)`?
 
 # Rural to Urban Proportions
 
+Since there appears to be an inverse relationship between a state's population and the number of Federal Firearms Licenses, it seemed a good idea to drill down further into how populations are comprised. The [US Census](https://www.census.gov/geo/reference/ua/urban-rural-2010.html) provides definitions and data on Rural and Urban across the United States.
+
 According to the U.S. Census:
 
 - Urbanized Areas are defined as having a population of over 50,000.
 - Urban Clusters have a population 5,000 < n < 50,000.
 - Rural Areas have a population less than 5,000.
 
-Further, there appears again to be an inverted relationship between Land Area and Population when looking at Urban vs Rural Areas - i.e., while Urban Areas comprise only 3 percent of United States Land Area, they also count for 80.7 percent of the population. Rural Areas, by contrast, make up 97% of US Land Area while only 19.3 percent of the population.<sup>[2](#works-cited)</sup> 
+Again there appears again to be an inverse relationship - this time, between Land Area and Population when looking at Urban vs Rural Areas. While Urban Areas comprise only 3 percent of United States Land Area, they also account for 80.7 percent of the population. Rural Areas, by contrast, make up 97% of US Land Area while only 19.3 percent of the population.<sup>[2](#works-cited)</sup> 
 
 Given the observation of an inverse relationship between FFLs vs Population by state, what can be learned from differences in rural- and urban-defined areas in the United States in regard to FFLs? 
 
-After combining rural-urban proportions data with per capita FFL data, we can look for correlation amongst the variables. 
+After combining Rural-Urban Proportions data with Per Capita FFL data from earlier, we can look for correlations between per capita License Counts and other variables. 
+
+![rural-urban-corr-matrix-01](R_plots/rural-urban-corr-matrix-01.png)
+
 
 # What variables strongly correlate with license counts? 
 
@@ -131,48 +149,6 @@ Was there much variance in the number of licenses in each state, from month to m
 
 ![Lic Count Total by Month 2015-16](R_plots/2015-16-LicTotalByMonth.png)
 
-# FFL History: 1975-2015
-
-By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015? **'dd'** stands for Destructive Device, **'mfg'** for manufacturer.
-
-![FFL-History-02](R_plots/FFL-History-02.png)
-
-- Looking specifically at dd's, the number has increased heavily.
-- Manufacturers of Ammo have gone down dramatically
-- around 2010, manufacturers of firearms began to increase steadily.
-- peak of all FFL types happened in the early 1990s.
-
-# Edit
-
-The sections below are likely to be edited out.
-
-## License Count By Month
-
-Was there much variance in the number of licenses in each state, from month to month?
-
-![Lic by Month](R_plots/2016-LicCountMonthly.png)
-
-## License Count by Region
-
-Are there any trends by region? Could state population be tell us more about license holders? 
-
-(For whatever reason, it's difficult to find the ATF's Region codes online, but the states belonging to each region can be found by simply filtering the data.)
-
-![count by state by region](R_plots/2016-CountByRegion.png)
-
-So most regions have less than 40,000 licenses per state, but appear _generally_ similar. Region 8 has just 4 states and a low number of licenses, other than Pennsylvania. Region 6 appears to have the lowest number of licenses by region overall; most states here have less than 10,000, with the outlier of New York at about 20,000. Perhaps a summary of each region by state would be easier to read than this plot. 
-
-
-# Why Own a Gun?
-
-_an examination of ATF Federal Firearms License data_
-
-Protection, Recreation, and Entitlement: these are 3 reasons commonly cited for owning a firearm in the United States. A Pew Research poll<sup>[1](#works-cited)</sup> actually asked the question "Why Own a Gun?", and their survey shows an interesting figure in people's primary reasons for doing so. 
-
-- In 1999, 49% of those surveyed cited 'Hunting' as a primary reason, and 26% claimed 'Protection'. 
-- In 2013, 48% claimed 'Protection', while 32% cited 'Hunting' as a primary reason. 
-
-The question of _Why?_ is beyond the direct scope of Federal Firearms License data alone; FFL covers not individual owners but rather dealers, manufacturers, and suppliers of firearms. However, by looking at patterns and outliers in federally licensed firearm trade...
 
 # Works Cited
 
