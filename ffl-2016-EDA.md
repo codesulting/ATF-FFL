@@ -1,7 +1,7 @@
 
 - [What is a Federal Firearms License?](#what-is-a-federal-firearms-license)
 - [License Counts by State](#license-counts-by-state)
-- [Rural-Urban Proportions](#rural-to-urban-proportions)
+- [Rural-Urban Proportions](#rural-urban-proportions)
 - [Federal Firearms Licenses over time](#ffl-history-1975-2015)
 
 # What is a Federal Firearms License?
@@ -106,7 +106,7 @@ And with fitted values from `lm(FFL.rate ~ Population)`?
 
 **TODO**: compare urban density across US to FFL density.
 
-# Rural to Urban Proportions
+# Rural-Urban Proportions
 
 Since there appears to be an inverse relationship between a state's population and the number of Federal Firearms Licenses, it seemed a good idea to drill down further into how populations are comprised. The [US Census](https://www.census.gov/geo/reference/ua/urban-rural-2010.html) provides definitions and data on Rural and Urban across the United States.
 
@@ -245,7 +245,7 @@ Six variables have smaller p-values than the Intercept:
 How do the fitted and observed values look? 
 
 ```{r}
-# create key-value df for state names and numbers
+# create key-value df for state name/index
 state.key <- ffl.16 %>%
   select(NAME, STATE)
 
@@ -264,7 +264,7 @@ ggplot(model.01.fit, aes(x = reorder(NAME, perCapitaFFL), y = perCapitaFFL)) +
        title = "Per Capita FFL count: Observed and Fitted Values - model.01")
 ``` 
 
-![model.01 - fitted vs. observed values](R_plots/ru-model-01-fitted-observed.png)      
+![model.01 - fitted vs. observed values](R_plots/ru-model-01-fitted-observed.png)
 
 
 
@@ -272,11 +272,7 @@ ggplot(model.01.fit, aes(x = reorder(NAME, perCapitaFFL), y = perCapitaFFL)) +
 
 
 
-## License Count By Month
 
-Was there much variance in the number of licenses in each state, from month to month? How does this look specifically, from 2015 to 2016? 
-
-![Lic Count Total by Month 2015-16](R_plots/2015-16-LicTotalByMonth.png)
 
 
 # Works Cited
