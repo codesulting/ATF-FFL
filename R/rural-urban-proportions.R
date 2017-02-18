@@ -29,6 +29,9 @@ names(rural.urban)
 perCap16 <- read.csv("~/GitHub/ATF-FFL/data/ffl-2016-perCapita.csv")
 str(perCap16)
 
+# load plot themes
+source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
+
 # Correlations ----------------------------------------------------------------
 # check correlation between variables
 # although some variables will show high correlation, 
@@ -143,22 +146,100 @@ corrplot(rural.urban.f.corr, method = "shade", shade.col = NA,
          addCoef.col = "black", number.cex = 0.85,
          order = "hclust", mar = c(1, 1, 1, 1))
 
+# Model Building --------------------------------------------------------------
 
+library(broom)
 
-# Life Off the Highway: Rural-Urban Simple Table ------------------------------
+# Model 01 --------------------------------------------------------------------
 
-highway.table <- data.frame(Urban.Areas = c(3.0, 80.7),
-                            Rural.Areas = c(97.0, 19.3))
+# model.01 looks at variables that appear to be correlated to monthly per capita FFL counts.
 
-rownames(highway.table) <- c("Urban.Areas", "Rural.Areas")
-colnames(highway.table) <- c("Land.Area", "Population")
+# sort states alphabetically
+ffl.16 <- ffl.16 %>%
+  arrange(NAME)
 
-ggplot(highway.table, aes(Land.Area, Population)) +
-  geom_bar(stat = "identity")
+# fit model
+# the STATE variable is a number/index that can be matched to state NAME;
+# i.e. should not have predictive power
+model.01 <- lm(perCapitaFFL ~ STATE + POPPCT_UC + POPPCT_UA + POPPCT_RURAL + POP_UC 
+               + POP_UA + POP_RURAL + AREA_UC + AREA_UA + AREA_RURAL, data = ffl.16)
 
-# the table needs to be spread.
+summary(model.01)
 
+# an adjusted r^2 of 0.82 (0.8567 unadjusted) appears promising;
+# AREA_RURAL appears to be the most significant predictor.
+# AREA_UC and AREA_UA are the next most significant, but with much higher p-values. (0.0854/0.0692)
+# But the variables in this model are highly correlated to the independent variable.
 
+# look at coefficients, sorted by p-value
+model.01.tidy <- tidy(model.01) %>%
+  arrange(p.value)
 
+model.01.tidy
+
+# create key-value df for state names and numbers
+state.key <- ffl.16 %>%
+  select(NAME, STATE)
+
+# store fitted values in dataframe, merge to include state names
+model.01.fit <- augment(model.01) %>%
+  arrange(desc(perCapitaFFL)) %>%
+  left_join(state.key)
+
+# plot observed and fitted perCapitaFFL counts
+ggplot(model.01.fit, aes(x = reorder(NAME, perCapitaFFL), y = perCapitaFFL)) +
+  geom_point() +
+  geom_point(aes(x = reorder(NAME, perCapitaFFL), y = .fitted), 
+             color = "red", shape = 15, size = 2, data = model.01.fit) +
+  pd.theme + coord_flip() +
+  labs(x = "State", y = "monthly per capita FFL count", 
+       title = "Per Capita FFL count: Observed and Fitted Values - model.01")
+
+# Model 02 --------------------------------------------------------------------
+# Will adding more variables increase our r^2, 
+# or help identify significant variables? 
+
+# with this many variables, many fail to converge
+# removing those that resulted in singularity
+ffl.16.02 <- ffl.16 %>%
+  arrange(NAME) %>%
+  select(-c(NAME, LicCountMonthly, POPESTIMATE2016, NATURALINC2016, NETMIG2016,
+            RESIDUAL2016, RNATURALINC2016, RNETMIG2016, POP_UC, AREA_UC, RINTERNATIONALMIG2016,
+            POP_RURAL, POPPCT_RURAL, AREA_RURAL, AREAPCT_RURAL, perCapFFLyear,
+            LicCount))
+
+model.02 <- lm(perCapitaFFL ~ ., data = ffl.16.02)
+summary(model.02)
+
+# Residual standard error: 8.516 on 19 degrees of freedom
+# Multiple R-squared:  0.9397,	Adjusted R-squared:  0.8446 
+# again, promising R-squared results, but rather high p-values.
+
+# look at coefficients, sorted by p-value
+model.02.tidy <- tidy(model.02) %>%
+  arrange(p.value)
+
+# store fitted values in dataframe, join to include state names
+model.02.fit <- augment(model.02) %>%
+  arrange(desc(perCapitaFFL)) %>%
+  left_join(state.key)
+
+# plot observed vs. fitted values (model.02)
+ggplot(model.02.fit, aes(x = reorder(NAME, perCapitaFFL), y = perCapitaFFL)) + 
+  geom_point() +
+  geom_point(aes(x = reorder(NAME, perCapitaFFL), y = .fitted), 
+             color = "red", shape = 15, size = 2,  data = model.02.fit) +
+  pd.theme + coord_flip() +
+  labs(x = "State", y = "mothly per capita FFL count", 
+       title = "Per Capita FFL count: Observed and Fitted Values, model.02")
+
+# plot observed vs. fitted values, descending order 
+ggplot(model.02.fit, aes(x = reorder(NAME, desc(perCapitaFFL)), y = perCapitaFFL)) + 
+  geom_point() +
+  geom_point(aes(x = reorder(NAME, desc(perCapitaFFL)), y = .fitted), 
+             color = "red", shape = 15, size = 2,  data = model.02.fit) +
+  pd.theme + coord_flip() +
+  labs(x = "State", y = "mothly per capita FFL count", 
+       title = "Per Capita FFL count: Observed and Fitted Values, model.02")
 
 
