@@ -20,14 +20,14 @@ f16 <- as.data.frame(f16)
 str(f16)
 
 # data: Census Population and License Counts ----------------------------------
-perCapita.16 <- read.csv("~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv")
-str(perCapita.16)
+perCap16 <- read.csv("~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv")
+str(perCap16)
 
 # from earlier cleansing/binding script, we now have
 # 50 observations of 26 variables
 
 # Measures of Central Tendency
-summary(perCapita.16$perCapitaFFL)
+summary(perCap16$perCapitaFFL)
 #    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #   3.687  19.430  26.100  31.170  38.180 104.700 
 
@@ -58,7 +58,7 @@ pd.classic <- theme_classic(base_size = 12, base_family = "GillSans") +
 # Are there more FFLs in certain states than others? 
 # And what factors might influence why there would or wouldnt be more?
 
-perCapita.16 %>% 
+perCap16 %>% 
   arrange(desc(perCapitaFFL)) %>%
   ggplot(aes(reorder(NAME, perCapitaFFL), perCapitaFFL, fill = perCapitaFFL)) +
     geom_bar(stat = "identity") + 
@@ -75,19 +75,19 @@ perCapita.16 %>%
 # How does this relate to population ranking across the states?
 # First look at the expected population values overall, then plot.
 
-summary(perCapita.16$EstPop16.Wiki)
+summary(perCap16$EstPop16.Wiki)
 #    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 # 585500  1850000  4559000  6449000  7199000 39250000
 
-perCapita.16 <- perCapita.16 %>%
+perCap16 <- perCap16 %>%
   mutate(perCapPop = EstPop16.Wiki / 100000)
 
-summary(perCapita.16$perCapPop)
+summary(perCap16$perCapPop)
 #     Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #   5.855  18.500  45.590  64.490  71.990 392.500 
 
 # plot FFLs by state with population mapped to color
-perCapita.16 %>% 
+perCap16 %>% 
   arrange(desc(EstPop16.Wiki)) %>%
   ggplot(aes(reorder(NAME, perCapitaFFL), perCapitaFFL, fill = perCapPop)) +
   geom_bar(stat = "identity") + 
@@ -127,7 +127,7 @@ capwords <- function(s, strict = FALSE) {
 usa$NAME <- capwords(usa$NAME)
 
 # merge USA map data with FFL data
-perCapitaMap <- left_join(perCapita.16, usa, by = "NAME")
+perCapitaMap <- left_join(perCap16, usa, by = "NAME")
 summary(as.factor(perCapitaMap$subregion))
 # there are 16 'subregions' 
 # eg. long island, main, staten island, manhattan, nantucket, north, chesapeake
@@ -172,7 +172,7 @@ summary(perCapitaMap$POPESTIMATE2016)
 
 # bar plot of population by state
 
-perCapita.16 %>%
+perCap16 %>%
   arrange(desc(POPESTIMATE2016)) %>%
 ggplot(aes(reorder(NAME, desc(POPESTIMATE2016)), POPESTIMATE2016, fill = POPESTIMATE2016)) +
   geom_bar(stat = "identity") +
@@ -210,7 +210,7 @@ ggplot(perCapitaMap, aes(lon, lat, group = group, fill = POPESTIMATE2016)) +
 # Pattern? : FFLs by Population -----------------------------------------------
 
 # create a new dataframe with only FFLs and population
-ffl.pop <- perCapita.16 %>%
+ffl.pop <- perCap16 %>%
   select(NAME, POPESTIMATE2016, LicCount, LicCountMonthly, perCapitaFFL) %>%
   mutate(pop100k = POPESTIMATE2016/100000)
 
