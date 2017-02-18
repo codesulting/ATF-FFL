@@ -115,6 +115,7 @@ According to the U.S. Census:
 - Urbanized Areas are defined as having a population of over 50,000.
 - Urban Clusters have a population 5,000 < n < 50,000.
 - Rural Areas have a population less than 5,000.
+- Urban Areas reflect the sum totals of Urbanized Areas and Urban Clusters.
 
 Again there appears again to be an inverse relationship - this time, between Land Area and Population when looking at Urban vs Rural Areas. While Urban Areas comprise only 3 percent of United States Land Area, they also account for 80.7 percent of the population. Rural Areas, by contrast, make up 97% of US Land Area while only 19.3 percent of the population.<sup>[2](#works-cited)</sup> 
 
@@ -177,7 +178,7 @@ For _monthly per capita FFL counts_ (**perCapitaFFL**), **Population Percentage*
 
 Overall - **Urban Clusters** tend to show a high correlation to Per Capita Monthly FFL counts, across all three variable classes (**Population**, **Population Percentage**, and **and Area**). While the assumption might be that **Rural** areas have higher FFL counts, there's actually a weak negative correlation between Population Percentage, Land Area and Monthly Per Capita FFLs. But contradicting this potential pattern is **Rural Population**, correlating with Monthly Per Capita FFLs at a coefficient of 0.82. 
 
-Other strong correlations appear, but the strongest of these generally highlight the difference between _Rural_ and _Urban_, e.g. coefficient of -1 for relationship between Rural Population Percentage and Urban Population. However, there are some potentially interesting relationships between the Census-defined variables: such as between the **Rural Population** and **Land Area** of **Urban Clusters** (0.93). 
+Other strong correlations appear, but the strongest of these generally highlight the difference between _Rural_ and _Urban_, e.g. coefficient of -1 for relationship between Rural Population Percentage and Urban Population. However, there are some potentially interesting relationships between the Census-defined variables: such as between the **Rural Population** and **Land Area** of **Urban Clusters** (0.93). Further investigation might show that **"Urban" Clusters** more resemble **Rural Areas**, despite the naming and US Census definition. 
 
 
 
