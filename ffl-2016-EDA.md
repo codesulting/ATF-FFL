@@ -33,7 +33,7 @@ The ATF bullet points defining Destructive Device are:
 
 Back to FFLs - the ATF [publishes data on this FFL holders](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) monthly, from 2013 to present. Additionally, an [annual commerce report](https://www.atf.gov/resource-center/data-statistics) is released, which contains numbers on weapons registrations, imports and taxes, and historical FFL data. With historical FFL data, we can broadly see how license counts have changed over time - from 1975-2015. 
 
-By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015? **'dd'** stands for Destructive Device, **'mfg'** for manufacturer.
+By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015? (**'dd'** stands for Destructive Device and **'mfg'** for manufacturer)
 
 ![FFL-History-02](R_plots/FFL-History-02.png)
 
@@ -41,8 +41,7 @@ By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1
 - Manufacturers of Ammunition have gone down dramatically
 - around 2010, Manufacturers of Firearms began to increase steadily.
 - peak of all FFL types appears to have happened in the early 1990s.
-
-
+- Tufte-style sparkline plot originally translated to R by [Lukasz Piwek](http://motioninsocial.com/tufte/)
 
 
 # License Counts by State
