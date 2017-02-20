@@ -40,7 +40,9 @@ By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1
 - around 2010, Manufacturers of Firearms began to increase steadily.
 - peak of all FFL types appears to have happened in the early 1990s.
 
+Looking at categories showing broad increases over time: these include all classes (Dealer, Importer, Manufacturer) of Destructive Devices, and Manufacturers of Firearms. Can anything be seen looking specifically at Manufacturers? 
 
+![Historical-Firearms-Manufacturing-01](indd/assets/Historical-Firearms-Manufacturing-01.jpg)
 
 
 # Works Cited

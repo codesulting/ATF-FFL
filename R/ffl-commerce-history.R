@@ -17,7 +17,7 @@ library(ggthemes)
 # registered weapons by state, taxpayers by state, total FFLs, FFL actions, and FFL 
 # This data is from 1976-2015.
 
-commerce.FFL.total <- read.csv("~/Documents/ATF-FFL/data/commerce/10-FFL-total.csv",
+commerce.FFL.total <- read.csv("~/GitHub/ATF-FFL/data/00-commerce/10-FFL-total.csv",
                                stringsAsFactors = T)
 str(commerce.FFL.total)
 summary(commerce.FFL.total)
@@ -48,6 +48,9 @@ colnames(FFLs)[3] <- "FFL.Rate"
 
 # Plot: Tufte Style sparklines for historic FFL data --------------------------
 # http://motioninsocial.com/tufte/#range-frame-plot
+
+# load custom themes
+source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
 
 # compute mins, maxes, ends, and quartile ranges for plot
 mins <- group_by(FFLs, LicenseType) %>% slice(which.min(FFL.Rate))
@@ -102,4 +105,68 @@ ggplot(FFLs, aes(Fiscal.Year, FFL.Rate, group = LicenseType)) +
         axis.text.x = element_text(size = 12),
         strip.text.y = element_text(size = 12),
         plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))
+
+# Exhibit 01: Firearms Manufactured 1986-2014 ---------------------------------
+
+# ATF Commerce Report Exhibit 01: Firearms Manufactured 1986-2014
+# This table contains data on the number of 
+# Pistols, Revolvers, Rifles, Shotguns, Miscellaneous, and Total firearms manufactured
+# excluding those produced for military,
+# but including those produced for law enforcement. 
+# Broadly, this should provide an overview of domestic firearms production.
+
+manufactured.firearms <- read.csv("~/GitHub/ATF-FFL/data/00-commerce/01-manufacturing.csv")
+str(manufactured.firearms)
+
+# gather values into long dataframe
+manufactured.firearms <- manufactured.firearms %>%
+  gather(key = "FirearmType", value = n, 2:7)
+
+colnames(manufactured.firearms)[3] <- "NumFirearms"
+manufactured.firearms$NumFirearms <- commas(manufactured.firearms$NumFirearms)
+
+write.csv(manufactured.firearms, 
+          file = "~/GitHub/ATF-FFL/data/00-commerce/01-manufacturing-long.csv",
+          row.names = F)
+
+# prep plot for Historical Manufacturing data ---------------------------------
+
+# compute min/max, start/end
+mins <- group_by(manufactured.firearms, FirearmType) %>% slice(which.min(NumFirearms))
+maxs <- group_by(manufactured.firearms, FirearmType) %>% slice(which.max(NumFirearms))
+ends <- group_by(manufactured.firearms, FirearmType) %>% filter(Year == max(Year))
+start <- group_by(manufactured.firearms, FirearmType) %>% filter(Year == min(Year))
+
+# compute and bind quartile range
+quarts <- manufactured.firearms %>% group_by(FirearmType) %>%
+  summarize(quart1 = quantile(NumFirearms, 0.25),
+            quart2 = quantile(NumFirearms, 0.75)) %>%
+  right_join(manufactured.firearms)
+
+# plot : Tufte Style Sparklines, Tufte theme
+ggplot(manufactured.firearms, aes(Year, NumFirearms, group = FirearmType)) +
+  facet_grid(FirearmType ~ ., scales = "free_y") +
+  geom_ribbon(data = quarts, aes(ymin = quart1, max = quart2), fill = "gray96") +
+  geom_line(size = 0.25) +
+  geom_point(data = mins, col = "firebrick3") +
+  geom_point(data = maxs, col = "deepskyblue") +
+  geom_text(data = mins, aes(label = NumFirearms), vjust = -1, size = 2.75) +
+  geom_text(data = maxs, aes(label = NumFirearms), vjust = -1, size = 2.75) +
+  geom_text(data = ends, aes(label = NumFirearms), hjust = 0, nudge_x = 1,
+            family = "GillSans", size = 3.5) +
+  geom_text(data = ends, aes(label = FirearmType), hjust = 0, nudge_x = 4, 
+            family = "GillSans", size = 3) +
+  expand_limits(x = max(FFLs$Year) + (0.25 * (max(FFLs$Year) - min(FFLs$Year)))) +
+  scale_x_continuous(breaks = seq(1975, 2015, 5)) +
+  scale_y_continuous(expand = c(0.25, 0)) +
+  theme_tufte(base_size = 10, base_family = "GillSans") +
+  theme(axis.title = element_blank(), axis.text.y = element_blank(), 
+        axis.ticks = element_blank(), strip.text = element_blank(),
+        axis.text.x = element_text(size = 10),
+        plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))
+
+
+
+
+
 
