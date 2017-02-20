@@ -58,6 +58,7 @@ pd.classic <- theme_classic(base_size = 12, base_family = "GillSans") +
 # Are there more FFLs in certain states than others? 
 # And what factors might influence why there would or wouldnt be more?
 
+# Bar: Per Capita FFL ~ State -------------------------------------------------
 perCap16 %>% 
   arrange(desc(perCapitaFFL)) %>%
   ggplot(aes(reorder(NAME, perCapitaFFL), perCapitaFFL, fill = perCapitaFFL)) +
@@ -170,8 +171,7 @@ summary(perCapitaMap$POPESTIMATE2016)
 #     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 #   585500  4093000  6651000  9828000 10310000 39250000
 
-# bar plot of population by state
-
+# bar plot of population by state ---------------------------------------------
 perCap16 %>%
   arrange(desc(POPESTIMATE2016)) %>%
 ggplot(aes(reorder(NAME, desc(POPESTIMATE2016)), POPESTIMATE2016, fill = POPESTIMATE2016)) +
@@ -184,21 +184,16 @@ ggplot(aes(reorder(NAME, desc(POPESTIMATE2016)), POPESTIMATE2016, fill = POPESTI
                                    lineheight = 1.5)) +
   labs(title = "2016: US Census Population ~ State", x = "", y = "", fill = "")
 
-# map of population by state
+# map of population by state --------------------------------------------------
 ggplot(perCapitaMap, aes(lon, lat, group = group, fill = POPESTIMATE2016)) +
   geom_polygon() +
-  scale_fill_gradient2(low = "deepskyblue3",
+  scale_fill_gradient2(low = "deepskyblue4",
                        mid = "antiquewhite1",
-                       high = "coral3", midpoint = 15000000) +
+                       high = "coral4", midpoint = 19625000) +
   coord_map("polyconic") + pd.theme +
-  theme(legend.position = "bottom",
-        panel.border = element_rect(linetype = "solid", 
-                                    fill = NA, 
-                                    color = "gray18"),
-        panel.grid = element_blank(),
+  theme(panel.grid = element_blank(),
         axis.text = element_blank(),
-        legend.title = element_text(size = 12),
-        legend.text = element_text(angle = 45, size = 12, hjust = 1, vjust = 1)) +
+        legend.title = element_text(size = 12)) +
   labs(title = "2016: US Census Population ~ State", 
        x = "", y = "", fill = "population")
 
@@ -251,7 +246,6 @@ pop.ffl <- ggplot(ffl.pop, aes(perCapitaFFL, pop100k, label = rownames(ffl.pop))
 
 # FFL ~ Population w/ log scales  
 pop.ffl + scale_x_log10() + scale_y_log10()
-
 
 ggplot(ffl.pop, aes(perCapitaFFL, pop100k, label = rownames(ffl.pop))) +
   geom_text(size = 3.75, alpha = 0.95, hjust = -0.05, vjust = 1, 
