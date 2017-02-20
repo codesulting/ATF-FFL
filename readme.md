@@ -1,84 +1,44 @@
-## Entitlement, Protection, and Recreation
+- [Exploratory Data Analysis](ffl-2016-EDA.md)
 
-_Why Own a Gun?_ An examination of ATF Federal Firearms License data.
+# What is a Federal Firearms License?
 
-Initial notes on a broad question, in an attempt to understand an issue, describe particular data, and note correlations across other data. Who, What, When, and Where are easily answered by summary statistics in this case; can these fields provide any clues as to _Why?_
+In the United States, a Federal Firearms License (FFL) is a requirement for those who engage in the business of firearms - generally **dealers**, **manufacturers**, and **importers**. 
 
-_write-ups of exploratory anaylses_:
+It's not actually a license to carry a firearm; it's strictly for the conducting business involving firearms. It's not necessary to have one if selling at gun shows, or when purchasing guns for personal reasons. 
 
-- [Exploratory Questions](ffl-2016-EDA.md)
-- [cross-reference: House of Representatives Expenditure Data](house-expenditure-EDA.md)
+The ATF considers 9 __types__ of FFLs: 
 
-## Exploratory Questions
+- Dealer
+- Pawnbroker
+- Collector
+- Manufacturer of Ammunition
+- Manufacturer of Firearms
+- Dealer in Destructive Devices
+- Manufacturer of Destructive Devices
+- Importer of Destructive Devices
 
-- Does having more seats in Congress increase the number of FFLs?
-- Does state financial health play a role in the number of FFLs?
-- Are there more active hunting grounds (fish and game) in states with more FFLs?
+'Destructive Devices' constitute their own class, and are [defined by the National Firearms Act](https://www.atf.gov/firearms/firearms-guides-importation-verification-firearms-national-firearms-act-definitions-1), [26 U.S.C. § 5845(F) (page 82)](https://www.atf.gov/firearms/docs/guide/atf-guidebook-importation-verification-firearms-ammunition-and-implements-war/download). Three examples, as shown in an illustration from the ATF Guidebook:
 
-![raw notes 01](http://pi.mozzarella.website/ATF-FFL/ffl-domain-notes.jpg)
+![destructive devices](indd/assets/dd-definition.png)
 
-## Data - Federal Firearms Licenses
+The ATF bullet points defining Destructive Device are: 
 
-The Bureau of Alcohol, Tobacco, Firearms, and Explosives ([ATF](https://www.atf.gov/)) maintains [listings of Federal Firearms licensees](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) online, dating back to 2013. This detailed data comes in the form of .xlsx or .txt files.
+- A missile having an explosive or incendiary charge of more than 1/4 oz. (**1/4 oz explosive/incendiary**)
+- Any type of weapon by whatever name known which will, or which may readily be converted to expel a projectile, by the action of an explosive or other propellant, the barrel or barrels of which have a bore greater than one-half inch in diameter. (**1/2" bore**)
+- A combination of parts designed and intended for use in converting a device into a destructive device and from which a destructive device can be readily assembled.
 
-Other notes:
+The ATF [publishes data on this FFL holders](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) monthly, from 2013 to present. Additionally, an [annual commerce report](https://www.atf.gov/resource-center/data-statistics) is released, which contains numbers on weapons registrations, imports and taxes, and historical FFL data. With historical FFL data, we can broadly see how license counts have changed over time - from 1975-2015. 
 
-- 2016: .pdf for 'FFL Type by State' for April is actually for Explosives, not Firearms
-- 2015: no data for September, October (no explanation)
-- 2014: January through May, and September are missing Expiration variable
-- 2013: no data for October (government shutdown)
+By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015<sup>[1](#works-cited)</sup>?
 
-Glimpse of the data:
+![FFL-History-02](indd/assets/TypesOverTime-V2.jpg)
 
-![June 2016 ATF data](http://pi.mozzarella.website/ATF-FFL/ffl-2016-glimpse-01.png)
+- Looking specifically at Destructive Devices - the number has increased steadily and heavily since 1975.
+- Manufacturers of Ammunition have gone down dramatically
+- around 2010, Manufacturers of Firearms began to increase steadily.
+- peak of all FFL types appears to have happened in the early 1990s.
 
-## Variables Provided
 
-- Region
-- District
-- County
-- Firearm Type
-- Expiration
-- Seqn
-- License Name
-- Business Name
-- Premise Street, City, State, ZIP
-- Mailing Street, City, State, ZIP
-- Phone number
+# Works Cited
 
-Further Breakdowns:
-
-- Region
-
-|  Region  |      States     							   |
-|----------|:---------------------------------------------:|
-|    1	   | AL, FL, GA, MS, NC, SC, TN, VA
-|    3     | IL, MN, ND, SD, WI  
-|    4     | IN, KY, MI, OH, WV
-|    5     | AR, CO, IA, KS, LA, MO, NE, NM, OK, TX, WY
-|    6     | CT, MA, ME, NH, NY, RI, VT
-|    8     | DE, MD, NJ, PA
-|    9     | AK, AZ, CA, HI, ID, MT, NV, OR, UT, WA
-
-## Variables Derived
-
-- year
-- month
-- License holder count
-- State population
-- Latitude and Longitude coordinates
-
-## Variables to derive
-
-Total cost of Licenses by Type can be calculated as:
-- 01 - $200 - Dealer (01), Including Pawnbroker (02), in Firearms Other Than Destructive Devices (Includes: Rifles, Shotguns, Pistols,
-Revolvers, Gunsmith activities and National Firearms Act (NFA) Weapons)
-- 02 - $200 - see above (pawnbroker)
-- 06 - $30 - Manufacturer of Ammunition for Firearms Other Than Ammunition for Destructive Devices or Armor Piercing Ammunition
-- 07 - $150 - Manufacturer of Firearms Other Than Destructive Devices
-- 08 - $150 - Importer of Firearms Other Than Destructive Devices or Ammunition for Firearms Other Than Destructive Devices, or
-Ammunition Other Than Armor Piercing Ammunition
-- 09 - $3000 - Dealer in Destructive Devices
-- 10 - $3000 - Manufacturer of Destructive Devices, Ammunition for Destructive Devices or Armor Piercing Ammunition
-- 11 - $3000 - Importer of Destructive Devices, Ammunition for Destructive Devices or Armor Piercing Ammunition
-
+<sup>1</sup>Tufte-style sparkline plot originally translated to R by [Lukasz Piwek](http://motioninsocial.com/tufte/)
