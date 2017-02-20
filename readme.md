@@ -1,4 +1,3 @@
-
 ## Entitlement, Protection, and Recreation
 
 _Why Own a Gun?_ An examination of ATF Federal Firearms License data.
@@ -48,6 +47,7 @@ Glimpse of the data:
 - Phone number
 
 Further Breakdowns:
+
 - Region
 
 |  Region  |      States     							   |

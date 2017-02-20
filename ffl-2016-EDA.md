@@ -31,9 +31,9 @@ The ATF bullet points defining Destructive Device are:
 - Any type of weapon by whatever name known which will, or which may readily be converted to expel a projectile, by the action of an explosive or other propellant, the barrel or barrels of which have a bore greater than one-half inch in diameter. (**1/2" bore**)
 - A combination of parts designed and intended for use in converting a device into a destructive device and from which a destructive device can be readily assembled.
 
-Back to FFLs - the ATF [publishes data on this FFL holders](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) monthly, from 2013 to present. Additionally, an [annual commerce report](https://www.atf.gov/resource-center/data-statistics) is released, which contains numbers on weapons registrations, imports and taxes, and historical FFL data. With historical FFL data, we can broadly see how license counts have changed over time - from 1975-2015. 
+The ATF [publishes data on this FFL holders](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) monthly, from 2013 to present. Additionally, an [annual commerce report](https://www.atf.gov/resource-center/data-statistics) is released, which contains numbers on weapons registrations, imports and taxes, and historical FFL data. With historical FFL data, we can broadly see how license counts have changed over time - from 1975-2015. 
 
-By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015? (**'dd'** stands for Destructive Device and **'mfg'** for manufacturer)
+By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1975 to 2015?
 
 ![FFL-History-02](indd/assets/TypesOverTime-V2.jpg)
 
@@ -42,7 +42,6 @@ By the 9 Types of FFLs as defined by the ATF, how have the counts changed from 1
 - around 2010, Manufacturers of Firearms began to increase steadily.
 - peak of all FFL types appears to have happened in the early 1990s.
 - Tufte-style sparkline plot originally translated to R by [Lukasz Piwek](http://motioninsocial.com/tufte/)
-
 
 # License Counts by State
 
@@ -63,7 +62,7 @@ f16 <- as.data.frame(f16)
 So the first broad question that comes to mind: Which states had the most firearms licenses? A license count variable for each state was computed while munging.
 
 ```{r}
-# Broadly: which states had the most firearms licenses? -----------------------
+# Broadly: which states had the most firearms licenses?
 
 summary(f16$LicCount)
 #    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
