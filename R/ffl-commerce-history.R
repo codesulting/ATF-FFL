@@ -222,27 +222,27 @@ manufactured.firearms %>%
 # What happens when combining Rifles and Shotguns vs Pistols and Revolvers? ---
 # create two broad categories: Handguns and Long Guns
 
-# read in Firearms Manufacturing Data
-mf0 <- read.csv("~/GitHub/ATF-FFL/data/00-commerce/01-manufacturing.csv", stringsAsFactors = F)
+# read in Firearms Manufacturing Data -----------------------------------------
+mf <- read.csv("~/GitHub/ATF-FFL/data/00-commerce/01-manufacturing.csv", stringsAsFactors = F)
 
 # remove commas from columns 2 through 7
-for (i in 2:ncol(mf0)) {
-  mf0[, i] <- commas(mf0[, i])
+for (i in 2:ncol(mf)) {
+  mf[, i] <- commas(mf[, i])
 }
 
 # sum each observation by year of Rifles+Shotguns and Pistols+Revolvers
-for (i in 1:nrow(mf0)) {
-  mf0$LongGuns[i] <- mf0$Rifles[i] + mf0$Shotguns[i]
-  mf0$Handguns[i] <- mf0$Pistols[i] + mf0$Revolvers[i]
+for (i in 1:nrow(mf)) {
+  mf$LongGuns[i] <- mf$Rifles[i] + mf$Shotguns[i]
+  mf$Handguns[i] <- mf$Pistols[i] + mf$Revolvers[i]
 }
 
 # create long dataframe
-mf0 <- mf0 %>%
+mf <- mf %>%
   gather(key = "FirearmType", value = n, 2:7)
 
-colnames(mf0)[5] <- "NumFirearms"
+colnames(mf)[5] <- "NumFirearms"
 
-mf0 %>%
+mf %>%
   select(Year, LongGuns, Handguns, FirearmType, NumFirearms) %>%
   filter(FirearmType != "Firearms" & FirearmType != "Misc..Firearms1") %>% 
   ggplot(aes(Year, NumFirearms, fill = FirearmType)) +
@@ -251,7 +251,9 @@ mf0 %>%
   scale_fill_manual(values = c("firebrick3", "antiquewhite2", 
                                "deepskyblue4", "cadetblue3")) +
   scale_x_continuous(breaks = seq(1986, 2014, 4)) + pd.theme +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+        legend.position = "bottom",
+        strip.background = element_rect(fill = NULL, color = "black")) +
   labs(title = "Firearms Manufacturing by Type, 1986-2014",
        x = "", y = "number of firearms manufactured")
 
