@@ -44,9 +44,9 @@ Looking at categories showing broad increases over time: these include all class
 
 ![Historical-Firearms-Manufacturing-01](indd/assets/Historical-Firearms-Manufacturing-01.jpg)
 
-How do some of the Firearm Types manufactured look, more specificaly? 
+Generally across all firearm types, it appears production has increased overall, or increased to near peak levels of the past. How do some of the Firearm Types manufactured look, more specifically? Are there more of a certain type than another? 
 
-![facet-FirearmsManufacturing](R_plots/facet-FirearmsManufacturing.png)
+![facet-FirearmsManufacturing](indd/assets/facet-FirearmsManufacturing-02.jpg)
 
 
 # Works Cited
