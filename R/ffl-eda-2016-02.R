@@ -32,7 +32,7 @@ summary(perCap16$perCapitaFFL)
 #   3.687  19.430  26.100  31.170  38.180 104.700 
 
 # In each state, there is a mean of 31 FFLs per 100k residents.
-# that factors out to 1 firearms dealer for ever 3226 residents. 
+# that factors out to 1 firearms dealer for every 3226 residents. 
 # Are there more in certain states than others? 
 # And what factors might influence why there would or wouldnt be more?
 
@@ -68,7 +68,7 @@ perCap16 %>%
                          high = "coral4",
                          midpoint = 52, guide = F) +
     scale_y_discrete(limits = c(0, 10, 25, 50, 75, 100, 125)) +
-    labs(title = "",
+    labs(title = "2016: FFLs by State (per 100k residents)",
          x = "", y = "number of licenses per 100k residents") +
     pd.theme +
     theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 10))
@@ -176,13 +176,34 @@ perCap16 %>%
   arrange(desc(POPESTIMATE2016)) %>%
 ggplot(aes(reorder(NAME, desc(POPESTIMATE2016)), POPESTIMATE2016, fill = POPESTIMATE2016)) +
   geom_bar(stat = "identity") +
-  scale_fill_gradient2(low = "deepskyblue3",
+  scale_fill_gradient2(low = "deepskyblue4",
                        mid = "antiquewhite1",
-                       high = "coral3", midpoint = 15000000, guide = F) +
+                       high = "coral4", midpoint = 15000000, guide = F) +
+  scale_y_discrete(limits = c(0, 10000000, 20000000, 30000000, 40000000)) +
   pd.theme +
   theme(axis.text.x = element_text(angle = 45, size = 9.5, hjust = 1, vjust = 1,
                                    lineheight = 1.5)) +
   labs(title = "2016: US Census Population ~ State", x = "", y = "", fill = "")
+
+
+# bar plot of population/100k by state ----------------------------------------
+
+summary(perCap16$perCapPop)
+summary(perCap16$POPESTIMATE2016)
+
+perCap16 %>%
+  arrange(desc(perCapPop)) %>%
+  ggplot(aes(reorder(NAME, desc(perCapPop)), perCapPop, fill = perCapPop)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "coral4", midpoint = 200, guide = F) +
+  scale_y_discrete(limits = c(0, 100, 200, 300, 425)) +
+  pd.theme +
+  theme(axis.text.x = element_text(angle = 45, size = 9.5, hjust = 1, vjust = 1,
+                                   lineheight = 1.5)) +
+  labs(title = "2016: US Census Population ~ State (per capita)", 
+       y = "population / 100k", x = "", fill = "")
 
 # map of population by state --------------------------------------------------
 ggplot(perCapitaMap, aes(lon, lat, group = group, fill = POPESTIMATE2016)) +
@@ -201,6 +222,19 @@ ggplot(perCapitaMap, aes(lon, lat, group = group, fill = POPESTIMATE2016)) +
 # and the number of Federal Firearms License holders.
 # Two new rank variables can be created to specifically look at this possibility.
 # Or first - a scatterplot.
+
+# map of per capita population by state
+ggplot(perCapitaMap, aes(lon, lat, group = group, fill = perCapPop)) +
+  geom_polygon() +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "coral4", midpoint = 200) +
+  coord_map("polyconic") + pd.theme +
+  theme(panel.grid = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_text(size = 12)) +
+  labs(title = "2016: US Census Population ~ State", 
+       x = "", y = "", fill = "population")
 
 # Pattern? : FFLs by Population -----------------------------------------------
 
