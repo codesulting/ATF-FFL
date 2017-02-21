@@ -20,7 +20,7 @@ library(rgdal)
 
 # This is FFL counts per 100k residents:
 # A merging of 2016 ATF-FFL data and 2016 US Census Data.
-perCapita.16 <- read.csv("~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv")
+perCapita.16 <- read.csv("~/GitHub/ATF-FFL/data/ffl-2016-perCapita.csv")
 str(perCapita.16)
 
 # data: National Firearms Act registration by state ---------------------------
@@ -30,7 +30,7 @@ str(perCapita.16)
 # and details counts of firearms registrations by type by state.
 # Variables: Any Other Weapon, Destructive Device, Machine Gun, Silencer, Rifle, Shotgun
 
-reg.by.state <- read.csv("~/Documents/ATF-FFL/data/commerce/08-registrastion-by-state-V2.csv",
+reg.by.state <- read.csv("~/Documents/ATF-FFL/data/commerce/08-registration-by-state.csv",
                                   stringsAsFactors = T)
 
 # add month and year variables to registration data
@@ -81,7 +81,7 @@ perCap(registered.pop$MachineGun)
 perCap(registered.pop$DestructiveDevice)
 
 # for (i in 27:33) {
-#    registered.pop <- registered.pop %>% 
+#   registered.pop <- registered.pop %>% 
 #        mutate(paste0(colnames(registered.pop[i]), ".per100k") = perCap(registered.pop[, i]))
 # }
 
@@ -96,24 +96,16 @@ registered.pop$Rifle.per100k <- perCap(registered.pop$Rifle)
 registered.pop$Shotgun.per100k <- perCap(registered.pop$Shotgun)
 registered.pop$Total.per100k <- perCap(registered.pop$Total)
 
+# add population/100k variable
+registered.pop <- registered.pop %>%
+  mutate(Pop100k = POPESTIMATE2016 / 100000)
+
 # write.csv(registered.pop, file = "~/Documents/ATF-FFL/data/2016-firearms-per100k.csv", row.names = F)
 
 # Exploratory Plots -----------------------------------------------------------
 
-# define a theme for plotting
-# modifies theme_minimal() with type set in Gill Sans
-# and italic axis titles in Times
-pd.theme <- theme_minimal(base_size = 14, base_family = "GillSans") +
-  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
-
-pd.classic <- theme_classic(base_size = 14, base_family = "GillSans") +
-  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
+# load custom plot themes
+source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
 
 # raw counts of Destructive Devices -------------------------------------------
 
@@ -125,35 +117,287 @@ reg.by.state %>% arrange(desc(DestructiveDevice)) %>%
   geom_point() +
   pd.theme + coord_flip()
 
-
 # plot per 100k observations of registered firearms ---------------------------
 
 # total firearms per capita
 registered.pop %>% arrange(desc(Total.per100k)) %>%
   ggplot(aes(reorder(NAME, Total.per100k), Total.per100k, fill = Total.per100k)) +
   geom_bar(stat = "identity") +
-  scale_fill_gradient(low = "steelblue3",
-                      high = "sienna3") +
+  scale_fill_gradient2(low = "deepskyblue4",
+                      mid = "antiquewhite1",
+                      high = "firebrick3", midpoint = 10000) +
   pd.theme + coord_flip() +
   theme(legend.position = "right") +
-  labs(x = "", y = "Registered Firearms per 100k residents", fill = "")
+  labs(x = "", y = "Registered Firearms per 100k residents", fill = "Registered\nFirearms",
+       title = "2016 National Firearms Act: Total Registered Weapons ~ State (per 100k residents)")
 
-# filter out per capita licensed firearms
+# total firearms per capita, color fill with state population
+ggplot(registered.pop, aes(reorder(NAME, Total.per100k), Total.per100k, fill = POPESTIMATE2016)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "firebrick3", midpoint = 20000000) +
+  pd.theme + coord_flip() +
+  theme(legend.position = "right") +
+  labs(x = "", y = "Registered Firearms per 100k residents", fill = "Population",
+       title = "2016 National Firearms Act: Total Registered Weapons ~ State (per 100k residents)")
+
+
+# filter for per capita licensed firearms
 firearms.perCapita <- registered.pop %>%
-  select(NAME, POPESTIMATE2016, OtherWeapon.per100k, DestructiveDevice.per100k,
+  select(NAME, POPESTIMATE2016, Pop100k, OtherWeapon, DestructiveDevice, MachineGun, Silencer,
+         Rifle, Shotgun, Total, OtherWeapon.per100k, DestructiveDevice.per100k,
          MachineGun.per100k, Silencer.per100k, Rifle.per100k, Shotgun.per100k, Total.per100k)
 
+# plot: per capita Destructive Devices
 ggplot(firearms.perCapita, aes(reorder(NAME, DestructiveDevice.per100k), DestructiveDevice.per100k,
-                               fill = DestructiveDevice.per100k)) +
+                               fill = POPESTIMATE2016)) +
   geom_bar(stat = "identity") +
-  scale_fill_gradient(low = "steelblue",
-                      high = "sienna3") +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "firebrick3", midpoint = 20000000) +
   pd.theme + coord_flip() +
   theme(legend.position = "right") +
-  labs(x = "", y = "Destructive Devices per 100k residents", fill = "")
-
+  labs(x = "", y = "Registered Destructive Devices per 100k residents", fill = "Population",
+       title = "2016: Registered Destructive Devices per 100k, by State")
 
 # Wyoming is off the chart. Per 100k statistics for Destructive Devices actually eclipses the 
 # actual number, and population of the state. The actual rate is about 20.6% - 
-# 1 in 5 people in Wyoming have a Destructive Device.  
+# 1 in 5 people in Wyoming have a Destructive Device.
+
+# plot: per capita Machine Guns
+ggplot(firearms.perCapita, aes(reorder(NAME, MachineGun.per100k), MachineGun.per100k,
+                               fill = POPESTIMATE2016)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "firebrick3", midpoint = 20000000) +
+  pd.theme + coord_flip() +
+  theme(legend.position = "right") +
+  labs(x = "", y = "Registered Machine Guns per 100k", fill = "Population",
+       title = "2016: Registered Machine Guns per 100k, by State")
+
+# Over 1000 machine guns per 100k residents in Connecticut
+
+# plot: registered Silencers per 100k
+ggplot(firearms.perCapita, aes(reorder(NAME, Silencer.per100k), Silencer.per100k,
+                               fill = POPESTIMATE2016)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "firebrick3", midpoint = 20000000) +
+  pd.theme + coord_flip() +
+  theme(legend.position = "right") +
+  labs(x = "", y = "Registered Silencers per 100k", fill = "Population",
+       title = "2016: Registered Silencers per 100k, by State")
+
+# keep it quiet in Idaho
+
+# plot: Rifles per 100k
+ggplot(firearms.perCapita, aes(reorder(NAME, Rifle.per100k), Rifle.per100k,
+                               fill = POPESTIMATE2016)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "firebrick3", midpoint = 20000000) +
+  pd.theme + coord_flip() +
+  theme(legend.position = "right") +
+  labs(x = "", y = "Registered Rifles per 100k", fill = "Population",
+       title = "2016: Registered Rifles per 100k, by State")
+
+# New Hampshire lives free
+
+# plot: Shotgun per 100k
+ggplot(firearms.perCapita, aes(reorder(NAME, Shotgun.per100k), Shotgun.per100k,
+                               fill = POPESTIMATE2016)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "firebrick3", midpoint = 20000000) +
+  pd.theme + coord_flip() +
+  theme(legend.position = "right") +
+  labs(x = "", y = "Registered Shotguns per 100k", fill = "Population",
+       title = "2016: Registered Shotguns per 100k, by State")
+
+# write.csv(firearms.perCapita, file = "~/GitHub/ATF-FFL/data/2016-firearms-per-capita.csv", row.names = F)
+
+# Maps: Registrations by State by Firearm Type --------------------------------
+
+# load map data for US
+usa <- map_data("state")
+
+# test map out
+ggplot(usa, aes(long, lat, group = group)) +
+  geom_path() + coord_map("polyconic") 
+
+# match variable names in FFL data to merge with US map
+colnames(usa) <- c("lon", "lat", "group", "order", "NAME", "subregion")
+
+# capitalize state.name (function from tolower() documentation)
+capwords <- function(s, strict = FALSE) {
+  cap <- function(s) paste(toupper(substring(s, 1, 1)),
+                           {s <- substring(s, 2); if(strict) tolower(s) else s},
+                           sep = "", collapse = " " )
+  sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
+}
+
+usa$NAME <- capwords(usa$NAME)
+
+# merge USA map data with FFL data
+firearms.perCapitaMap <- left_join(firearms.perCapita, usa, by = "NAME")
+summary(as.factor(firearms.perCapitaMap$subregion))
+# there are 16 'subregions' 
+# eg. long island, main, staten island, manhattan, nantucket, north, chesapeake
+
+# Map with Per Capita FFL data
+# reorder group and order variables from `usa` data
+firearms.perCapitaMap <- firearms.perCapitaMap %>%
+  arrange(group, order)
+
+# Map: Total Firearms Registered ----------------------------------------------
+
+summary(firearms.perCapitaMap$Total.per100k)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 356.6  1007.0  1345.0  1514.0  1682.0 21830.0 
+
+ggplot(firearms.perCapitaMap, aes(lon, lat, group = group, fill = Total.per100k)) +
+  geom_polygon() +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "coral4", midpoint = 21830/2) +
+  coord_map("polyconic") + pd.theme +
+  theme(legend.position = "right",
+        panel.border = element_rect(linetype = "solid", 
+                                    fill = NA, 
+                                    color = "white"),
+        panel.grid = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10, hjust = 1, vjust = 1)) +
+  labs(title = "2016: Total Registered Weapons ~ State (per 100k residents)", 
+       x = "", y = "", fill = "")
+
+# Map: Destructive Devices ----------------------------------------------------
+
+summary(firearms.perCapitaMap$DestructiveDevice.per100k)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  207.9   434.6   677.1   840.4   828.8 20650.0 
+
+
+ggplot(firearms.perCapitaMap, aes(lon, lat, group = group, fill = DestructiveDevice.per100k)) +
+  geom_polygon() +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "coral4", midpoint = 20650.0 / 2) +
+  coord_map("polyconic") + pd.theme +
+  theme(legend.position = "right",
+        panel.border = element_rect(linetype = "solid", 
+                                    fill = NA, 
+                                    color = "white"),
+        panel.grid = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10, hjust = 1, vjust = 1)) +
+  labs(title = "2016: Destructive Devices ~ State (per 100k residents)", 
+       x = "", y = "", fill = "")
+
+# Map: Machine Guns -----------------------------------------------------------
+
+summary(firearms.perCapitaMap$MachineGun.per100k)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  28.7   125.1   166.8   200.5   240.0  1061.0  
+
+ggplot(firearms.perCapitaMap, aes(lon, lat, group = group, fill = MachineGun.per100k)) +
+  geom_polygon() +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "coral4", midpoint = 1061.0  / 2) +
+  coord_map("polyconic") + pd.theme +
+  theme(legend.position = "right",
+        panel.border = element_rect(linetype = "solid", 
+                                    fill = NA, 
+                                    color = "white"),
+        panel.grid = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10, hjust = 1, vjust = 1)) +
+  labs(title = "2016: Registered Machine Guns ~ State (per 100k residents)", 
+       x = "", y = "", fill = "")
+
+# Map: Silencers --------------------------------------------------------------
+
+summary(firearms.perCapitaMap$Silencer.per100k)
+#    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+#   2.745  185.300  296.000  335.800  480.900 1080.000  
+
+ggplot(firearms.perCapitaMap, aes(lon, lat, group = group, fill = Silencer.per100k)) +
+  geom_polygon() +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "coral4", midpoint = 1080 / 2) +
+  coord_map("polyconic") + pd.theme +
+  theme(legend.position = "right",
+        panel.border = element_rect(linetype = "solid", 
+                                    fill = NA, 
+                                    color = "white"),
+        panel.grid = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10, hjust = 1, vjust = 1)) +
+  labs(title = "2016: Silencers ~ State (per 100k residents)", 
+       x = "", y = "", fill = "")
+
+# Map: Rifles -----------------------------------------------------------------
+
+summary(firearms.perCapitaMap$Rifle.per100k)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   4.13   54.43   70.45   73.85   89.31  239.30   
+
+ggplot(firearms.perCapitaMap, aes(lon, lat, group = group, fill = Rifle.per100k)) +
+  geom_polygon() +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "coral4", midpoint = 239.3 / 2) +
+  coord_map("polyconic") + pd.theme +
+  theme(legend.position = "right",
+        panel.border = element_rect(linetype = "solid", 
+                                    fill = NA, 
+                                    color = "white"),
+        panel.grid = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10, hjust = 1, vjust = 1)) +
+  labs(title = "2016: Rifles ~ State (per 100k residents)", 
+       x = "", y = "", fill = "")
+
+# Map: Shotguns  --------------------------------------------------------------
+
+summary(firearms.perCapitaMap$Shotgun.per100k)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   4.34   26.87   35.15   41.73   42.69  170.90  
+
+firearms.perCapitaMap2 <- firearms.perCapitaMap %>%
+  filter(NAME != "Alaska")
+
+summary(firearms.perCapitaMap2$Shotgun.per100k)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#    4.34   26.87   35.15   41.72   42.69  132.90 
+
+ggplot(firearms.perCapitaMap2, aes(lon, lat, group = group, fill = Shotgun.per100k)) +
+  geom_polygon() +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite1",
+                       high = "coral4", midpoint = 132.90  / 2) +
+  coord_map("polyconic") + pd.theme +
+  theme(legend.position = "right",
+        panel.border = element_rect(linetype = "solid", 
+                                    fill = NA, 
+                                    color = "white"),
+        panel.grid = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10, hjust = 1, vjust = 1)) +
+  labs(title = "2016: Registered Shotguns ~ State (per 100k residents)", 
+       x = "", y = "", fill = "")
+
 
