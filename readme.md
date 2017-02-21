@@ -44,6 +44,10 @@ Looking at categories showing broad increases over time: these include all class
 
 ![Historical-Firearms-Manufacturing-01](indd/assets/Historical-Firearms-Manufacturing-01.jpg)
 
+How do some of the Firearm Types manufactured look, more specificaly? 
+
+![facet-FirearmsManufacturing](R_plots/facet-FirearmsManufacturing.png)
+
 
 # Works Cited
 

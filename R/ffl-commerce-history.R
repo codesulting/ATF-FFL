@@ -46,7 +46,9 @@ commas <- function(x) {
 FFLs$n <- commas(FFLs$n)
 colnames(FFLs)[3] <- "FFL.Rate"
 
-# Plot: Tufte Style sparklines for historic FFL data --------------------------
+# Exhibit 10: Federal Firearms Licenses Total 1975-2015 -----------------------
+
+# Plot: Tufte Style sparklines for historic FFL data 
 # http://motioninsocial.com/tufte/#range-frame-plot
 
 # load custom themes
@@ -157,13 +159,103 @@ ggplot(manufactured.firearms, aes(Year, NumFirearms, group = FirearmType)) +
   geom_text(data = ends, aes(label = FirearmType), hjust = 0, nudge_x = 4, 
             family = "GillSans", size = 3) +
   expand_limits(x = max(FFLs$Year) + (0.25 * (max(FFLs$Year) - min(FFLs$Year)))) +
-  scale_x_continuous(breaks = seq(1975, 2015, 5)) +
+  scale_x_continuous(breaks = seq(1986, 2014, 4)) +
   scale_y_continuous(expand = c(0.25, 0)) +
   theme_tufte(base_size = 10, base_family = "GillSans") +
   theme(axis.title = element_blank(), axis.text.y = element_blank(), 
         axis.ticks = element_blank(), strip.text = element_blank(),
         axis.text.x = element_text(size = 10),
         plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))
+
+# Firearm Manufacturing by Type, common scale
+manufactured.firearms %>%
+  group_by(Year, FirearmType) %>%
+  ggplot(aes(Year, NumFirearms, color = FirearmType)) +
+  geom_freqpoly(stat = "identity") +
+  scale_x_continuous(breaks = seq(1986, 2014, by = 4)) +
+  scale_y_continuous(breaks = seq(0, 12000000, by = 2000000)) +
+  pd.theme
+
+# Firearm Manufacturing by Type, common scale (total removed)
+manufactured.firearms %>%
+  group_by(Year, FirearmType) %>%
+  filter(FirearmType != "Firearms" & FirearmType != "Misc..Firearms1") %>%
+  ggplot(aes(Year, NumFirearms, color = FirearmType)) +
+  geom_freqpoly(stat = "identity", size = 1) +
+  scale_color_manual(values = c("firebrick3", "antiquewhite2", 
+                                "deepskyblue4", "cadetblue3")) +
+  scale_x_continuous(breaks = seq(1986, 2014, by = 1)) + pd.theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  labs(title = "Firearms Manufacturing by Type, 1986-2014",
+       x = "", y = "number of firearms")
+
+levels(as.factor(manufactured.firearms$FirearmType))
+manufactured.firearms$FirearmType <- factor(manufactured.firearms$FirearmType)
+summary(manufactured.firearms$FirearmType)
+
+# What are there more of? 
+# Pistols vs. Rifles
+manufactured.firearms %>%
+  group_by(Year, FirearmType) %>%
+  filter(FirearmType == "Pistols" | FirearmType == "Rifles") %>%
+  ggplot(aes(Year, NumFirearms, color = FirearmType)) +
+  geom_freqpoly(stat = "identity", size = 1.1) +
+  scale_color_manual(values = c("firebrick3", "deepskyblue4")) +
+  scale_x_continuous(breaks = seq(1986, 2014, by = 1)) + pd.theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  labs(title = "Firearms Manufacturing: Pistols vs. Rifles, 1986-2014",
+       x = "", y = "number of firearms")
+
+# What are there more of? 
+# Pistols vs. Shotguns
+manufactured.firearms %>%
+  group_by(Year, FirearmType) %>%
+  filter(FirearmType == "Pistols" | FirearmType == "Shotguns") %>%
+  ggplot(aes(Year, NumFirearms, color = FirearmType)) +
+  geom_freqpoly(stat = "identity", size = 1.1) +
+  scale_color_manual(values = c("firebrick3", "cadetblue3")) +
+  scale_x_continuous(breaks = seq(1986, 2014, by = 1)) + pd.theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  labs(title = "Firearms Manufacturing: Pistols vs. Shotguns, 1986-2014",
+       x = "", y = "number of firearms")
+
+# What happens when combining Rifles and Shotguns vs Pistols and Revolvers? ---
+# create two broad categories: Handguns and Long Guns
+
+# read in Firearms Manufacturing Data
+mf0 <- read.csv("~/GitHub/ATF-FFL/data/00-commerce/01-manufacturing.csv", stringsAsFactors = F)
+
+# remove commas from columns 2 through 7
+for (i in 2:ncol(mf0)) {
+  mf0[, i] <- commas(mf0[, i])
+}
+
+# sum each observation by year of Rifles+Shotguns and Pistols+Revolvers
+for (i in 1:nrow(mf0)) {
+  mf0$LongGuns[i] <- mf0$Rifles[i] + mf0$Shotguns[i]
+  mf0$Handguns[i] <- mf0$Pistols[i] + mf0$Revolvers[i]
+}
+
+# create long dataframe
+mf0 <- mf0 %>%
+  gather(key = "FirearmType", value = n, 2:7)
+
+colnames(mf0)[5] <- "NumFirearms"
+
+mf0 %>%
+  select(Year, LongGuns, Handguns, FirearmType, NumFirearms) %>%
+  filter(FirearmType != "Firearms" & FirearmType != "Misc..Firearms1") %>% 
+  ggplot(aes(Year, NumFirearms, fill = FirearmType)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ FirearmType, nrow = 2) +
+  scale_fill_manual(values = c("firebrick3", "antiquewhite2", 
+                               "deepskyblue4", "cadetblue3")) +
+  scale_x_continuous(breaks = seq(1986, 2014, 4)) + pd.theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  labs(title = "Firearms Manufacturing by Type, 1986-2014",
+       x = "", y = "number of firearms manufactured")
+
+# Exhibit 3: Firearms Imports 1986-2015 ---------------------------------------
 
 
 
