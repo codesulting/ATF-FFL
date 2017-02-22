@@ -52,7 +52,6 @@ rownames(house) <- 1:50
 
 commerce.FFL.total <- read.csv("~/Documents/ATF-FFL/data/commerce/10-FFL-total.csv")
 
-
 # Per Capita FFLs -------------------------------------------------------------
 
 # 1. find monthly average of FFLs per state

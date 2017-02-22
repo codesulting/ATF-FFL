@@ -29,7 +29,6 @@ colnames(geo)[4] <- "County.FFL"
 
 # wrangle: Wyoming ------------------------------------------------------------
 
-
 # filter for Wyoming
 wy.geo <- geo %>%
   filter(PremiseState == "WY") %>%
