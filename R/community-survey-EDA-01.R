@@ -111,19 +111,80 @@ industryPerCapita <- industry %>%
          otherPC = perCap2015(ind.13.OtherServices),
          publicAdminPC = perCap2015(ind.14.PublicAdministration))
 
+# Bind FFL data
+industryPerCapita <- left_join(industryPerCapita, ffl, by = "NAME")
+
 
 # plot workforce per 100k population 
-
 summary(industryPerCapita$workforcePC)
-#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#     Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #   40110   45200   47400   47430   50200   53630
+
+53630/2
+# 26815
 
 ggplot(industryPerCapita, aes(reorder(NAME, workforcePC), workforcePC, 
                      fill = workforcePC)) +
   geom_bar(stat = "identity") + 
-  scale_fill_gradient2(low = "firebrick4",
-                       mid = "antiquewhite1",
-                       high = "cadetblue3", midpoint = 9025000) +
-  labs(title = "Total Workforce Population ~ State", x = "", 
+  scale_fill_gradient(low = "antiquewhite1", high = "cadetblue") +
+  scale_y_discrete(limits = c(0, 10000, 20000, 30000, 40000, 50000)) + 
+  labs(title = "Total Workforce Population ~ State, per 100k population", x = "", 
        y = "workforce population aged 16+", fill = "") +
   pd.theme + coord_flip()
+
+# plot agriculture Per Capita vs FFL per capita
+ggplot(industryPerCapita, aes(agriculturePC, perCapitaFFL, label = NAME)) +
+  geom_point() + 
+  geom_text(size = 3, position = "jitter", 
+            alpha = 0.75, hjust = -0.1, vjust = 1,
+            check_overlap = T, family = "GillSans") +
+  expand_limits(x = c(0, 7000)) +
+  labs(title = "FFLs ~ Industry Population (Agricultural, Forestry, Hunting, Mining - per 100k)", 
+       x = "per capita FFLs", 
+       y = "per capita agricultural...workforce population", fill = "") +
+  pd.classic
+
+# This appears to be significant.
+
+# plot construction Per Capita vs FFL per capita
+ggplot(industryPerCapita, aes(constructionPC, perCapitaFFL, label = NAME)) +
+  geom_point() + 
+  geom_text(size = 3, position = "jitter", 
+            alpha = 0.75, hjust = -0.1, vjust = 1,
+            check_overlap = T, family = "GillSans") +
+  expand_limits(x = c(0, 6000)) +
+  labs(title = "FFLs ~ Industry Population (Construction - per 100k)", 
+       x = "per capita FFLs", 
+       y = "per capita construction workforce population", fill = "") +
+  pd.classic
+
+# select only per capita observations
+industryPerCapita <- industryPerCapita %>%
+  select(ind.GEO.id2, NAME, Pop2015, 
+         workforcePC, agriculturePC, constructionPC, manufacturingPC,
+         wholesalePC, retailPC, transportationPC, informationPC,
+         financePC, pro.scientificPC, educationPC, artsPC, otherPC, 
+         publicAdminPC, perCapitaFFL)
+
+# create a long dataframe
+indPC <- industryPerCapita %>%
+  gather(key = Industry, value = Pop2015, 4:17)
+
+colnames(indPC)[6] <- "PerCapIndustry"
+indPC$Industry <- gsub("PC", "", indPC$Industry)
+indPC$Industry <- gsub("publicAdmin", "Public Administration", indPC$Industry)
+
+indPC %>% group_by(Industry) %>%
+  filter(Industry != "workforce") %>%
+  ggplot(aes(PerCapIndustry, perCapitaFFL, label = NAME)) +
+  geom_point(size = 1, alpha = 0.65) +
+  geom_text(size = 2.25, position = "jitter", 
+            alpha = 0.75, hjust = 1, vjust = 1,
+            check_overlap = T, family = "GillSans") +
+  facet_wrap(~ Industry, scales = "free_x", nrow = 3) + pd.theme +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black"),
+        axis.text = element_text(size = 6),
+        axis.title = element_text(size = 8)) +
+  labs(title = "FFLs ~ Workforce Industry Population, per 100k",
+       x = "FFLs per capita", y = "workforce population")
