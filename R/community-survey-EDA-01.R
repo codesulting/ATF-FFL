@@ -19,7 +19,7 @@ acs <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-all-data.csv", stringsAsFactors 
 
 # individual datasets to explore
 education <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-education.csv", stringsAsFactors = F)
-finance <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-education.csv", stringsAsFactors = F)
+finance <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-finance.csv", stringsAsFactors = F)
 industry <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-industry.csv", stringsAsFactors = F)
 working.class <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-working-class.csv", stringsAsFactors = F)
 
@@ -53,9 +53,7 @@ colnames(pop) <- c("NAME",
                    "Pop2013", "Pop2014", "Pop2015", "Pop2016")
 
 rownames(pop) <- NULL
-
 write.csv(pop, file = "~/GitHub/ATF-FFL/data/population-compact.csv", row.names = F)
-
 
 # EDA: Industry ---------------------------------------------------------------
 
@@ -114,6 +112,7 @@ industryPerCapita <- industry %>%
 # Bind FFL data
 industryPerCapita <- left_join(industryPerCapita, ffl, by = "NAME")
 
+# Individual Plots: FFLs ~ Industry Category ----------------------------------
 
 # plot workforce per 100k population 
 summary(industryPerCapita$workforcePC)
@@ -132,31 +131,77 @@ ggplot(industryPerCapita, aes(reorder(NAME, workforcePC), workforcePC,
        y = "workforce population aged 16+", fill = "") +
   pd.theme + coord_flip()
 
-# plot agriculture Per Capita vs FFL per capita
+# agriculture Per Capita vs FFL per capita
 ggplot(industryPerCapita, aes(agriculturePC, perCapitaFFL, label = NAME)) +
-  geom_point() + 
+  geom_point(size = 0.75, shape = 1) + 
   geom_text(size = 3, position = "jitter", 
             alpha = 0.75, hjust = -0.1, vjust = 1,
             check_overlap = T, family = "GillSans") +
   expand_limits(x = c(0, 7000)) +
-  labs(title = "FFLs ~ Industry Population (Agricultural, Forestry, Hunting, Mining - per 100k)", 
-       x = "per capita FFLs", 
-       y = "per capita agricultural...workforce population", fill = "") +
+  labs(title = "FFLs ~ Industry Type: Agricultural, Forestry, Hunting, Mining - per 100k", 
+       y = "per capita Federal Firearms Licenses", 
+       x = "per capita workforce population: Agricultural", fill = "") +
   pd.classic
 
-# This appears to be significant.
+# This appears to be significant - 
+# an upward trend, positive correlation.
 
-# plot construction Per Capita vs FFL per capita
+# Construction Per Capita vs FFL per capita
 ggplot(industryPerCapita, aes(constructionPC, perCapitaFFL, label = NAME)) +
-  geom_point() + 
-  geom_text(size = 3, position = "jitter", 
+  geom_point(size = 0.75, shape = 1) + 
+  geom_text(size = 3.1, position = "jitter", 
             alpha = 0.75, hjust = -0.1, vjust = 1,
             check_overlap = T, family = "GillSans") +
-  expand_limits(x = c(0, 6000)) +
-  labs(title = "FFLs ~ Industry Population (Construction - per 100k)", 
-       x = "per capita FFLs", 
-       y = "per capita construction workforce population", fill = "") +
+  labs(title = "FFLs ~ Industry Type: Construction per 100k", 
+       y = "per capita FFLs", 
+       x = "per capita workforce population: Construction", fill = "") +
   pd.classic
+
+# FFLs ~ Public Administration
+ggplot(industryPerCapita, aes(publicAdminPC, perCapitaFFL, label = NAME)) +
+  geom_point(size = 0.75, shape = 1) + 
+  geom_text(size = 3.1, position = "jitter", 
+            alpha = 0.75, hjust = -0.1, vjust = 1,
+            check_overlap = T, family = "GillSans") +
+  labs(title = "FFLs ~ Industry Type: Public Administration per 100k", 
+       y = "per capita FFLs", 
+       x = "per capita workforce population: Public Administration", fill = "") +
+  pd.classic
+
+# FFLs ~ Manufacturing
+ggplot(industryPerCapita, aes(manufacturingPC, perCapitaFFL, label = NAME)) +
+  geom_point(size = 0.75, shape = 1) + 
+  geom_text(size = 3.1, position = "jitter", 
+            alpha = 0.75, hjust = -0.1, vjust = 1,
+            check_overlap = T, family = "GillSans") +
+  labs(title = "FFLs ~ Industry Type: Manufacturing per 100k", 
+       y = "per capita FFLs", 
+       x = "per capita workforce population: Manufacturing", fill = "") +
+  pd.classic
+
+# FFLs ~ Finance
+ggplot(industryPerCapita, aes(financePC, perCapitaFFL, label = NAME)) +
+  geom_point(size = 0.75, shape = 1) + 
+  geom_text(size = 3.1, position = "jitter", 
+            alpha = 0.75, hjust = -0.1, vjust = 1,
+            check_overlap = T, family = "GillSans") +
+  labs(title = "FFLs ~ Industry Type: Finance per 100k", 
+       y = "per capita FFLs", 
+       x = "per capita workforce population: Finance", fill = "") +
+  pd.classic
+
+# FFLs ~ Scientific
+ggplot(industryPerCapita, aes(pro.scientificPC, perCapitaFFL, label = NAME)) +
+  geom_point(size = 0.75, shape = 1) + 
+  geom_text(size = 3.1, position = "jitter", 
+            alpha = 0.75, hjust = -0.1, vjust = 1,
+            check_overlap = T, family = "GillSans") +
+  labs(title = "FFLs ~ Industry Type: Sciences per 100k", 
+       y = "per capita FFLs", 
+       x = "per capita workforce population: Sciences", fill = "") +
+  pd.classic
+
+# FACET plot for all variables ------------------------------------------------
 
 # select only per capita observations
 industryPerCapita <- industryPerCapita %>%
@@ -174,8 +219,23 @@ colnames(indPC)[6] <- "PerCapIndustry"
 indPC$Industry <- gsub("PC", "", indPC$Industry)
 indPC$Industry <- gsub("publicAdmin", "Public Administration", indPC$Industry)
 
+# capwords function
+source("~/GitHub/ATF-FFL/R/capwords.R")
+
+# clean Industry levels for plotting
+levels(as.factor(indPC$Industry))
+indPC$Industry <- capwords(indPC$Industry)
+indPC$Industry <- gsub("Pro.scientific", "Sciences", indPC$Industry)
+indPC$Industry <- gsub("Arts", "Arts, Entertainment, and Accomodation", indPC$Industry)
+indPC$Industry <- factor(indPC$Industry)
+
+write.csv(indPC, file = "~/GitHub/ATF-FFL/data/2015-ACS-industryPerCapita.csv", row.names = F)
+write.csv(industryPerCapita, file = "~/GitHub/ATF-FFL/data/2015-ACS-industryPerCapita-full.csv",
+          row.names = F)
+
+# Facetted Plot for all variables ---------------------------------------------
 indPC %>% group_by(Industry) %>%
-  filter(Industry != "workforce") %>%
+  filter(Industry != "Workforce") %>%
   ggplot(aes(PerCapIndustry, perCapitaFFL, label = NAME)) +
   geom_point(size = 1, alpha = 0.65) +
   geom_text(size = 2.25, position = "jitter", 
@@ -187,4 +247,86 @@ indPC %>% group_by(Industry) %>%
         axis.text = element_text(size = 6),
         axis.title = element_text(size = 8)) +
   labs(title = "FFLs ~ Workforce Industry Population, per 100k",
-       x = "FFLs per capita", y = "workforce population")
+       y = "FFLs per capita", x = "workforce population")
+
+library(extrafont)
+font_import()
+fonttable()
+fonts()
+loadfonts(device="postscript", quiet = T)
+
+# Facetted Plot for Variables of Interest - Edit 01
+indPC %>% group_by(Industry) %>%
+  filter(Industry == "Agriculture" | Industry == "Construction" | 
+           Industry == "Finance" | Industry == "Manufacturing" |
+           Industry == "Sciences" | Industry == "Public Administration" |
+           Industry == "Wholesale" | Industry == "Retail" | 
+           Industry == "Arts, Entertainment, and Accomodation") %>%
+  ggplot(aes(PerCapIndustry, perCapitaFFL, label = NAME)) +
+  geom_point(size = 1, alpha = 0.65) +
+  geom_text(size = 2.25, position = "jitter", 
+            alpha = 0.75, hjust = 1.075, vjust = 1,
+            check_overlap = T, family = "Open Sans") +
+  facet_wrap(~ Industry, scales = "free_x", nrow = 3) + pd.theme +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black"),
+        axis.text = element_text(size = 9),
+        axis.title = element_text(size = 10)) +
+  labs(title = "FFLs ~ Workforce Industry Population, per 100k",
+       y = "FFLs per capita", x = "workforce population")
+
+# Facetted Plot for Variables of Interest - Edit 02
+indPC %>% group_by(Industry) %>%
+  filter(Industry == "Agriculture" | Industry == "Construction" | 
+           Industry == "Finance" | Industry == "Manufacturing" |
+           Industry == "Sciences" | Industry == "Public Administration") %>%
+  ggplot(aes(PerCapIndustry, perCapitaFFL, label = NAME)) +
+  geom_point(size = 1, alpha = 0.65) +
+  geom_text(size = 2.25, position = "jitter", 
+            alpha = 0.75, hjust = 1.075, vjust = 1,
+            check_overlap = T, family = "Gill Sans") +
+  facet_wrap(~ Industry, scales = "free_x", nrow = 3) + pd.theme +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black"),
+        axis.text = element_text(size = 9),
+        axis.title = element_text(size = 10)) +
+  labs(title = "FFLs ~ Workforce Industry Population, per 100k",
+       y = "FFLs per capita", x = "workforce population")
+
+# Facetted Plot for Variables of Interest - Edit 03
+indPC %>% group_by(Industry) %>%
+  filter(Industry == "Agriculture" | 
+           Industry == "Construction" | 
+           Industry == "Finance" |
+           Industry == "Sciences" | 
+           Industry == "Public Administration") %>%
+  ggplot(aes(PerCapIndustry, perCapitaFFL, label = NAME)) +
+  geom_point(size = 1, alpha = 0.65) +
+  geom_text(size = 2.25, position = "jitter", 
+            alpha = 0.75, hjust = 1.075, vjust = 1,
+            check_overlap = T, family = "Gill Sans") +
+  facet_wrap(~ Industry, scales = "free_x", nrow = 5) + pd.theme +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black"),
+        axis.text = element_text(size = 8),
+        axis.title = element_text(size = 10)) +
+  labs(title = "FFLs ~ Workforce Industry Population, per 100k",
+       y = "FFLs per capita", x = "workforce population")
+
+# Facetted Plot for Variables of Interest - Edit 04
+indPC %>% group_by(Industry) %>%
+  filter(Industry == "Agriculture" | Industry == "Construction" | 
+           Industry == "Finance" | Industry == "Manufacturing" |
+           Industry == "Sciences" | Industry == "Workforce") %>%
+  ggplot(aes(PerCapIndustry, perCapitaFFL, label = NAME)) +
+  geom_point(size = 1, alpha = 0.65) +
+  geom_text(size = 2.25, position = "jitter", 
+            alpha = 0.75, hjust = 1.075, vjust = 1,
+            check_overlap = T, family = "Gill Sans") +
+  facet_wrap(~ Industry, scales = "free_x", nrow = 3) + pd.theme +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black"),
+        axis.text = element_text(size = 9),
+        axis.title = element_text(size = 10)) +
+  labs(title = "FFLs ~ Workforce Industry Population, per 100k",
+       y = "FFLs per capita", x = "workforce population")
