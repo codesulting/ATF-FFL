@@ -50,36 +50,37 @@ colnames(finance) <- paste0("total", gsub("fin", "", colnames(finance)))
 colnames(finance)[2] <- "NAME"
 
 # new dataframe with per capita observations
-financePerCapita <- perCap2015(finance[, c(3:15)])
+financePerCapita <- perCap2015(finance[, c(5:15)])
 colnames(financePerCapita) <- gsub("total", "perCapita", colnames(financePerCapita))
 financePerCapita <- cbind(finance, financePerCapita)
 
 financePerCapita <- left_join(financePerCapita, pop, by = "NAME")
 financePerCapita <- left_join(financePerCapita, ffl, by = "NAME")
 
-financePerCapita <- financePerCapita %>%
-  select(-c(1, 3:15, 29:33))
-
-write.csv(financePerCapita, file = "~/GitHub/ATF-FFL/data/2015-ACS-financePerCapita.csv")
+# write.csv(financePerCapita, file = "~/GitHub/ATF-FFL/data/2015-ACS-financePerCapita-all.csv")
 
 # create long dataframe for facet plots ---------------------------------------
 
-finance.long <- financePerCapita %>%
+finance.stack <- financePerCapita %>%
+  select(-c(1, 5:15, 27:31)) %>% 
   gather(key = Category, value = Pop2015, 2:14)
 
-colnames(finance.long)[11] <- "PerCapCategory"
+colnames(finance.stack)[11] <- "PerCapCategory"
+finance.stack$Pop2016.y <- NULL
 
-finance.long$Category <- gsub("perCapita.", "", finance.long$Category)
-finance.long$Category <- gsub("01.OccupiedHousingUnits", "Occupied Housing Units", finance.long$Category)
-finance.long$Category <- gsub("14.MedianHouseholdIncome", "Median Household Income", finance.long$Category)
-finance.long$Category <- gsub("LessThan5000", "Less than 5000", finance.long$Category)
-finance.long$Category <- gsub("to", " to ", finance.long$Category)
-finance.long$Category <- gsub(".or\\.", " or ", finance.long$Category)
+finance.stack$Category <- gsub("perCapita.", "", finance.stack$Category)
+finance.stack$Category <- gsub("total.01.OccupiedHousingUnits", "Occupied Housing Units", finance.stack$Category)
+finance.stack$Category <- gsub("total.14.MedianHouseholdIncome", "Median Household Income", finance.stack$Category)
+finance.stack$Category <- gsub("LessThan5000", "Less than 5000", finance.stack$Category)
+finance.stack$Category <- gsub("to", " to ", finance.stack$Category)
+finance.stack$Category <- gsub(".or\\.", " or ", finance.stack$Category)
 
-levels(as.factor(finance.long$Category))
-finance.long$Category <- factor(finance.long$Category)
+levels(as.factor(finance.stack$Category))
+finance.stack$Category <- factor(finance.stack$Category)
 
-# Barplot of States ~ Median Household Income
+# write.csv(finance.stack, file = "~/GitHub/ATF-FFL/data/2015-ACS-financePerCapita-stack.csv")
+
+# Barplot of States ~ Median Household Income ---------------------------------
 summary(finance$total.14.MedianHouseholdIncome)
 #       Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #     40590   49450   54440   56020   62500   75850
@@ -101,26 +102,50 @@ ggplot(finance,
                        mid = "antiquewhite1",
                        high = "cadetblue", 
                        midpoint = 54440) +
-  scale_y_discrete(limits = seq(0, 80000, 20000)) +
-  pd.theme + coord_flip() +
+  scale_y_discrete(limits = seq(0, 75000, 25000)) +
+  pd.theme + theme(axis.text.x = element_text(angle = 45, 
+                                              hjust = 1, 
+                                              vjust = 1)) +
   labs(title = "Median Household Income ~ State", 
        y = "Median Household Income", x = "", fill = "")
 
-# Plot all Income Brackets ~ FFLs
-finance.long %>% group_by(Category) %>%
-  filter(Category != "Occupied Housing Units") %>%
+# Facet Plot all Income Brackets ~ FFLs ---------------------------------------
+finance.stack %>% group_by(Category) %>%
+  filter(Category != "Occupied Housing Units" & 
+           Category != "Median Household Income") %>%
   ggplot(aes(PerCapCategory, perCapitaFFL, label = NAME)) +
   geom_point(size = 1, alpha = 0.65) +
   geom_text(size = 2.25, position = "jitter", 
             alpha = 0.75, hjust = 1, vjust = 1,
             check_overlap = T, family = "GillSans") +
-  facet_wrap(~ Category, scales = "free_x", nrow = 3) + pd.theme +
+  facet_wrap(~ Category, scales = "free_x") + pd.theme +
   theme(strip.background = element_rect(fill = NA, color = "black"),
         panel.background = element_rect(fill = NA, color = "black"),
         axis.text = element_text(size = 9),
         axis.title = element_text(size = 10)) +
   labs(title = "FFLs ~ Financial Category, per 100k",
        x = "income bracket per capita", y = "FFLs per capita")
+
+# Plot Select Income Brackets ~ FFLs ------------------------------------------
+
+levels(finance.stack$Category)
+
+finance.stack %>% group_by(Category) %>%
+  filter(Category == "Less than 5000" | 
+           Category == "150000 or more" |
+           Category == "") %>%
+  ggplot(aes(PerCapCategory, perCapitaFFL, label = NAME)) +
+  geom_point(size = 1, alpha = 0.65) +
+  geom_text(size = 2.25, position = "jitter", 
+            alpha = 0.75, hjust = 1, vjust = 1,
+            check_overlap = T, family = "GillSans") +
+  facet_wrap(~ Category, scales = "free_x") + pd.theme +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black"),
+        axis.text = element_text(size = 9),
+        axis.title = element_text(size = 10)) +
+  labs(title = "FFLs ~ Financial Category, per 100k",
+       x = "population by income bracket (per 100k households)", y = "FFLs per capita")
 
 
 
