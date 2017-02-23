@@ -2,6 +2,8 @@
 
 ## Rural-Urban Proportions data
 
+### Population Percentage Model
+
 Is there a relationship between per capita FFLs and the percentage of the population living in Rural, Urban Cluster, and Urban Areas? 
 
 ```{r}
@@ -47,7 +49,36 @@ ggplot(m01.fit, aes(perCapitaFFL, reorder(NAME, perCapitaFFL))) + geom_point() +
 
 ![rural-urban-PopPct-01.png](R_plots/00-model-building/rural-urban-PopPct-01.png)
 
+### Land Area Model
 
+How does land area relate to FFLs? 
 
+```{r}
+land.area.m1 <- lm(perCapitaFFL ~ AREA_RURAL + AREA_UC + AREA_UA, data = ffl.16m)
+summary(land.area.m1)
 
+Call:
+lm(formula = perCapitaFFL ~ AREA_RURAL + AREA_UC + AREA_UA, data = ffl.16m)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-25.836  -7.480  -3.275   3.908  60.082 
+
+Coefficients:
+                     Estimate        Std. Error t value       Pr(>|t|)    
+(Intercept) 32.93139291048011  4.09042581520027   8.051 0.000000000249 ***
+AREA_RURAL   0.00000000004510  0.00000000001048   4.303 0.000087093700 ***
+AREA_UC      0.00000000257617  0.00000000479633   0.537       0.593779    
+AREA_UA     -0.00000000275645  0.00000000078212  -3.524       0.000973 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 16.1 on 46 degrees of freedom
+Multiple R-squared:  0.4786,	Adjusted R-squared:  0.4446 
+F-statistic: 14.08 on 3 and 46 DF,  p-value: 0.000001214
+```
+
+And how do the fitted & observed values look for each model? 
+
+![rural-urban-land-poppct.jpg](indd/assets/rural-urban-land-poppct.jpg)
 

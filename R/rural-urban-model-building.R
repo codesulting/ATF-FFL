@@ -48,21 +48,21 @@ write.csv(ffl.16, file = "~/GitHub/ATF-FFL/data/rural-urban-compact.csv", row.na
 
 # Model Building --------------------------------------------------------------
 
-# Population Percentages ------------------------------------------------------
 ffl.16 <- read.csv("~/GitHub/ATF-FFL/data/rural-urban-compact.csv")
 
 ffl.16m <- ffl.16
 rownames(ffl.16m) <- ffl.16m$NAME
+# create key-value df for state names and numbers
+state.key <- ffl.16 %>%
+  select(NAME, STATE)
+
+# Population Percentages ------------------------------------------------------
 
 # Is there a relationship between per capita FFLs and 
 # the percentage of the population living in Rural, Urban Cluster, and Urban Areas? 
 model.01 <- lm(perCapitaFFL ~ POPPCT_RURAL + POPPCT_UC + POPPCT_UA, data = ffl.16m)
 summary(model.01)
 glance(model.01)
-
-# create key-value df for state names and numbers
-state.key <- ffl.16 %>%
-  select(NAME, STATE)
 
 # fitted values
 m01.fit <- augment(model.01) %>%
@@ -124,6 +124,11 @@ ggplot(land.area.m1.fit, aes(perCapitaFFL, reorder(NAME, perCapitaFFL))) + geom_
 
 # Population PCT and Land Area ------------------------------------------------
 
+land.poppct.m1 <- lm(perCapitaFFL ~ AREA_RURAL + AREA_UC + AREA_UA +
+                       POPPCT_RURAL + POPPCT_UC + POPPCT_UA, data = ffl.16m)
+
+summary(land.poppct.m1)
+tidy()
 
 
 
