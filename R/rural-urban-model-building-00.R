@@ -123,12 +123,41 @@ ggplot(land.area.m1.fit, aes(perCapitaFFL, reorder(NAME, perCapitaFFL))) + geom_
 
 
 # Population PCT and Land Area ------------------------------------------------
-
 land.poppct.m1 <- lm(perCapitaFFL ~ AREA_RURAL + AREA_UC + AREA_UA +
                        POPPCT_RURAL + POPPCT_UC + POPPCT_UA, data = ffl.16m)
 
 summary(land.poppct.m1)
-tidy()
+
+land.poppct.m1.fit <- augment(land.poppct.m1) %>%
+  arrange(desc(perCapitaFFL)) %>%
+  left_join(ffl.16m)
+
+lppm1f <- fortify(land.poppct.m1)
+
+# fitted and observed values: Land Area linear model
+ggplot(land.poppct.m1.fit, aes(perCapitaFFL, reorder(NAME, perCapitaFFL))) + geom_point() +
+  geom_point(aes(.fitted, reorder(NAME, perCapitaFFL)), color = "firebrick3", data = land.poppct.m1.fit) +
+  pd.theme + 
+  theme(axis.line = element_line(color = "black")) +
+  labs(y = "", x = "fitted & observed per capita FFLs",
+       title = "Per Capita FFL ~ Land Area + Population Percentages:\nRural + Urban Cluster + Urbanized Area")
+
+
+# Boostrapping Regressions ----------------------------------------------------
+
+library(MASS)
+
+set.seed(2017)
+
+boot.lm01 <- ffl.16m %>% bootstrap(100) %>%
+  do(tidy(lm(perCapitaFFL ~ AREA_RURAL + AREA_UC + POPPCT_RURAL + POPPCT_UC, 
+             data = ., 
+             start = list(k = 1, b = 0))))
+
+head(boot.lm01)
+
+
+
 
 
 
