@@ -249,13 +249,6 @@ model.comparison <- bind_rows(g01, g02, g03) %>%
   mutate(model = 1:3) %>%
   print
 
-
-ggplot(model.comparison, aes(model, adj.r.squared)) +
-  geom_bar(stat = "identity", color = "black", fill = "white") + 
-  pd.theme +
-  theme(axis.line = element_line(color = "black")) +
-  labs(y = "adjusted R-squared")
-
 model.comparison <- glance(rural.urban.01) %>%
   bind_rows(glance(rural.urban.02), 
             glance(rural.urban.03)) %>%
@@ -279,5 +272,86 @@ corrplot(model.01.cor, method = "shade", shade.col = NA,
          addCoef.col = "black", number.cex = 1,
          order = "hclust", mar = c(1, 1, 1, 1))
 
-# Inverse Population Model ----------------------------------------------------
+# Inverse Population Model 01 -------------------------------------------------
 
+
+rural.urban.04 <- lm(perCapitaFFL ~ POPPCT_UC + AREA_RURAL, data = ffl.16)
+summary(rural.urban.04)
+summary(rural.urban.03)
+summary(rural.urban.01)
+
+ffl.16$perCapitaPop <- ffl.16$POPESTIMATE2016/100000
+
+inverse.01 <- lm(perCapitaFFL ~ I(1/POPESTIMATE2016), data = ffl.16)
+inverse.02 <- lm(perCapitaFFL ~ I(1/perCapitaPop) + POPPCT_UC + AREA_RURAL, data = ffl.16)
+summary(inverse.02)
+summary(inverse.01)
+
+par(mfrow = c(2, 2))
+plot(inverse.02)
+plot(inverse.01)
+
+i02.fit <- augment(inverse.02)
+
+# histogram of residuals
+ggplot(i02.fit, aes(.resid)) +
+  geom_histogram(binwidth = 8, color = "black", fill = "white") +
+  pd.theme + theme(axis.line = element_line(color = "black")) +
+  labs(title = "Distribution of Residuals - lm `inverse.02`")
+
+ggplot(ffl.16, aes(perCapitaPop, perCapitaFFL)) +
+  geom_point()
+
+i02.fit <- i02.fit %>%
+  mutate(perCapitaPop = I.1.perCapitaPop. * 100000)
+
+ggplot(i02.fit, aes(perCapitaFFL, I.1.perCapitaPop.)) +
+  geom_point() +
+  geom_smooth()
+
+ggplot(ffl.16, aes(POPESTIMATE2016, perCapitaFFL, label = NAME)) +
+  geom_point() +
+  geom_text(aes(POPESTIMATE2016, perCapitaFFL), 
+            hjust = -0.1, vjust = -0.5, 
+            size = 2.25, check_overlap = T) +
+  geom_smooth(method = "lm", formula = y ~ I(1/x), se = F, 
+              size = 0.5, linetype = "dashed") +
+  pd.theme +
+  theme(axis.line = element_line(color = "black")) +
+  labs(x = "population", y = "per capita FFLs",
+       title = "Per Capita FFLs ~ Population")
+
+ggplot(ffl.16, aes(perCapitaPop, perCapitaFFL, label = NAME)) +
+  geom_point() +
+  geom_text(aes(perCapitaPop, perCapitaFFL), 
+            hjust = -0.1, vjust = -0.5, 
+            size = 2.25, check_overlap = T) +
+  geom_smooth(method = "lm", formula = y ~ I(1/x), se = F, 
+              size = 0.5, linetype = "dashed") +
+  pd.theme +
+  theme(axis.line = element_line(color = "black")) +
+  labs(x = "population (in hundreds of thousands)", y = "per capita FFLs",
+       title = "Per Capita FFLs ~ Population")
+
+# Inverse Population Model 02 -------------------------------------------------
+
+inverse.03 <- lm(perCapitaFFL ~ AREA_ST + POP_ST +
+                   POPPCT_RURAL + POPPCT_UC + 
+                   AREAPCT_RURAL + AREAPCT_UC + 
+                   AREA_RURAL + AREA_UC, data = ffl.16)
+
+inverse.04 <- lm(perCapitaFFL ~ AREA_ST +
+                   POPPCT_RURAL + POPPCT_UC +
+                   AREA_RURAL + AREA_UC, data = ffl.16)
+
+summary(inverse.04)
+summary(inverse.03)
+summary(rural.urban.01)
+
+robust.rural <- rlm(perCapitaFFL ~ POPPCT_UC + AREA_RURAL, data = ffl.16)
+summary(robust.rural)
+
+# industry
+
+industry <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-industryPerCapita-full.csv", stringsAsFactors = F)
+rural.urban.industry <- left_join(ffl.16, industry)

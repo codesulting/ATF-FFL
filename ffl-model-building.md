@@ -12,7 +12,7 @@ Could the Land Area of Rural America have an effect on the number of Federal Fir
 
 _note:_ Why look at only at Rural Populations and Land Areas, and not also Urbanized Areas? The US census defines these two as opposites - any land that doesn't fit the population and land area criteria for 'Urban' is by default considered 'Rural'.
 
-### Model 01 - Population and Land Area Features
+## Model 01 - Population and Land Area Features
 
 This first model looks to see if per Capita FFL counts could be explained by: 
 
@@ -125,7 +125,7 @@ Removing large outliers might be revealing the presence of other, (relatively) s
 - What about looking at the strongest explanatory variables from the first model? `POPPCT_UC` & `AREA_RURAL`
 - Would it be beneficial to try a reduced model with only these variables, with a minimally adequate model as a goal?
 
-### Model 03: Further Reductions
+## Model 03: Further Reductions
 
 Before fitting this reduced model, a quick look at these variables against per capita FFL counts.
 
@@ -200,6 +200,46 @@ corrplot(model.01.cor, method = "shade", shade.col = NA,
 ![rural01-corrplot](R_plots/01-model-building/rural01-corrplot.png)
 
 Correlation matrix actually shows some reasonable values. 
+
+## Model 04 - Inversely Proportional
+
+What would happen if adding the roughly _inverse relationship_ between Population and Federal Firearms Licenses that was observed in exploration? 
+
+![perCapitaFFLs-population](R_plots/01-model-building/perCapitaFFLs-Population.png)
+
+Plotting with a function shows that _y = 1/x_ would not be an exact fit, but rather a _very_ general approximation. How does this approximation interact with the previous model? 
+
+
+```{R}
+ffl.16$perCapitaPop <- ffl.16$POPESTIMATE2016/100000
+
+inverse.02 <- lm(perCapitaFFL ~ I(1/perCapitaPop) + POPPCT_UC + AREA_RURAL, data = ffl.16)
+
+summary(inverse.02)
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-34.936  -3.294  -0.661   6.044  35.321 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)    
+(Intercept)       -6.337e-01  3.050e+00  -0.208  0.83632    
+I(1/perCapitaPop)  1.287e+02  4.544e+01   2.832  0.00684 ** 
+POPPCT_UC          1.637e+00  2.471e-01   6.623 3.35e-08 ***
+AREA_RURAL         2.301e-11  7.025e-12   3.275  0.00201 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 10.51 on 46 degrees of freedom
+Multiple R-squared:  0.778,	Adjusted R-squared:  0.7635 
+F-statistic: 53.72 on 3 and 46 DF,  p-value: 4.532e-15
+```
+
+![inverse02-lm](R_plots/01-model-building/inverse02-lm.png)
+
+Again, it seems like the most trouble with fitting these models is the influence of outlier states.
+
+
+
 
 
 
