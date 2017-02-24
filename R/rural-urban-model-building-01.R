@@ -62,7 +62,7 @@ ggplot(ffl.16, aes(perCapitaFFL)) +
 par(mfrow = c(2, 2))
 plot(rural.urban.01)
 
-# plot fitted vs observed
+# plot fitted vs observed BY STATE
 ggplot(ru.01.fit, aes(perCapitaFFL, reorder(.rownames, perCapitaFFL))) + 
   geom_point(size = 2) + pd.theme + 
   geom_errorbarh(aes(xmin = .fitted, xmax = perCapitaFFL), data = ru.01.fit,
@@ -71,6 +71,79 @@ ggplot(ru.01.fit, aes(perCapitaFFL, reorder(.rownames, perCapitaFFL))) +
              color = "firebrick3", size = 2, data = ru.01.fit) +
   labs(y = "", x = "fitted & observed per capita FFLs",
        title = "Per Capita FFL ~ Rural & UrbanCluster Population Percentages + Land Area")
+
+# plot fitted + observed by % of population in Urban Clusters
+ggplot(ru.01.fit, aes(POPPCT_UC, perCapitaFFL, label = .rownames)) + 
+  geom_point() +
+  geom_text(aes(POPPCT_UC, perCapitaFFL), 
+            size = 2, 
+            hjust = -0.1, vjust = -0.1, 
+            check_overlap = T) +
+  geom_point(aes(POPPCT_UC, .fitted, label = .rownames), 
+             color = "firebrick3", shape = 1, size = 2, 
+             data = ru.01.fit) +
+  geom_text(aes(POPPCT_UC, .fitted), 
+            size = 2, color = "firebrick3",
+            hjust = -0.1, vjust = -0.1, 
+            check_overlap = T) +
+  geom_smooth(stat = "smooth", method = "lm", se = F, 
+              color = "deepskyblue3", size = 0.25,
+              linetype = "dashed") +
+  pd.theme +
+  theme(axis.line = element_line(color = "black")) +
+  labs(title = "Fitted and Observed Values: lm `rural.urban.01`",
+       x = "Percentage of Population living in Urban Clusters")
+
+# plot fitted + observed by Rural Land Area
+ggplot(ru.01.fit, aes(log(AREA_RURAL), perCapitaFFL, label = .rownames)) + 
+  geom_point() +
+  geom_text(aes(log(AREA_RURAL), perCapitaFFL), 
+            size = 2, 
+            hjust = -0.1, vjust = -0.1, 
+            check_overlap = T) +
+  geom_point(aes(log(AREA_RURAL), .fitted, label = .rownames), 
+             color = "firebrick3", shape = 5, size = 2, 
+             data = ru.01.fit) +
+  geom_text(aes(log(AREA_RURAL), .fitted), 
+            size = 2, color = "firebrick3",
+            hjust = -0.1, vjust = -0.1, 
+            check_overlap = T) +
+  geom_smooth(method = "lm", se = F, color = "deepskyblue3", 
+              size = 0.25, linetype = "dashed") +
+  pd.theme +
+  theme(axis.line = element_line(color = "black")) +
+  labs(title = "Fitted and Observed Values: lm `rural.urban.01`",
+       x = "log(Rural Land Area)")
+
+
+# plot fitted + observed  
+ggplot(ru.01.fit, aes(POPPCT_UC, perCapitaFFL, label = .rownames)) + 
+  geom_point() +
+  geom_text(aes(POPPCT_UC, perCapitaFFL), 
+            size = 2.65, 
+            hjust = -0.07, vjust = -0.1, 
+            check_overlap = T) +
+  geom_smooth(stat = "smooth", method = "lm", se = F, 
+              color = "deepskyblue3", size = 0.25,
+              linetype = "dashed") +
+  pd.theme +
+  theme(axis.line = element_line(color = "black")) +
+  labs(title = "Per Capita FFLs ~ Percentage of Population in Urban Clusters",
+       x = "Percentage of Population living in Urban Clusters")
+
+# plot observed vs Area Rural
+ggplot(ru.01.fit, aes(log(AREA_RURAL), perCapitaFFL, label = .rownames)) + 
+  geom_point() +
+  geom_text(aes(log(AREA_RURAL), perCapitaFFL), 
+            size = 2.65, 
+            hjust = -0.1, vjust = -0.1, 
+            check_overlap = T) +
+  geom_smooth(method = "lm", se = F, color = "deepskyblue3", 
+              size = 0.25, linetype = "dashed") +
+  pd.theme +
+  theme(axis.line = element_line(color = "black")) +
+  labs(title = "Per Capita FFLs by Rural Land Area",
+       x = "log(Rural Land Area)")
 
 # Looking at Residuals vs. Leverage: Alaska, Wyoming, and Delaware 
 # seem to be exerting outsize influence on the model.
@@ -110,18 +183,50 @@ ggplot(ru.02.fit, aes(perCapitaFFL, reorder(.rownames, perCapitaFFL))) +
   labs(y = "", x = "fitted & observed per capita FFLs",
        title = "Per Capita FFL ~ Rural & Urban Cluster Population Percentages + Land Area")
 
-# plot fitted + observed  by 
-ggplot(ru.02.fit, aes(POPPCT_RURAL, perCapitaFFL, label = .rownames)) + geom_point() +
-  geom_text(aes(POPPCT_RURAL, perCapitaFFL), size = 2,
+# plot fitted + observed by POPPCT_UC
+ggplot(ru.02.fit, aes(POPPCT_UC, perCapitaFFL, label = .rownames)) + geom_point() +
+  geom_text(aes(POPPCT_UC, perCapitaFFL), size = 2,
             hjust = -0.1, vjust = -0.1, check_overlap = T) +
-  geom_point(aes(POPPCT_RURAL, .fitted, label = .rownames), 
+  geom_point(aes(POPPCT_UC, .fitted, label = .rownames), 
              color = "firebrick3", shape = 5, size = 2, data = ru.02.fit) +
-  geom_text(aes(POPPCT_RURAL, .fitted), size = 2, color = "firebrick3",
+  geom_text(aes(POPPCT_UC, .fitted), size = 2, color = "firebrick3",
             hjust = -0.1, vjust = -0.1, check_overlap = T) +
-  geom_smooth(stat = "smooth", method = "lm", se = F, color = "deepskyblue3") +
+  geom_smooth(stat = "smooth", method = "lm", se = F, 
+              color = "deepskyblue3", size = 0.5) +
   pd.theme +
   theme(axis.line = element_line(color = "black")) +
   labs(title = "Fitted and Observed Values: lm `rural.urban.02`",
-       x = "Rural Population Percentage")
+       x = "Percentage of Population living in Urban Clusters")
+
+# plot fitted + observed vs Area Rural
+ggplot(ru.02.fit, aes(log(AREA_RURAL), perCapitaFFL, label = .rownames)) + geom_point() +
+  geom_text(aes(log(AREA_RURAL), perCapitaFFL), size = 2,
+            hjust = -0.1, vjust = -0.1, check_overlap = T) +
+  geom_point(aes(log(AREA_RURAL), .fitted, label = .rownames), 
+             color = "firebrick3", shape = 5, size = 2, data = ru.02.fit) +
+  geom_text(aes(log(AREA_RURAL), .fitted), size = 2, color = "firebrick3",
+            hjust = -0.1, vjust = -0.1, check_overlap = T) +
+  geom_smooth(stat = "smooth", method = "lm", se = F, 
+              color = "deepskyblue3", size = 0.5) +
+  pd.theme +
+  theme(axis.line = element_line(color = "black")) +
+  labs(title = "Fitted and Observed Values: lm `rural.urban.02`",
+       x = "log(Rural Land Area)")
+
+# reduced model ---------------------------------------------------------------
+
+rural.urban.03 <- lm(perCapitaFFL ~ POPPCT_UC + AREA_RURAL, data = ffl.16)
+summary(rural.urban.03)
+plot(rural.urban.03)
+
+ru.03.fit <- augment(rural.urban.03)
+
+ggplot(ru.03.fit, aes(.resid)) +
+  geom_histogram(binwidth = 8, color = "black", fill = "white") +
+  geom_histogram(aes(.std.resid), binwidth = 1,
+                 color = "black", fill = "red", alpha = 0.25) +
+  pd.theme + theme(axis.line = element_line(color = "black")) +
+  labs(title = "Distribution of Residuals - lm `rural.urban.03`")
+
   
 

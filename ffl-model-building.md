@@ -41,7 +41,7 @@ tidy(rural.urban.01)
 
 Going by `p.value`, the most significant explanatory variables in this case would be:
 
-- Urban Cluster Population Percentage (`POPPCT_UC`) and 
+- Urban Cluster Population Percentage (`POPPCT_UC`)
 - Rural Land Area (`AREA_RURAL`). 
 
 How do the R-squared and fitted values look? 
@@ -114,7 +114,44 @@ Glancing at the summary, there's a better chance that the residuals will be clos
 
 TODO: CREATE TABLE COMPARING MODEL.01 AND MODEL.02
 
-Removing large outliers might be revealing the presence of other, (relatively) smaller outliers.
+Removing large outliers might be revealing the presence of other, (relatively) smaller outliers. 
+
+- What about looking at the strongest explanatory variables from the first model? `POPPCT_UC` & `AREA_RURAL`
+- Would it be beneficial to try a reduced model with only these variables, with a minimally adequate model as a goal?
+
+Before fitting this reduced model, a quick look at these variables against per capita FFL counts.
+
+![FFLs ~ POPPCT_UC](R_plots/01-model-building/rural01-obs-POPPCT_UC.png)
+
+![FFLs ~ AREA_RURAL](R_plots/01-model-building/rural01-obs-AREA_RURAL.png)
+
+Visually (and very roughly), `POPPCT_UC` appears more likely than `AREA_RURAL` to be able to describe per capita FFLs in a linear model.
+
+```{R}
+rural.urban.03 <- lm(perCapitaFFL ~ POPPCT_UC + AREA_RURAL, data = ffl.16)
+summary(rural.urban.03)
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-33.858  -5.848   0.395   6.428  35.333 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -1.480e+00  3.254e+00  -0.455  0.65133    
+POPPCT_UC    2.064e+00  2.098e-01   9.840 5.37e-13 ***
+AREA_RURAL   2.463e-11  7.507e-12   3.281  0.00195 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 11.26 on 47 degrees of freedom
+Multiple R-squared:  0.7392,	Adjusted R-squared:  0.7281 
+F-statistic: 66.62 on 2 and 47 DF,  p-value: 1.912e-14
+```
+
+![rural03-lm-plot.png](R_plots/01-model-building/rural03-lm-plot.png)
+
+With the model reduced to these two variables, the Q-Q plot shows the residuals closest to normally distributed out of any of the previous models. Outliers such as Montana and Wyoming still exert influence, but less so from the first model. 
+
+![rural03](R_plots/01-model-building/rural03-hist-resid.png)
 
 
 
