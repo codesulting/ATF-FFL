@@ -41,13 +41,85 @@ tidy(rural.urban.01)
 
 Going by `p.value`, the most significant explanatory variables in this case would be Urban Cluster Population Percentage (`POPPCT_UC`) and Rural Land Area (`AREA_RURAL`). 
 
-How does the R-squared look? 
+How do the R-squared and fitted values look? 
 
 ```{R}
 glance(rural.urban.01)[, c(1:5, 8, 10)]
 # r.squared   adj.r.squared    sigma statistic      p.value      AIC deviance
 # 1 0.8333481     0.8144104 9.306224  44.00469 4.927771e-16 372.5705 3810.656
+
+summary(rural.urban.01)
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-18.4432  -4.7065   0.5332   5.0442  30.2534 
+
+Coefficients:
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)    2.960e+01  1.600e+01   1.851  0.07110 .  
+POPPCT_RURAL   3.944e-01  1.147e-01   3.438  0.00131 ** 
+POPPCT_UC      1.652e+00  2.517e-01   6.565 5.51e-08 ***
+AREAPCT_RURAL -3.011e-01  1.967e-01  -1.531  0.13320    
+AREAPCT_UC    -4.606e+00  1.598e+00  -2.883  0.00612 ** 
+AREA_RURAL     2.713e-11  6.817e-12   3.981  0.00026 ***
+AREA_UC       -3.726e-09  1.989e-09  -1.873  0.06791 .  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 9.052 on 43 degrees of freedom
+Multiple R-squared:  0.8459,	Adjusted R-squared:  0.8244 
+F-statistic: 39.34 on 6 and 43 DF,  p-value: 6.618e-16
 ```
+
+![histogram of residuals 01](R_plots/01-model-building/rural01-hist-resid.png)
+
+I'd like to say the distribution of residuals approaches Normal - except for the outliers in the 30s. 
+
+![lm01 plot](R_plots/01-model-building/rural01-lm-plot.png)
+
+Alaska seems to be exerting a strong influence, as do Wyoming and Delaware. Montana, though, constantly appears as an oultier as well. How much did each of these affect the parameter estimates? 
+
+```{R}
+rural.urban.02 <- update(rural.urban.01, subset = (NAME != "Alaska" & NAME != "Wyoming" & NAME != "Montana"))
+
+summary(rural.urban.02)
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-12.280  -2.828  -0.162   4.012  14.686 
+
+Coefficients:
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)    5.565e+00  1.074e+01   0.518  0.60702    
+POPPCT_RURAL   5.061e-01  8.949e-02   5.655 1.44e-06 ***
+POPPCT_UC      6.580e-01  2.144e-01   3.069  0.00385 ** 
+AREAPCT_RURAL  3.597e-02  1.382e-01   0.260  0.79601    
+AREAPCT_UC    -2.375e+00  1.201e+00  -1.978  0.05483 .  
+AREA_RURAL     3.524e-11  1.361e-11   2.589  0.01336 *  
+AREA_UC       -5.444e-09  1.598e-09  -3.406  0.00151 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 5.72 on 40 degrees of freedom
+Multiple R-squared:  0.8511,	Adjusted R-squared:  0.8288 
+F-statistic:  38.1 on 6 and 40 DF,  p-value: 4.889e-15
+```
+
+Glancing at the summary, there's a better chance that the residuals will be closer to normally distributed.
+
+![histogram of residuals 02](R_plots/01-model-building/rural02-hist-resid.png)
+
+![lm02 plot](R_plots/01-model-building/rural02-lm-plot.png)
+
+TODO: CREATE TABLE COMPARING MODEL.01 AND MODEL.02
+
+Removing large outliers might be revealing the presence of other, (relatively) smaller outliers.
+
+
+
+
+
+
+
+
 
 
 

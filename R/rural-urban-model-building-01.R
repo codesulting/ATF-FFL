@@ -42,6 +42,7 @@ tidy(rural.urban.01)
 glance(rural.urban.01)[, c(1:5, 8, 10)]
 
 ru.01.fit <- augment(rural.urban.01)
+ru.01.fit 
 
 # histogram of residuals
 ggplot(ru.01.fit, aes(.resid)) +
@@ -57,9 +58,32 @@ ggplot(ffl.16, aes(perCapitaFFL)) +
   theme(axis.line = element_line(color = "black")) +
   labs(title = "Distribution of FFLs per capita, by state")
 
-hist(ru.01.fit$.resid)
+# plot of model 01
+par(mfrow = c(2, 2))
+plot(rural.urban.01)
 
+# Looking at Residuals vs. Leverage: Alaska, Wyoming, and Delaware 
+# seem to be exerting outsize influence on the model.
+# How much of an influence can be observed? 
 
+ffl.16.2 <- ffl.16 %>%
+  filter(NAME != "Alaska" & NAME != "Wyoming" & NAME != "Delaware")
 
+rural.urban.02 <- update(rural.urban.01, subset = NAME != "Alaska" & 
+                           NAME != "Wyoming" & 
+                           NAME != "Montana")
+
+summary(rural.urban.02)
+summary(rural.urban.01)
+
+tidy(rural.urban.02)
+ru.02.fit <- augment(rural.urban.02)
+
+# plot model 02 residuals
+ggplot(ru.02.fit, aes(.resid)) + pd.theme +
+  geom_histogram(binwidth = 8, color = "black", fill = "white") +
+  theme(axis.line = element_line(color = "black")) +
+  labs(title = "Distibution of Residuals: lm `rural.urban.02`")
+  
 
 
