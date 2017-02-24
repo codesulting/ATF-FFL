@@ -15,11 +15,3 @@ pd.classic <- theme_classic(base_size = 12, base_family = "GillSans") +
         axis.title = element_text(family = "Times", face = "italic", size = 12),
         axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
         axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
-
-pd.pdf <- theme_minimal(base_size = 12, base_family = "Open Sans") +
-  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
-
-pd.pal <- c("deepskyblue4", "antiquewhite1", "firebrick4")
