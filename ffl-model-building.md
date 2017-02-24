@@ -1,84 +1,62 @@
-# Model Bulding
+# Model Building
 
 ## Rural-Urban Proportions data
 
-### Population Percentage Model
+The value that we're looking to explain here is the per capita Federal Firearms License count, by state. Previously, what appeared to be an inverse relationship between a state's population and FFL count was observed. 
 
-Is there a relationship between per capita FFLs and the percentage of the population living in Rural, Urban Cluster, and Urban Areas? 
+Are there characteristics of the population that might also contribute to FFL counts? 
 
-```{r}
-# Population Percentages
-model.01 <- lm(perCapitaFFL ~ POPPCT_RURAL + POPPCT_UC + POPPCT_UA, data = ffl.16m)
-summary(model.01)
+Does the percentage of the population living in Rural Areas play a role? In Urban Clusters? 
 
-Call:
-lm(formula = perCapitaFFL ~ POPPCT_RURAL + POPPCT_UC + POPPCT_UA, 
-    data = ffl.16m)
+Could the Land Area of Rural America have an effect on the number of Federal Firearms Licenses in a given state? 
 
-Residuals:
-    Min      1Q  Median      3Q     Max 
--32.017  -5.475  -1.428   6.889  36.937 
+_note:_ Why look at only at Rural Populations and Land Areas, and not also Urbanized Areas? The US census defines these two as opposites - any land that doesn't fit the population and land area criteria for 'Urban' is by default considered 'Rural'.
 
-Coefficients:
-             Estimate Std. Error t value Pr(>|t|)
-(Intercept)   25052.3    36630.6   0.684    0.497
-POPPCT_RURAL   -250.3      366.3  -0.683    0.498
-POPPCT_UC      -248.6      366.3  -0.679    0.501
-POPPCT_UA      -250.6      366.3  -0.684    0.497
-
-Residual standard error: 12.1 on 46 degrees of freedom
-Multiple R-squared:  0.7055,	Adjusted R-squared:  0.6863 
-F-statistic: 36.74 on 3 and 46 DF,  p-value: 0.000000000002858
+```{R}
+rural.urban.01 <- lm(perCapitaFFL ~ POPPCT_RURAL + POPPCT_UC + AREAPCT_RURAL + AREAPCT_UC + 
+                     AREA_RURAL + AREA_UC, data = ffl.16)
 ```
 
-```{r}
-glance(model.01)
-  r.squared adj.r.squared    sigma statistic              p.value df    logLik      AIC      BIC deviance df.residual
-1  0.705535     0.6863307 12.09853   36.7385 0.000000000002858006  4 -193.5166 397.0332 406.5933 6733.227          46
+This first model looks to see if per Capita FFL counts could be explained by: 
+
+- percentage of population _n_ living in Rural Areas, _n_ < 2,500
+- percentage of population _n_ living in Urban Clusters (2,500 < _n_ < 50,000)
+- percentage of Rural Land Area
+- percentage of Urban Cluster Land Area
+- total Rural Land Area
+- total Urban Cluster Land Area
+
+What do the coefficients for this model look like? 
+
+```{R}
+tidy(rural.urban.01)
+           term      estimate    std.error statistic      p.value
+1   (Intercept)  3.912484e+01 1.559204e+01  2.509284 1.585326e-02
+2  POPPCT_RURAL  4.035331e-01 1.178348e-01  3.424567 1.343717e-03
+3     POPPCT_UC  1.844273e+00 2.363076e-01  7.804543 7.711391e-10
+4 AREAPCT_RURAL -4.634996e-01 1.815600e-01 -2.552872 1.422859e-02
+5    AREAPCT_UC -5.395559e+00 1.584342e+00 -3.405552 1.419769e-03
+6    AREA_RURAL  2.515727e-11 6.923526e-12  3.633592 7.270708e-04
 ```
 
-How do the fitted values look plotted with the observed values?
+Going by `p.value`, the most significant explanatory variables in this case would be Urban Cluster Population Percentage (`POPPCT_UC`) and Rural Land Area (`AREA_RURAL`). 
 
-```{r}
-# observed and fitted by state
-ggplot(m01.fit, aes(perCapitaFFL, reorder(NAME, perCapitaFFL))) + geom_point() +
-  geom_point(aes(.fitted, reorder(NAME, perCapitaFFL)), color = "firebrick3", data = m01.fit) +
-  pd.theme + labs(y = "", x = "fitted & observed per capita FFLs",
-                  title = "Per Capita FFL ~ Population Percentages:\nRural + Urban Cluster + Urbanized Areas")
+How does the R-squared look? 
+
+```{R}
+glance(rural.urban.01)[, c(1:5, 8, 10)]
+# r.squared   adj.r.squared    sigma statistic      p.value      AIC deviance
+# 1 0.8333481     0.8144104 9.306224  44.00469 4.927771e-16 372.5705 3810.656
 ```
 
-![rural-urban-PopPct-01.png](R_plots/00-model-building/rural-urban-PopPct-01.png)
 
-### Land Area Model
 
-How does land area relate to FFLs? 
 
-```{r}
-land.area.m1 <- lm(perCapitaFFL ~ AREA_RURAL + AREA_UC + AREA_UA, data = ffl.16m)
-summary(land.area.m1)
 
-Call:
-lm(formula = perCapitaFFL ~ AREA_RURAL + AREA_UC + AREA_UA, data = ffl.16m)
 
-Residuals:
-    Min      1Q  Median      3Q     Max 
--25.836  -7.480  -3.275   3.908  60.082 
 
-Coefficients:
-                     Estimate        Std. Error t value       Pr(>|t|)    
-(Intercept) 32.93139291048011  4.09042581520027   8.051 0.000000000249 ***
-AREA_RURAL   0.00000000004510  0.00000000001048   4.303 0.000087093700 ***
-AREA_UC      0.00000000257617  0.00000000479633   0.537       0.593779    
-AREA_UA     -0.00000000275645  0.00000000078212  -3.524       0.000973 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-Residual standard error: 16.1 on 46 degrees of freedom
-Multiple R-squared:  0.4786,	Adjusted R-squared:  0.4446 
-F-statistic: 14.08 on 3 and 46 DF,  p-value: 0.000001214
-```
 
-And how do the fitted & observed values look for each model? 
 
-![rural-urban-land-poppct.jpg](indd/assets/rural-urban-land-poppct.jpg)
+
 
