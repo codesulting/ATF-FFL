@@ -29,7 +29,7 @@ rownames(ffl.16) <- ffl.16$NAME
 
 # Model Building --------------------------------------------------------------
 
-# m01 - Do Rural and Urban Cluster Population Percentages and Land Area 
+# mddel 01 - Do Rural and Urban Cluster Population Percentages and Land Area 
 # have a relationship with per capita FFL counts? 
 
 rural.urban.01 <- lm(perCapitaFFL ~ 
@@ -62,9 +62,20 @@ ggplot(ffl.16, aes(perCapitaFFL)) +
 par(mfrow = c(2, 2))
 plot(rural.urban.01)
 
+# plot fitted vs observed
+ggplot(ru.01.fit, aes(perCapitaFFL, reorder(.rownames, perCapitaFFL))) + 
+  geom_point(size = 2) + pd.theme + 
+  geom_errorbarh(aes(xmin = .fitted, xmax = perCapitaFFL), data = ru.01.fit,
+                 color = "gray50", alpha = 0.90, height = 0.70) +
+  geom_point(aes(.fitted, reorder(.rownames, .fitted)), 
+             color = "firebrick3", size = 2, data = ru.01.fit) +
+  labs(y = "", x = "fitted & observed per capita FFLs",
+       title = "Per Capita FFL ~ Rural & UrbanCluster Population Percentages + Land Area")
+
 # Looking at Residuals vs. Leverage: Alaska, Wyoming, and Delaware 
 # seem to be exerting outsize influence on the model.
 # How much of an influence can be observed? 
+# Model 02 --------------------------------------------------------------------
 
 ffl.16.2 <- ffl.16 %>%
   filter(NAME != "Alaska" & NAME != "Wyoming" & NAME != "Delaware")
@@ -85,5 +96,32 @@ ggplot(ru.02.fit, aes(.resid)) + pd.theme +
   theme(axis.line = element_line(color = "black")) +
   labs(title = "Distibution of Residuals: lm `rural.urban.02`")
   
+# plot of model 02
+par(mfrow = c(2, 2))
+plot(rural.urban.02)
 
+# plot fitted vs observed by state
+ggplot(ru.02.fit, aes(perCapitaFFL, reorder(.rownames, perCapitaFFL))) + 
+  geom_point(size = 2) + pd.theme + 
+  geom_errorbarh(aes(xmin = .fitted, xmax = perCapitaFFL), data = ru.02.fit,
+                 color = "gray50", alpha = 0.90, height = 0.70) +
+  geom_point(aes(.fitted, reorder(.rownames, .fitted)), 
+             color = "firebrick3", size = 2, data = ru.02.fit) +
+  labs(y = "", x = "fitted & observed per capita FFLs",
+       title = "Per Capita FFL ~ Rural & Urban Cluster Population Percentages + Land Area")
+
+# plot fitted + observed  by 
+ggplot(ru.02.fit, aes(POPPCT_RURAL, perCapitaFFL, label = .rownames)) + geom_point() +
+  geom_text(aes(POPPCT_RURAL, perCapitaFFL), size = 2,
+            hjust = -0.1, vjust = -0.1, check_overlap = T) +
+  geom_point(aes(POPPCT_RURAL, .fitted, label = .rownames), 
+             color = "firebrick3", shape = 5, size = 2, data = ru.02.fit) +
+  geom_text(aes(POPPCT_RURAL, .fitted), size = 2, color = "firebrick3",
+            hjust = -0.1, vjust = -0.1, check_overlap = T) +
+  geom_smooth(stat = "smooth", method = "lm", se = F, color = "deepskyblue3") +
+  pd.theme +
+  theme(axis.line = element_line(color = "black")) +
+  labs(title = "Fitted and Observed Values: lm `rural.urban.02`",
+       x = "Rural Population Percentage")
+  
 

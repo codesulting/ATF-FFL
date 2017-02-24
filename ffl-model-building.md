@@ -39,7 +39,10 @@ tidy(rural.urban.01)
 6    AREA_RURAL  2.515727e-11 6.923526e-12  3.633592 7.270708e-04
 ```
 
-Going by `p.value`, the most significant explanatory variables in this case would be Urban Cluster Population Percentage (`POPPCT_UC`) and Rural Land Area (`AREA_RURAL`). 
+Going by `p.value`, the most significant explanatory variables in this case would be:
+
+- Urban Cluster Population Percentage (`POPPCT_UC`) and 
+- Rural Land Area (`AREA_RURAL`). 
 
 How do the R-squared and fitted values look? 
 
