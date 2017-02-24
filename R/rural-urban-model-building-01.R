@@ -213,7 +213,7 @@ ggplot(ru.02.fit, aes(log(AREA_RURAL), perCapitaFFL, label = .rownames)) + geom_
   labs(title = "Fitted and Observed Values: lm `rural.urban.02`",
        x = "log(Rural Land Area)")
 
-# reduced model ---------------------------------------------------------------
+# Reduced Model ---------------------------------------------------------------
 
 rural.urban.03 <- lm(perCapitaFFL ~ POPPCT_UC + AREA_RURAL, data = ffl.16)
 summary(rural.urban.03)
@@ -221,6 +221,7 @@ plot(rural.urban.03)
 
 ru.03.fit <- augment(rural.urban.03)
 
+# histogram of residuals
 ggplot(ru.03.fit, aes(.resid)) +
   geom_histogram(binwidth = 8, color = "black", fill = "white") +
   geom_histogram(aes(.std.resid), binwidth = 1,
@@ -228,5 +229,55 @@ ggplot(ru.03.fit, aes(.resid)) +
   pd.theme + theme(axis.line = element_line(color = "black")) +
   labs(title = "Distribution of Residuals - lm `rural.urban.03`")
 
-  
+# plot fitted vs observed BY STATE
+ggplot(ru.03.fit, aes(perCapitaFFL, reorder(.rownames, perCapitaFFL))) + 
+  geom_point(size = 2) + pd.theme + 
+  geom_errorbarh(aes(xmin = .fitted, xmax = perCapitaFFL), data = ru.03.fit,
+                 color = "gray50", alpha = 0.90, height = 0.70) +
+  geom_point(aes(.fitted, reorder(.rownames, .fitted)), 
+             color = "firebrick3", size = 2, data = ru.03.fit) +
+  labs(y = "", x = "fitted & observed per capita FFLs",
+       title = "Per Capita FFL ~ Urban Cluster Population % + Rural Land Area")
+
+# Compare all 3 models --------------------------------------------------------
+
+g01 <- glance(rural.urban.01)
+g02 <- glance(rural.urban.02)
+g03 <- glance(rural.urban.03)
+
+model.comparison <- bind_rows(g01, g02, g03) %>%
+  mutate(model = 1:3) %>%
+  print
+
+
+ggplot(model.comparison, aes(model, adj.r.squared)) +
+  geom_bar(stat = "identity", color = "black", fill = "white") + 
+  pd.theme +
+  theme(axis.line = element_line(color = "black")) +
+  labs(y = "adjusted R-squared")
+
+model.comparison <- glance(rural.urban.01) %>%
+  bind_rows(glance(rural.urban.02), 
+            glance(rural.urban.03)) %>%
+  mutate(model = 1:3) %>%
+  print
+ 
+# check collinearity on first model
+library(rms)
+library(corrplot)
+
+vif(rural.urban.01)
+sqrt(vif(rural.urban.01))
+
+model.01.cor <- ru.01.fit %>%
+  select(3:8) %>%
+  cor(.)
+
+par(mfrow = c(1, 1), family = "GillSans")
+corrplot(model.01.cor, method = "shade", shade.col = NA,
+         tl.col = "gray23", tl.srt = 45, tl.cex = 1, 
+         addCoef.col = "black", number.cex = 1,
+         order = "hclust", mar = c(1, 1, 1, 1))
+
+# Inverse Population Model ----------------------------------------------------
 
