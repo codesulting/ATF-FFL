@@ -1,6 +1,7 @@
-# Model Building
+Model Building
+==============
 
-## Rural-Urban Proportions
+# Rural-Urban Proportions
 
 The value that we're looking to explain here is the per capita Federal Firearms License count, by state. Previously, what appeared to be an inverse relationship between a state's population and FFL count was observed. 
 
@@ -20,7 +21,7 @@ _note:_ Why look at only at Rural Populations and Land Areas, and not also Urban
 - [Model 05](#model-05---robust-regression) - Robust Regression 01
 - TO-DO: Bisquare weighted Robust Regression, Bootstrap Confidence Intervals, describe all this.
 
-## Model 01 - Population and Land Area Features
+# Model 01 - Population and Land Area Features
 
 This first model looks to see if per Capita FFL counts could be explained by: 
 
@@ -62,9 +63,9 @@ glance(rural.urban.01)[, c(1:5, 8, 10)]
 # 1 0.8333481     0.8144104 9.306224  44.00469 4.927771e-16 372.5705 3810.656
 
 summary(rural.urban.01)
-Residuals:
-     Min       1Q   Median       3Q      Max 
--18.4432  -4.7065   0.5332   5.0442  30.2534 
+# Residuals:
+#      Min       1Q   Median       3Q      Max 
+# -18.4432  -4.7065   0.5332   5.0442  30.2534 
 
 Coefficients:
                 Estimate Std. Error t value Pr(>|t|)    
@@ -91,7 +92,7 @@ I'd like to say the distribution of residuals approaches Normal - except for the
 
 Alaska seems to be exerting a strong influence, as do Wyoming and Delaware. Montana, though, constantly appears as an oultier as well. How much did each of these affect the parameter estimates? 
 
-### Model 02: How Influential are the Outliers?
+# Model 02: How Influential are the Outliers?
 
 To measure the influence of the outliers, I removed them and updated the first model.
 
@@ -99,9 +100,9 @@ To measure the influence of the outliers, I removed them and updated the first m
 rural.urban.02 <- update(rural.urban.01, subset = (NAME != "Alaska" & NAME != "Wyoming" & NAME != "Montana"))
 
 summary(rural.urban.02)
-Residuals:
-    Min      1Q  Median      3Q     Max 
--12.280  -2.828  -0.162   4.012  14.686 
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+# -12.280  -2.828  -0.162   4.012  14.686 
 
 Coefficients:
                 Estimate Std. Error t value Pr(>|t|)    
@@ -133,7 +134,7 @@ Removing large outliers might be revealing the presence of other, (relatively) s
 - What about looking at the strongest explanatory variables from the first model? `POPPCT_UC` & `AREA_RURAL`
 - Would it be beneficial to try a reduced model with only these variables, with a minimally adequate model as a goal?
 
-## Model 03: Further Reductions
+# Model 03: Further Reductions
 
 Before fitting this reduced model, a quick look at these variables against per capita FFL counts.
 
@@ -146,9 +147,9 @@ Visually (and very roughly), `POPPCT_UC` appears more likely than `AREA_RURAL` t
 ```{R}
 rural.urban.03 <- lm(perCapitaFFL ~ POPPCT_UC + AREA_RURAL, data = ffl.16)
 summary(rural.urban.03)
-Residuals:
-    Min      1Q  Median      3Q     Max 
--33.858  -5.848   0.395   6.428  35.333 
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+# -33.858  -5.848   0.395   6.428  35.333 
 
 Coefficients:
               Estimate Std. Error t value Pr(>|t|)    
@@ -171,7 +172,7 @@ With the model reduced to these two variables, the Q-Q plot shows the residuals 
 
 ![rural03-fitted-obs](R_plots/01-model-building/rural03-fitted-obs.png)
 
-## Model Comparison
+# Model Comparison
 
 None of the 3 models above are perfect.
 
@@ -209,7 +210,7 @@ corrplot(model.01.cor, method = "shade", shade.col = NA,
 
 Correlation matrix actually shows some reasonable values. Even so, variables can be pared back from the first model given the small amount of explanatory power in most of them. 
 
-## Model 04 - Inversely Proportional
+# Model 04 - Inversely Proportional
 
 What would happen if adding the roughly _inverse relationship_ between Population and Federal Firearms Licenses that was observed in exploration? 
 
@@ -224,9 +225,9 @@ ffl.16$perCapitaPop <- ffl.16$POPESTIMATE2016/100000
 inverse.02 <- lm(perCapitaFFL ~ I(1/perCapitaPop) + POPPCT_UC + AREA_RURAL, data = ffl.16)
 
 summary(inverse.02)
-Residuals:
-    Min      1Q  Median      3Q     Max 
--34.936  -3.294  -0.661   6.044  35.321 
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+# -34.936  -3.294  -0.661   6.044  35.321 
 
 Coefficients:
                     Estimate Std. Error t value Pr(>|t|)    
@@ -254,7 +255,7 @@ Using a Robust Regression method, assigning less weight to outlier values, might
 
 ![perCapitaFFLs-population](R_plots/01-model-building/perCapitaFFLs-Population.png)
 
-## Model 05 - Robust Regression
+# Model 05 - Robust Regression
 
 Before trying out a robust regression, a linear model using the variables:
 
@@ -268,9 +269,9 @@ rr00 <-  lm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + AREA_RURAL + AREA_UC, data
 
 summary(rr00)
 
-Residuals:
-    Min      1Q  Median      3Q     Max 
--24.667  -3.964   0.251   4.098  32.939 
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+# -24.667  -3.964   0.251   4.098  32.939 
 
 Coefficients:
                Estimate Std. Error t value Pr(>|t|)    
@@ -295,9 +296,11 @@ Looking at the QQ plot, it appears the residuals are normally distributed, beyon
 - Wyoming
 - Hawaii
 
-These are the states that appear to be the largest outliers - with Alaska seeming to exert the strongest influence over the model. 
+These are the states that appear to be the largest outliers - but
 
-How would the robust regression, using Huber weights, handle these outliers? 
+- Alaska 
+
+seems to exert the strongest influence over the model. How would the robust regression, using Huber weights, handle these outliers? 
 
 ```{R}
 summary(rr01 <- rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + 
@@ -305,9 +308,9 @@ summary(rr01 <- rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL +
                       
 Call: rlm(formula = perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + AREA_RURAL + 
     AREA_UC, data = ffl.16)
-Residuals:
-     Min       1Q   Median       3Q      Max 
--21.5424  -3.8918  -0.3444   3.2812  39.2188 
+# Residuals:
+#      Min       1Q   Median       3Q      Max 
+# -21.5424  -3.8918  -0.3444   3.2812  39.2188 
 
 Coefficients:
              Value   Std. Error t value
@@ -388,39 +391,4 @@ visual observations:
 - Variance increases slightly when the Urban Cluster population percentage is above 15. 
 - Alaska remains an extreme outlier even after weights. Why is this?
 - Looking back at OLS Resduals vs. Leverage plot, Alaska appears to be the most influential outlier - but was not assigned a different weight in the robust regression model. Was there an error in the modeling, or would `bisquare` weighting treat this differently? 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
