@@ -250,10 +250,7 @@ Problems:
 - influential outliers (again)
 - linear model when for nonlinear function
 
-
 Using a Robust Regression method, assigning less weight to outlier values, might be the solution here for the first problem. The second problem, to be addressed later. 
-
-![perCapitaFFLs-population](R_plots/01-model-building/perCapitaFFLs-Population.png)
 
 # Model 05 - Robust Regression
 
