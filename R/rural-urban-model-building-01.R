@@ -347,11 +347,3 @@ inverse.04 <- lm(perCapitaFFL ~ AREA_ST +
 summary(inverse.04)
 summary(inverse.03)
 summary(rural.urban.01)
-
-robust.rural <- rlm(perCapitaFFL ~ POPPCT_UC + AREA_RURAL, data = ffl.16)
-summary(robust.rural)
-
-# industry
-
-industry <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-industryPerCapita-full.csv", stringsAsFactors = F)
-rural.urban.industry <- left_join(ffl.16, industry)
