@@ -4,13 +4,21 @@
 
 The value that we're looking to explain here is the per capita Federal Firearms License count, by state. Previously, what appeared to be an inverse relationship between a state's population and FFL count was observed. 
 
-Are there characteristics of the population that might also contribute to FFL counts? 
+A few questions specific to this finer-grain population data:
 
-Does the percentage of the population living in Rural Areas play a role? In Urban Clusters? 
-
-Could the Land Area of Rural America have an effect on the number of Federal Firearms Licenses in a given state? 
+- Are there characteristics of the population that might also contribute to FFL counts? 
+- Does the percentage of the population living in Rural Areas play a role? In Urban Clusters? 
+- Could the Land Area of Rural America have an effect on the number of Federal Firearms Licenses in a given state? 
 
 _note:_ Why look at only at Rural Populations and Land Areas, and not also Urbanized Areas? The US census defines these two as opposites - any land that doesn't fit the population and land area criteria for 'Urban' is by default considered 'Rural'.
+
+- [Model 01](#model-01---population-and-land-area-features) - Population and Land Area Features
+- [Model 02](#model-02-how-influential-are-the-outliers) - How Influential are the Outliers?
+- [Model 03](#model-03-further-reductions) - Further Reductions
+- [Model Comparison](#model-comparison)
+- [Model 04](#model-04---inversely-proportional) - Inverse Proportions
+- [Model 05](#model-05---robust-regression) - Robust Regression 01
+- TO-DO: Bisquare weighted Robust Regression, Bootstrap Confidence Intervals, describe all this.
 
 ## Model 01 - Population and Land Area Features
 
