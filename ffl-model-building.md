@@ -199,7 +199,7 @@ corrplot(model.01.cor, method = "shade", shade.col = NA,
 
 ![rural01-corrplot](R_plots/01-model-building/rural01-corrplot.png)
 
-Correlation matrix actually shows some reasonable values. 
+Correlation matrix actually shows some reasonable values. Even so, variables can be pared back from the first model given the small amount of explanatory power in most of them. 
 
 ## Model 04 - Inversely Proportional
 
@@ -236,9 +236,13 @@ F-statistic: 53.72 on 3 and 46 DF,  p-value: 4.532e-15
 
 ![inverse02-lm](R_plots/01-model-building/inverse02-lm.png)
 
-Again, it seems like the most trouble with fitting these models is the influence of outlier states.
+Problems: 
 
-Using a Robust Regression method, assigning less weight to outlier values, might be the solution here. 
+- influential outliers (again)
+- linear model when for nonlinear function
+
+
+Using a Robust Regression method, assigning less weight to outlier values, might be the solution here for the first problem. The second problem, to be addressed later. 
 
 ![perCapitaFFLs-population](R_plots/01-model-building/perCapitaFFLs-Population.png)
 
@@ -363,6 +367,23 @@ rr.huber01
 ```
 
 Generally, it appears the model capped the residuals at about ±7.28 - and would assign weights to outliers accordingly to get these values.
+
+How do these weighted fit and residual values look compared to unweighted? 
+
+![rrHuber01-obs-v-fitted](R_plots/02-model-building/rrHuber01-obs-v-fitted.png)
+
+Other than the severe outliers, most of the weighted fit values correspond to the observed values.
+
+![rrHuber01-weighted-lm](R_plots/02-model-building/rrHuber01-weighted-lm.png)
+
+visual observations:
+- Variance increases slightly when the Urban Cluster population percentage is above 15. 
+- Alaska remains an extreme outlier even after weights. Why is this?
+- Looking back at OLS Resduals vs. Leverage plot, Alaska appears to be the most influential outlier - but was not assigned a different weight in the robust regression model. Was there an error in the modeling, or would `bisquare` weighting treat this differently? 
+
+
+
+
 
 
 
