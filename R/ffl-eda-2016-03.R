@@ -6,51 +6,22 @@
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-library(data.table)
 library(scales)
-
 library(maps)
 library(mapproj)
-
-# data: Federal Firearms Licenses 2016 ----------------------------------------
-f16 <- fread("~/Documents/ATF-FFL/data/ffl-2016-V3.csv", stringsAsFactors = T)
-f16 <- as.data.frame(f16)
-str(f16)
 
 # data: Census Population and License Counts
 perCap16 <- read.csv("~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv")
 str(perCap16)
 
-# custom theme for plotting
+# load custom theme and map data
 source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
+source("~/GitHub/ATF-FFL/R/usa-map-prep.R")
 
-# FFLs per 100k map -----------------------------------------------------------
-
-# load map data for US
-usa <- map_data("state")
-
-# test map out
-ggplot(usa, aes(long, lat, group = group)) +
-  geom_path() + coord_map("polyconic") 
-
-# match variable names in FFL data to merge with US map
-colnames(usa) <- c("lon", "lat", "group", "order", "NAME", "subregion")
-
-# capitalize state.name (function from tolower() documentation)
-capwords <- function(s, strict = FALSE) {
-  cap <- function(s) paste(toupper(substring(s, 1, 1)),
-                           {s <- substring(s, 2); if(strict) tolower(s) else s},
-                           sep = "", collapse = " " )
-  sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
-}
-
-usa$NAME <- capwords(usa$NAME)
+# Map Preparation --------------------------------------------------------------
 
 # merge USA map data with FFL data
-perCapitaMap <- left_join(perCap16, usa, by = "NAME")
-summary(as.factor(perCapitaMap$subregion))
-# there are 16 'subregions' 
-# eg. long island, main, staten island, manhattan, nantucket, north, chesapeake
+perCapitaMap <- left_join(perCap16, fifty_states, by = "NAME")
 
 # Map with Per Capita FFL data
 # reorder group and order variables from `usa` data
@@ -69,8 +40,10 @@ summary(perCapitaMap$perCapitaFFL)
 # 3.687  16.500  22.720  26.360  31.840 104.700
 
 # Bar Plot FFLs by state with population mapped to color ----------------------
+
 perCap16 %>% 
-  arrange(desc(EstPop16.Wiki)) %>%
+  arrange(desc(POPESTIMATE2016)) %>%
+  mutate(perCapPop = POPESTIMATE2016/100000) %>%
   ggplot(aes(reorder(NAME, perCapitaFFL), perCapitaFFL, fill = perCapPop)) +
   geom_bar(stat = "identity") + 
   scale_fill_gradient2(low = "deepskyblue4",
@@ -169,16 +142,20 @@ perCapitaMap$atf.Region <- as.factor(perCapitaMap$atf.Region)
 
 # define palettes
 display.brewer.pal(7,"BrBG")
-brbg.pd <- c('#8c510a','#bf812d','#dfc27d','#f6e8c3','#c7eae5','#80cdc1','#35978f','#01665e')
+brbg.pd <- c('#8c510a','#bf812d','#dfc27d','#eddeb8','#c7eae5','#80cdc1','#35978f','#01665e')
 
 # map of ATF Regions
 ggplot(perCapitaMap, aes(lon, lat, group = group, fill = atf.Region)) +
-  geom_polygon() +
+  geom_polygon(linetype = "solid", color = "white", size = 0.075) +
   scale_fill_manual(values = brbg.pd) +
   coord_map("polyconic") + pd.theme +
-  theme(panel.grid = element_blank(),
+  theme(panel.border = element_rect(linetype = "solid",
+                                    fill = NA, 
+                                    color = "white"),
+        panel.grid = element_blank(),
         axis.text = element_blank(),
-        legend.title = element_text(size = 12)) +
+        legend.title = element_text(size = 12),
+        legend.position = "right") +
   labs(title = "ATF Federal Firearms License Regions", 
        x = "", y = "", fill = "Region")
 
@@ -215,12 +192,26 @@ summary(perCapitaMapRegion$perCapFFLRegion)
 levels(as.factor(perCapitaMapRegion$perCapFFLRegion))
 # "11.9075881831947" "12.5174778907644" "16.5153543818352" "20.4674221254215" "23.2532855847123" "24.4531173804022" "30.2975398789806"
 
+# write.csv(perCap16, file = "~/GitHub/ATF-FFL/data/ffl-2016-perCapita.csv", row.names = F)
+# write.csv(perCapitaMapRegion, file = "~/GitHub/ATF-FFL/data/map-perCapitaRegions.csv", row.names = F)
 
 # Map 05: FFLs per capita, by ATF region --------------------------------------
 
+perCapitaRegions <- read.csv("~/GitHub/ATF-FFL/data/map-perCapitaRegions.csv")
+perCapitaRegions$atf.Region <- factor(perCapitaRegions$atf.Region)
+perCapitaRegions <- perCapitaRegions[, -c(28:32)]
+
+perCapitaRegions <- perCapitaRegions %>%
+  left_join(fifty_states, by = "NAME")
+
+summary(perCapitaRegions$perCapFFLRegion)
+
+write.csv(perCapitaRegions, file = "~/GitHub/ATF-FFL/data/map-perCapitaRegions.csv",
+          row.names = F)
+
 # map of ATF Regions
-ggplot(perCapitaMapRegion, aes(lon, lat, group = group, fill = perCapFFLRegion)) +
-  geom_polygon() +
+ggplot(perCapitaRegions, aes(lon, lat, group = group, fill = perCapFFLRegion)) +
+  geom_polygon(linetype = "solid", color = "white", size = 0.075) +
   scale_fill_gradient2(low = "deepskyblue4", mid = "antiquewhite1", high = "firebrick3",
                        midpoint = 21.5) +
   coord_map("polyconic") + pd.theme +
@@ -230,17 +221,10 @@ ggplot(perCapitaMapRegion, aes(lon, lat, group = group, fill = perCapFFLRegion))
   labs(title = "Per Capita Federal Firearms License by Region", 
        x = "", y = "", fill = "FFLs")
 
-
 # bar plot
-ggplot(perCapitaMapRegion, aes(reorder(NAME, perCapFFLRegion), perCapFFLRegion, fill = perCapFFLRegion)) +
+ggplot(perCapitaRegions, aes(reorder(NAME, perCapFFLRegion), perCapFFLRegion, fill = perCapFFLRegion)) +
   geom_bar(stat = "identity", position = "dodge") + pd.theme +
   scale_fill_gradient2(low = "deepskyblue4", mid = "antiquewhite1", high = "firebrick3",
                        midpoint = 21.5) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
   labs(title = "Per Capita Federal Firearms Licenses by Region", x = "", y = "", fill = "")
-
-
-# write.csv(perCap16, file = "~/GitHub/ATF-FFL/data/ffl-2016-perCapita.csv", row.names = F)
-# write.csv(perCapitaMapRegion, file = "~/GitHub/ATF-FFL/data/map-perCapitaRegions.csv", row.names = F)
-
-
