@@ -8,7 +8,6 @@ library(tidyr)
 library(ggplot2)
 library(data.table)
 library(scales)
-
 library(maps)
 library(mapproj)
 
@@ -38,20 +37,13 @@ summary(perCap16$perCapitaFFL)
 
 # Exploratory Plots -----------------------------------------------------------
 
-# define a theme for plotting
-# modifies theme_minimal() with type set in Gill Sans
-# and italic axis titles in Times
-pd.theme <- theme_minimal(base_size = 12, base_family = "GillSans") +
-  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
+source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
+source("~/GitHub/ATF-FFL/R/usa-map-prep.R")
 
-pd.classic <- theme_classic(base_size = 12, base_family = "GillSans") +
-  theme(plot.margin = unit(c(1, 1, 1, 1), "cm"),
-        axis.title = element_text(family = "Times", face = "italic", size = 12),
-        axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)))
+# remove unnecessary
+rm(county_map)
+rm(us.county)
+rm(usa)
 
 # FFL per 100k by state -------------------------------------------------------
 
@@ -71,17 +63,18 @@ perCap16 %>%
     labs(title = "2016: FFLs by State (per 100k residents)",
          x = "", y = "number of licenses per 100k residents") +
     pd.theme +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 10))
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 24),
+          axis.text.y = element_text(size = 24))
 
 # How does this relate to population ranking across the states?
 # First look at the expected population values overall, then plot.
 
-summary(perCap16$EstPop16.Wiki)
+summary(perCap16$POPESTIMATE2016)
 #    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 # 585500  1850000  4559000  6449000  7199000 39250000
 
 perCap16 <- perCap16 %>%
-  mutate(perCapPop = EstPop16.Wiki / 100000)
+  mutate(perCapPop = POPESTIMATE2016 / 100000)
 
 summary(perCap16$perCapPop)
 #     Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -89,7 +82,7 @@ summary(perCap16$perCapPop)
 
 # plot FFLs by state with population mapped to color
 perCap16 %>% 
-  arrange(desc(EstPop16.Wiki)) %>%
+  arrange(desc(POPESTIMATE2016)) %>%
   ggplot(aes(reorder(NAME, perCapitaFFL), perCapitaFFL, fill = perCapPop)) +
   geom_bar(stat = "identity") + 
   scale_fill_gradient2(low = "deepskyblue4",
@@ -99,39 +92,14 @@ perCap16 %>%
   labs(title = "2016: Federal Firearms Licenses by State (per 100,000 residents)",
        x = "", y = "number of licenses per 100k residents", fill = "Population / 100k") +
   pd.theme + 
-  theme(legend.position = "right") +
+  theme(legend.position = "right",
+        axis.text = element_text(size = 24)) +
   coord_flip()
 
 # FFLs per 100k map -----------------------------------------------------------
 
-library(maps)
-library(mapproj)
-
-# load map data for US
-usa <- map_data("state")
-
-# test map out
-ggplot(usa, aes(long, lat, group = group)) +
-  geom_path() + coord_map("polyconic") 
-
-# match variable names in FFL data to merge with US map
-colnames(usa) <- c("lon", "lat", "group", "order", "NAME", "subregion")
-
-# capitalize state.name (function from tolower() documentation)
-capwords <- function(s, strict = FALSE) {
-  cap <- function(s) paste(toupper(substring(s, 1, 1)),
-                           {s <- substring(s, 2); if(strict) tolower(s) else s},
-                           sep = "", collapse = " " )
-  sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
-}
-
-usa$NAME <- capwords(usa$NAME)
-
 # merge USA map data with FFL data
-perCapitaMap <- left_join(perCap16, usa, by = "NAME")
-summary(as.factor(perCapitaMap$subregion))
-# there are 16 'subregions' 
-# eg. long island, main, staten island, manhattan, nantucket, north, chesapeake
+perCapitaMap <- left_join(perCap16, fifty_states, by = "NAME")
 
 # Map with Per Capita FFL data
 # reorder group and order variables from `usa` data
@@ -200,12 +168,14 @@ perCap16 %>%
                        high = "coral4", midpoint = 200, guide = F) +
   scale_y_discrete(limits = c(0, 100, 200, 300, 425)) +
   pd.theme +
-  theme(axis.text.x = element_text(angle = 45, size = 9.5, hjust = 1, vjust = 1,
-                                   lineheight = 1.5)) +
+  theme(axis.text.x = element_text(angle = 45, size = 24, hjust = 1, vjust = 1,
+                                   lineheight = 1.5),
+        axis.text.y = element_text(size = 24)) +
   labs(title = "2016: US Census Population ~ State (per capita)", 
        y = "population / 100k", x = "", fill = "")
 
 # map of population by state --------------------------------------------------
+
 ggplot(perCapitaMap, aes(lon, lat, group = group, fill = POPESTIMATE2016)) +
   geom_polygon() +
   scale_fill_gradient2(low = "deepskyblue4",
