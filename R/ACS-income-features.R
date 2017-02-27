@@ -384,5 +384,26 @@ plot(income.000)
 income.01 <- rlm(perCapitaFFL ~ ., data = income.ffl.pct)
 summary(income.01)
 
+# check weights
+huber01 <- data.frame(.rownames = income.ffl$NAME, 
+                      .resid = income.01$resid,
+                      weight = income.01$w) %>% arrange(weight)
+
+huber01[1:12, ]
+summary(huber01$weight)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.1001  0.8296  1.0000  0.8325  1.0000  1.0000
+
+.9/2 + .1
+
+ggplot(huber01, aes(reorder(.rownames, desc(weight)), weight, fill = weight)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient2(low = "coral4",
+                       mid = "antiquewhite1",
+                       high = "deepskyblue4",
+                       midpoint = 0.55, guide = F) +
+  pd.theme + coord_flip() +
+  labs(title = "Robust Regression 01 - Huber Assigned Weights\nPer Capita FFLs ~ Income Bracket, by State",
+       x = "", y = "weight")
 
 

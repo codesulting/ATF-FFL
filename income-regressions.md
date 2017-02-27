@@ -125,3 +125,46 @@ mid-significant variables:
 It might be worth consolidating income brackets. 
 
 ![income000](R_plots/03-model-building-income/income000.png)
+
+# Robust Regression 01: Income Bracket by Population Percentages
+
+**Model: `income.01`** - 
+```{R}
+# model
+income.01 <- rlm(perCapitaFFL ~ ., data = income.ffl.pct)
+
+# check weights
+huber01 <- data.frame(.rownames = income.ffl$NAME, 
+                      .resid = income.01$resid,
+                      weight = income.01$w) %>% arrange(weight)
+                      
+summary(income.01)
+Residuals:
+#      Min       1Q   Median       3Q      Max 
+# -21.2285  -2.4884   0.1529   2.3826  49.5270 
+
+Coefficients:
+                             Value      Std. Error t value   
+(Intercept)                  -1152.9067  1207.4966    -0.9548
+ATF.Region                       0.5712     0.5118     1.1162
+Pop2016                          0.0000     0.0000     2.0233
+fin.GEO.id2                     -0.0709     0.0687    -1.0323
+fin.01.OccupiedHousingUnits      0.0000     0.0000    -2.0732
+pct.03.LessThan5000             -1.9413    12.7573    -0.1522
+pct.04.5000to9999               14.3638    12.1462     1.1826
+pct.05.10000to14999              9.3398    12.9888     0.7191
+pct.06.15000to19999             15.0561    13.4001     1.1236
+pct.07.20000to24999             20.2428    11.8823     1.7036
+pct.08.25000to34999             13.9513    12.6529     1.1026
+pct.09.35000to49999             12.3068    12.3090     0.9998
+pct.10.50000to74999              6.9773    12.5334     0.5567
+pct.11.75000to99999              1.5776    12.1719     0.1296
+pct.12.100000to149999           18.5034    12.5192     1.4780
+pct.13.150000.or.more            0.1415    12.6934     0.0111
+fin.14.MedianHouseholdIncome     0.0037     0.0018     2.0686
+
+Residual standard error: 3.688 on 33 degrees of freedom          
+```
+
+![income01-weights](R_plots/03-model-building-income/bar-income01-weight-comparison.jpg)
+
