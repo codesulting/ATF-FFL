@@ -42,7 +42,7 @@ glance(rr00)
 par(mfrow = c(2, 2))
 plot(rr00)
 
-# Robust Model 01 -------------------------------------------------------------
+# Robust Model 01: Huber ------------------------------------------------------
 
 # model
 summary(rr01 <- rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + 
@@ -75,17 +75,23 @@ ggplot(rr.huber01, aes(weighted.resid)) +
 #   mutate(distance = perCapitaFFL - weighted.fit)
 
 # plot weighted fit values
-ggplot(rr.huber01, aes(POPPCT_UC, perCapitaFFL, label = .rownames)) + 
+ggplot(rr.huber01, aes(POPPCT_UC, perCapitaFFL, fill = weighted.fit, label = .rownames)) + 
   geom_point(size = 1.5) +
   geom_text(aes(POPPCT_UC, perCapitaFFL), 
             size = 3, hjust = 1.15, vjust = -0.65, 
             check_overlap = T, family = "GillSans") +
   geom_point(aes(POPPCT_UC, weighted.fit), color = "firebrick3", 
              shape = 23, size = 4, alpha = 0.8, data = rr.huber01) +
+  geom_smooth(method = "lm", se = F, color = "deepskyblue4", 
+              size = 0.25, linetype = "longdash") +
   geom_errorbar(aes(x = POPPCT_UC, 
                     ymin = weighted.fit, 
                     ymax = perCapitaFFL), 
                     linetype = "dotted") +
+  scale_fill_gradient2(low = "deepskyblue4", 
+                       mid = "antiquewhite1", 
+                       high = "firebrick4",
+                       midpoint = 40, guide = F) +
   labs(x = "percentage of population living in Urban Clusters",
        title = "Robust Model 01: Observed vs. Fitted Values, Huber Weighting") +
   pd.scatter
@@ -95,17 +101,22 @@ summary(rr.huber01$weighted.fit)
 # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 # 3.687  20.070  26.100  30.490  38.780  81.820
 
-# plot fitted with regression line, fill mapped to fit value
+# plot fitted values with regression line, fill mapped to fit value
 ggplot(rr.huber01, aes(POPPCT_UC, weighted.fit, 
                        fill = weighted.fit, 
                        label = .rownames)) + 
   geom_point(color = "firebrick3", shape = 23, size = 3.5, 
              alpha = 0.8, data = rr.huber01) +
+  geom_point(aes(POPPCT_UC, perCapitaFFL), shape = 1, size = 1.25) +
   geom_text(aes(POPPCT_UC, weighted.fit), 
             size = 3, hjust = 1.15, vjust = -0.65, 
             check_overlap = T, family = "GillSans") +
   geom_smooth(method = "lm", se = F, color = "deepskyblue4", 
               size = 0.5, linetype = "dashed") +
+  geom_errorbar(aes(x = POPPCT_UC, 
+                    ymin = weighted.fit, 
+                    ymax = perCapitaFFL), 
+                linetype = "dotted", lineend = "butt") +
   scale_fill_gradient2(low = "deepskyblue4", 
                        mid = "antiquewhite1", 
                        high = "firebrick3",
@@ -114,18 +125,6 @@ ggplot(rr.huber01, aes(POPPCT_UC, weighted.fit,
        title = "Robust Model 01: Weighted Fit Values (Huber)") +
   pd.scatter
 
-# plot fitted with regression line, no color fill
-ggplot(rr.huber01, aes(POPPCT_UC, weighted.fit, label = .rownames)) + 
-  geom_point(color = "firebrick3", shape = 23, size = 3.5, 
-             alpha = 0.8, data = rr.huber01) +
-  geom_text(aes(POPPCT_UC, weighted.fit), 
-            size = 3, hjust = 1.15, vjust = -0.65, 
-            check_overlap = T, family = "GillSans") +
-  geom_smooth(method = "lm", se = F, color = "deepskyblue4", 
-              size = 0.5, linetype = "dashed") +
-  labs(x = "percentage of population living in Urban Clusters",
-       title = "Robust Model 01: Weighted Fit Values (Huber)") +
-  pd.scatter
 
 # Robust Model 02 -------------------------------------------------------------
 
@@ -153,17 +152,24 @@ par(mfrow = c(2, 2), familiy = "GillSans")
 plot(rr02)
 
 # plot bisquare-fitted vs observed
-ggplot(rr.bisquare01, aes(POPPCT_UC, perCapitaFFL, label = .rownames)) + 
+ggplot(rr.bisquare01, aes(POPPCT_UC, perCapitaFFL, fill = weighted.fit, label = .rownames)) + 
   geom_point(size = 1.5) +
   geom_text(aes(POPPCT_UC, perCapitaFFL), 
             size = 3, hjust = 1.15, vjust = -0.65, 
             check_overlap = T, family = "GillSans") +
-  geom_point(aes(POPPCT_UC, weighted.fit), color = "firebrick3", 
-             shape = 23, size = 4, alpha = 0.8, data = rr.bisquare01) +
+  geom_point(aes(POPPCT_UC, weighted.fit), 
+             shape = 23, size = 4, alpha = 0.8, 
+             data = rr.bisquare01) +
+  geom_smooth(method = "lm", se = F, color = "deepskyblue4", 
+              size = 0.25, linetype = "dashed") +
   geom_errorbar(aes(x = POPPCT_UC, 
                     ymin = weighted.fit, 
                     ymax = perCapitaFFL), 
                 linetype = "dotted") +
+  scale_fill_gradient2(low = "deepskyblue4", 
+                       mid = "antiquewhite1", 
+                       high = "firebrick3",
+                       midpoint = 40, guide = F) +
   labs(x = "percentage of population living in Urban Clusters",
        title = "Robust Model 02: Observed vs. Fitted Values, Bisquare Weighting") +
   pd.scatter
@@ -206,12 +212,68 @@ ggplot(rr.bisquare01, aes(POPPCT_UC, weighted.fit,
        title = "Robust Model 02: Weighted Fit Values (Bisquare)") +
   pd.scatter
 
+# Bootstrap Regressions -------------------------------------------------------
 
+# Bootstrap Regression 01: Tidy Huber -----------------------------------------
 
+# construct 100 bootstrap replications of the Robust Huber Model 01
+bootHub01 <- ffl.16 %>%
+  bootstrap(1000) %>%
+  do(tidy(rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + 
+                AREA_RURAL + AREA_UC, data = .)))
 
+bootHub01
 
+# calculate confidence intervals: percentile method
+# group observations by term (variable)
+# use quantile() on coefficients, 
+# 2.5% = 0.5 / 2, 97.5% = 1 - 0.5/2
+alpha = .05
+bootHub01 %>%
+  group_by(term) %>%
+  summarize(low = quantile(estimate, alpha / 2),
+            high = quantile(estimate, 1 - alpha / 2))
 
+# histogram of confidence intervals
+bootHub01 %>% 
+  filter(term != "(Intercept)") %>%
+  ggplot(aes(estimate)) +
+  geom_histogram(binwidth = 0.1, color = "black", fill = NA) +
+  facet_wrap(~ term, scales = "free") +
+  pd.theme
 
+bh.coef <- bootHub01 %>% 
+  filter(term != "(Intercept)")
 
+summary(bh.coef$estimate)
+summary(bh.coef$std.error)
 
+# look at residuals, fitted values
+bootHub01b <- ffl.16 %>% 
+  bootstrap(100) %>%
+  do(augment(rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + 
+                   AREA_RURAL + AREA_UC, data = .)))
 
+ggplot(bootHub01b, aes(POPPCT_UC, perCapitaFFL)) +
+  geom_point() +
+  geom_line(aes(POPPCT_UC, y = .fitted, group = replicate), alpha = 0.1) +
+  pd.scatter
+
+# Bootstrap Regression 02: Boot Huber -----------------------------------------
+
+library(boot)
+
+# r-squared function
+rsq <- function(formula, data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  fit <- lm(formula, data=d)
+  return(summary(fit)$r.square)
+}
+
+# bootstrap
+bootHub02 <- boot(data = ffl.16, statistic = rsq, R = 1000, 
+                  formula = perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + AREA_RURAL + AREA_UC)
+
+bootHub02
+plot(bootHub02)
+boot.ci(bootHub02, type="bca")

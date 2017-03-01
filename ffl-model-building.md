@@ -18,7 +18,8 @@ _note:_ Why look at only at Rural Populations and Land Areas, and not also Urban
 - [Model 03](#model-03-further-reductions) - Further Reductions
 - [Model Comparison](#model-comparison)
 - [Model 04](#model-04---inversely-proportional) - Inverse Proportions
-- [Model 05](#model-05---robust-regression) - Robust Regression 01
+- [Model 05](#model-05---robust-regression) - Robust Regression 01, Huber Weighting
+- [Model 06](#model-05---robust-bisquare-regression) - Robust Regression 01, Bisquare Weighting
 - TO-DO: Bisquare weighted Robust Regression, Bootstrap Confidence Intervals, describe all this.
 
 # Model 01 - Population and Land Area Features
@@ -378,14 +379,138 @@ Generally, it appears the model capped the residuals at about ±7.28 - and would
 
 How do these weighted fit and residual values look compared to unweighted? 
 
-![rrHuber01-obs-v-fitted](R_plots/02-model-building/rrHuber01-obs-v-fitted.png)
+![rrHuber01-obs-v-fitted](R_plots/02-model-building/rrHuber01-obs-v-fitted-fill.png)
 
 Other than the severe outliers, most of the weighted fit values correspond to the observed values.
 
-![rrHuber01-weighted-lm](R_plots/02-model-building/rrHuber01-weighted-lm.png)
-
 visual observations:
-- Variance increases slightly when the Urban Cluster population percentage is above 15. 
+- **Hawaii**, **Delaware**, and **New Mexico** increase in number of FFLs.
+- **Wyoming**, **Montana**, and **Idaho** decrease in number of FFLs.
+- Variance appears to increase slightly when the Urban Cluster population percentage is above 15; under 15%, the range is tighter.
 - Alaska remains an extreme outlier even after weights. Why is this?
-- Looking back at OLS Resduals vs. Leverage plot, Alaska appears to be the most influential outlier - but was not assigned a different weight in the robust regression model. Was there an error in the modeling, or would `bisquare` weighting treat this differently? 
+- Looking back at OLS Resduals vs. Leverage plot, Alaska appears to be the most influential outlier - but was not assigned a different weight in the robust regression model. Was there an error in the modeling, or would `bisquare` weighting treat this differently?
+
+# Model 06 - Robust Bisquare Regression
+
+```{R}
+# model - bisquare weighted
+summary(rr02 <- rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + AREA_RURAL + AREA_UC, 
+                    data = ffl.16, method = "MM"))
+
+# check weights
+bisquare01 <- data.frame(.rownames = ffl.16$NAME, 
+                         .resid = rr02$resid, 
+                         weight = rr02$w) %>% arrange(weight)
+
+bisquare01
+        .rownames      .resid    weight
+1         Montana  44.0214205 0.0000000
+2         Wyoming  44.1139417 0.0000000
+3           Idaho  16.6578902 0.3606386
+4          Hawaii -16.2983827 0.3812926
+5     Mississippi -12.9788780 0.5737683
+...
+...
+48         Kansas  -0.5187031 0.9992224
+49      Louisiana   0.4952067 0.9992944
+50         Nevada   0.1576136 0.9999288
+```
+
+Using bisquare weighting, no observation receives full weight in the model. **Montana** and **Wyoming** are actually carry `0.000` weight in this model.
+
+Again, creating a new dataframe - and adding weighted residuals and weighted fit values.
+
+```{R}
+# join with fitted and observed data
+rr.bisquare01 <- augment(rr02) %>%
+  left_join(bisquare01) %>%
+  arrange(weight) %>%
+  mutate(weighted.resid = .resid * weight,
+         weighted.fit = .fitted + weighted.resid)
+  
+rr.bisquare01
+        .rownames perCapitaFFL POPPCT_UC POPPCT_RURAL   AREA_RURAL    AREA_UC   .fitted   .se.fit      .resid    weight weighted.resid weighted.fit
+1         Montana   103.810958     29.40        44.11 3.761922e+11  434862680 59.789538 1.8408237  44.0214205 0.0000000      0.0000000    59.789538
+2         Wyoming   104.725127     40.25        35.24 2.509662e+11  334287801 60.611185 3.1760257  44.1139417 0.0000000      0.0000000    60.611185
+3           Idaho    56.749092     20.06        29.42 2.127521e+11  406348749 40.091202 1.1705571  16.6578902 0.3606386      6.0074787    46.098680
+4          Hawaii     7.303407     20.47         8.07 1.561632e+10  433177176 23.601790 2.3346314 -16.2983827 0.3812926     -6.2144525    17.387337
+```
+
+How does this look? Is there a big difference from the Huber-weighted model? 
+
+![rrBisquare01](R_plots/02-model-building/rrBisquare-obs-v-fitted-fill.png)
+
+Visually:
+- **Wyoming** and **Montana** values drop dramatically compared to the Huber model; again probably because they were weighted at `0` in this model.
+- **New Mexico** shows a very small increase, comparatively. 
+- **Idaho** FFL fit is a much lower value, closer to the `lm` fit line than in the Huber model.
+- Again, at about 15% Urban Cluster population, variance increases. The outlier cases such as **Delaware** and **Hawaii** account for this in obvious ways, but the values in general spread to a wider range.
+
+# Model Stability - Bootstrapping Regressions
+
+_reference:_ [Tidy bootstrappping with dplyr and broom](https://cran.r-project.org/web/packages/broom/vignettes/bootstrapping.html)
+
+First the Robust Huber Model - construct 100 replicates of this regression.
+
+```{R}
+# construct 100 bootstrap replications of the Robust Huber Model 01
+bootHub01 <- ffl.16 %>%
+  bootstrap(1000) %>%
+  do(tidy(rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + 
+                AREA_RURAL + AREA_UC, data = .)))
+
+bootHub01
+   replicate         term      estimate    std.error statistic
+       <int>        <chr>         <dbl>        <dbl>     <dbl>
+1          1  (Intercept)  5.017718e+00 2.039890e+00  2.459798
+2          1    POPPCT_UC  6.895608e-01 1.415388e-01  4.871887
+3          1 POPPCT_RURAL  4.961477e-01 7.832312e-02  6.334626
+4          1   AREA_RURAL  3.251231e-11 2.718750e-12 11.958549
+5          1      AREA_UC -4.149412e-09 8.524933e-10 -4.867384
+6          2  (Intercept)  2.539257e+00 2.099177e+00  1.209644
+7          2    POPPCT_UC  1.169924e+00 1.266826e-01  9.235086
+8          2 POPPCT_RURAL  4.127163e-01 8.248027e-02  5.003819
+9          2   AREA_RURAL  3.012506e-11 3.793467e-12  7.941300
+10         2      AREA_UC -4.680593e-09 1.038031e-09 -4.509108
+# ... with 4,990 more rows
+```
+
+Calculating confidence intervals using percentile method - first group the variables by term, and calculate using `quantile`. 
+
+```{R}
+alpha = .05
+
+bootHub01 %>%
+  group_by(term) %>%
+  summarize(low = quantile(estimate, alpha / 2),
+            high = quantile(estimate, 1 - alpha / 2))
+            
+          term           low          high
+         <chr>         <dbl>         <dbl>
+1  (Intercept) -3.293695e+00  7.832726e+00
+2   AREA_RURAL  2.266928e-11  8.860855e-11
+3      AREA_UC -1.012886e-08 -3.532349e-09
+4 POPPCT_RURAL  1.080833e-01  7.986280e-01
+5    POPPCT_UC  2.765049e-01  2.124592e+00
+```
+
+```{R}
+# histogram of estimates
+bootHub01 %>% 
+  filter(term != "(Intercept)") %>%
+  ggplot(aes(estimate)) +
+  geom_histogram(binwidth = 0.2, color = "black", fill = NA) +
+  facet_wrap(~ term, scales = "free") +
+  pd.theme
+```
+
+![bootHub01 estimate hist](R_plots/02-model-building/bootHub01-hist-CI.png)
+
+
+
+
+
+
+
+
 
