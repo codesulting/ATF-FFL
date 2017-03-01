@@ -114,7 +114,7 @@ most significant variables:
 - pct.07.20000to24999
 - pct.08.25000to34999
 
-mid-significant variables:
+potentially significant variables:
 - fin.01.OccupiedHousingUnits
 - pct.04.5000to9999
 - pct.05.10000to14999
@@ -167,4 +167,6 @@ Residual standard error: 3.688 on 33 degrees of freedom
 ```
 
 ![income01-weights](R_plots/03-model-building-income/bar-income01-weight-comparison.jpg)
+
+Looking at the weights assigned by the robust regression, we can see which states had their influence on the  model reduced.
 
