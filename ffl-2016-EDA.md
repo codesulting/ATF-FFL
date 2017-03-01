@@ -178,13 +178,13 @@ corrplot(rural.urban.f.corr, method = "shade", shade.col = NA,
          order = "hclust", mar = c(1, 1, 1, 1))
 ```
 
-![corrplot-filtered](R_plots/rural-urban-corr-filter-01.png)
+![corrplot-filtered](R_plots/rural-urban-plots/rural-urban-corr-filter-01.png)
 
 For _raw totals of monthly license counts_ (**LicCount**, **LicCountMonthly**), **Land Area** and **Population** of **Urban Clusters** show the highest positive correlation (r^2 = **0.90** & **0.88**). **Land Area** of **Urbanized Areas** and **Rural Population** also are strong (r^2 = **0.83** & **0.82**). 
 
 For _monthly per capita FFL counts_ (**perCapitaFFL**), **Population Percentage** of **Urban Clusters** shows the highest positive correlation (r^2 = **0.82**). **Population Percentage** of **Urbanized Areas** shows a strong negative correlation (**-0.75**).
 
-![corrplot-filtered-annotated](R_plots/rural-urban-corr-filter-02b.jpg)
+![corrplot-filtered-annotated](R_plots/rural-urban-plots/rural-urban-corr-filter-02b.jpg)
 
 ### Per Capita FFL relationships
 
