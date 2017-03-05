@@ -450,10 +450,10 @@ Visually:
 
 _reference:_ [Tidy bootstrappping with dplyr and broom](https://cran.r-project.org/web/packages/broom/vignettes/bootstrapping.html)
 
-First the Robust Huber Model - construct 100 replicates of this regression.
+First the Robust Huber Model - construct 1000 replicates of this regression.
 
 ```{R}
-# construct 100 bootstrap replications of the Robust Huber Model 01
+# construct 1000 bootstrap replications of the Robust Huber Model 01
 bootHub01 <- ffl.16 %>%
   bootstrap(1000) %>%
   do(tidy(rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + 
@@ -505,6 +505,54 @@ bootHub01 %>%
 ```
 
 ![bootHub01 estimate hist](R_plots/02-model-building/bootHub01-hist-CI.png)
+
+
+## Bootstrap 02
+
+_reference:_ [Quick R: Bootstrapping](http://www.statmethods.net/advstats/bootstrapping.html)
+
+```{r}
+# Bootstrap Regression 02: Boot Huber -----------------------------------------
+
+library(boot)
+
+# r-squared function
+rsq <- function(formula, data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  fit <- lm(formula, data=d)
+  return(summary(fit)$r.square)
+}
+
+# boot Huber function
+boot.huber <- function(X, i, maxit = 30) {
+  
+  ## Select observations by row numbers
+  X <- X[i, ]
+  
+  ## Fit model
+  res.rlm <- rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + AREA_RURAL + AREA_UC, 
+                 data = X, maxit = maxit)
+  
+  ## Return coefficient vector
+  coefficients(res.rlm)
+}
+```
+
+This method of bootstrapping creates an R-Squared function, which might not be the best error measure given robust regression.
+
+```{R}
+# bootstrap
+bootHub02 <- boot(data = ffl.16, statistic = boot.huber, R = 1000)
+
+bootHub02
+plot(bootHub02)
+boot.ci(bootHub02, type="bca")
+
+summary(rr01)
+bootHub02
+```
+
+
 
 
 

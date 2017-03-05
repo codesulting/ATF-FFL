@@ -250,13 +250,14 @@ summary(bh.coef$std.error)
 
 # look at residuals, fitted values
 bootHub01b <- ffl.16 %>% 
-  bootstrap(100) %>%
+  bootstrap(1000) %>%
   do(augment(rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + 
                    AREA_RURAL + AREA_UC, data = .)))
 
 ggplot(bootHub01b, aes(POPPCT_UC, perCapitaFFL)) +
   geom_point() +
   geom_line(aes(POPPCT_UC, y = .fitted, group = replicate), alpha = 0.1) +
+  geom_smooth(method = "lm") +
   pd.scatter
 
 # Bootstrap Regression 02: Boot Huber -----------------------------------------
@@ -270,10 +271,35 @@ rsq <- function(formula, data, indices) {
   return(summary(fit)$r.square)
 }
 
+# boot Huber function
+boot.huber <- function(X, i, maxit = 30) {
+  
+  ## Select observations by row numbers
+  X <- X[i, ]
+  
+  ## Fit model
+  res.rlm <- rlm(perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + AREA_RURAL + AREA_UC, 
+                 data = X, maxit = maxit)
+  
+  ## Return coefficient vector
+  coefficients(res.rlm)
+}
+
 # bootstrap
-bootHub02 <- boot(data = ffl.16, statistic = rsq, R = 1000, 
-                  formula = perCapitaFFL ~ POPPCT_UC + POPPCT_RURAL + AREA_RURAL + AREA_UC)
+bootHub02 <- boot(data = ffl.16, statistic = boot.huber, R = 1000)
 
 bootHub02
 plot(bootHub02)
-boot.ci(bootHub02, type="bca")
+boot.ci(bootHub02, type = "bca")
+
+summary(rr01)
+bootHub02
+
+# Bootstrapping Mulitple Statistics -------------------------------------------
+
+# function to obtain regression weights
+
+
+
+
+
