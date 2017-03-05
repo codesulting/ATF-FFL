@@ -509,7 +509,7 @@ bootHub01 %>%
 
 ## Bootstrap 02
 
-_reference:_ [Quick R: Bootstrapping](http://www.statmethods.net/advstats/bootstrapping.html)
+_reference:_ [worked example from Fox / Rpubs](http://rstudio-pubs-static.s3.amazonaws.com/3349_e4336c07479e4d3e801e2c1c907052eb.html)
 
 ```{r}
 # Bootstrap Regression 02: Boot Huber -----------------------------------------
@@ -522,7 +522,12 @@ rsq <- function(formula, data, indices) {
   fit <- lm(formula, data=d)
   return(summary(fit)$r.square)
 }
+```
+This method of bootstrapping creates an R-Squared function, which might not be the best error measure given robust regression.
 
+A better example might be:
+
+```{R}
 # boot Huber function
 boot.huber <- function(X, i, maxit = 30) {
   
@@ -537,8 +542,6 @@ boot.huber <- function(X, i, maxit = 30) {
   coefficients(res.rlm)
 }
 ```
-
-This method of bootstrapping creates an R-Squared function, which might not be the best error measure given robust regression.
 
 ```{R}
 # bootstrap
