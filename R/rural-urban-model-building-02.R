@@ -298,8 +298,20 @@ bootHub02
 # Bootstrapping Mulitple Statistics -------------------------------------------
 
 # function to obtain regression weights
+bs <- function(formula, data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  fit <- rlm(formula, data = d)
+  return(coef(fit)) 
+}
 
+bootHub03 <- boot(data = ffl.16, statistic = bs, 
+                R = 1000, formula = perCapitaFFL ~ 
+                  POPPCT_UC + POPPCT_RURAL + AREA_RURAL + AREA_UC)
 
-
-
-
+bootHub03
+plot(bootHub03)
+par(mfrow = c(2, 2))
+plot(bootHub03, index = 1)
+plot(bootHub03, index = 2)
+plot(bootHub03, index = 3)
+plot(bootHub03, index = 4)
