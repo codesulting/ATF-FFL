@@ -27,8 +27,9 @@ perCap2015 <- function (x) {
   x
 }
 
-# custom plot themes
+# custom plot themes and maps
 source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
+source("~/GitHub/ATF-FFL/R/usa-map-prep.R")
 
 # Cleanse and Bind Finance and FFL data ---------------------------------------
 
@@ -42,8 +43,8 @@ finance <- finance[-c(9, 52), ]
 # remove percentages variables
 # There are percentage-of-state-population variables, 
 # that have been converted to counts instead.
-finance <- finance %>%
-  select(-c(4:14))
+# finance <- finance %>%
+#   select(-c(4:14))
 
 # rename columns for binding
 colnames(finance) <- paste0("total", gsub("fin", "", colnames(finance)))

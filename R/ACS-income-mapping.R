@@ -396,14 +396,24 @@ summary(huber01$weight)
 
 .9/2 + .1
 
-ggplot(huber01, aes(reorder(.rownames, desc(weight)), weight, fill = weight)) +
+huber01.b <- huber01 %>%
+  filter(weight < 1)
+
+ggplot(huber01.b, aes(reorder(.rownames, desc(weight)), weight, fill = weight)) +
   geom_bar(stat = "identity") +
   scale_fill_gradient2(low = "coral4",
                        mid = "antiquewhite1",
                        high = "deepskyblue4",
                        midpoint = 0.55, guide = F) +
   pd.theme + coord_flip() +
-  labs(title = "Robust Regression 01 - Huber Assigned Weights\nPer Capita FFLs ~ Income Bracket, by State",
-       x = "", y = "weight")
+  theme(axis.text = element_text(size = 10)) +
+  labs(title = "", x = "", y = "weight")
+
+# Model 02: Robust Regression 02 ----------------------------------------------
+
+income02 <- lm(perCapitaFFL ~ pct.07.20000to24999 + pct.08.25000to34999 + fin.01.OccupiedHousingUnits,
+                data = income.ffl.pct)
+
+summary(income02)
 
 
