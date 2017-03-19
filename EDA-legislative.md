@@ -1,6 +1,10 @@
-# Legislatures by State
+# State Goverment
 
-Legislative data by state for the years 2014-2016. Structure of the data:
+State government data for the years 2014-2016. The **legislative branch** of each state's government generally comprises a State Sentate and State House of Representatives<sup>[1](#notes)</sup>, and generally these are referred to as the Upper and Lower Houses, respectively<sup>[2](#notes)</sup>. The **executive branch** of a state's government is headed by an elected Governor. 
+
+Historical data on parties elected to state government were acquired from the National Conference of State Legislatures ([NCLS](http://www.ncsl.org/)), in the form of annual tables which were converted to CSVs using Tabula. 
+
+Structure of the data:
 
 ```{R}
 str(legislature)
@@ -21,21 +25,47 @@ str(legislature)
  $ Year         : chr  "2014" "2014" "2014" "2014" ...
 ```
 
-# Party Totals 2014-2016
+# State Governments by Party - 2014-2016
+
+Given the legislative and executive branches of state government, 3 categories were presented in the data:
+
+- Legislative Control - party which holds both Senate and House, or split
+- Governing Party - party of the elected governor
+- State Control - party which holds both Legislative Control and Governorship, or split
+
+or 
+
+- **Legislative Control** + **Governing Party** = **State Control**
 
 ![](R_plots/06-model-building-legislature/EDA-facet-bar-party-by-year.png)
 
-A common thread through the party totals over the years is 
-- a receding of **Democratic** seats, and
-- slight increase in **Divided**, **Independent**, and **Split** seats.
-- **Republican** seats remain relatively steady, with a slight increase from 2014-15.
+Observations on the party totals over the years:
 
-There might be a popular notion that Republicans are 'gaining' seats on Democrats, but the voting results show Democrats are losing seats to Independents, and within-state divisions are increasing - particularly arriving at 2016. 
+- generally - a receding of **Democratic** seats, and
+- slight increase in **Divided** and **Split** seats.
+- emergence of an  **Independent** seat.
+- **Republican** seats remain relatively steady, with a slight increase from 2014 that carries over to 2016 (the _general_ length of term)
+
+There might be a popular notion that Republicans are 'gaining' seats on Democrats, but the voting results show Democrats are losing seats to Independents, and within-state divisions are increasing - particularly arriving at 2016.
+
+![](R_plots/06-model-building-legislature/legislative-facet-map-all.jpg)
+
+**State Control** becomes an interesting category to look at on the map - from 2014 onwards the United States visually appears to be of 3 parties - this is superficial to some degree, as the third 'party' is simply states divided between Democrat and Republican. A stacked area chart gives another sense of these three 'parties' and the space they occupy:
 
 ![](R_plots/06-model-building-legislature/EDA-facet-bar-by-area.png)
 
+# Political Control in 2014
+
+2014 becomes a particular year of interest because the governing parties in place would feasibly be enacting legislation that would affect 2015-onwards. 
+
 ![](R_plots/06-model-building-legislature/legislative-map-2014.jpg)
 
+
+
+# Notes
+<sup>1</sup> Nebraska is the exception, having a unicameral legislative body.
+
+<sup>2</sup> "State governments of the United States", [Wikipedia](https://en.wikipedia.org/wiki/State_governments_of_the_United_States).
 
 
 
