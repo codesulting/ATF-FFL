@@ -1,6 +1,6 @@
 # The American Workforce - by Industry
 
-The [United States Census](https://www.census.gov/acs/www/data/data-tables-and-tools/subject-tables/) provides information on the total population in the workforce by broad industry category<sup>1</sup>. 
+The [United States Census](https://www.census.gov/acs/www/data/data-tables-and-tools/subject-tables/) provides information on the total population in the workforce by broad industry category<sup>[1](#notes)</sup>. 
 
 - Can certain characteristics be observed from state to state? 
 - Can any trends observed have association with the number of Federal Firearms Licenses for that state or region?
@@ -216,9 +216,40 @@ Residual standard error: 11.68 on 46 degrees of freedom
 Multiple R-squared:  0.7257,	Adjusted R-squared:  0.7078 
 F-statistic: 40.56 on 3 and 46 DF,  p-value: 5.688e-13
 ```
+
+As expected from the exploratory scatterplots, `agriculturePC` carries weight as a strong predictor. What happens if we remove this variable? How do the other variables interact? 
+
+```{R}
+# remove agriculture - its a strong predictor
+mod.02 <- lm(perCapitaFFL ~ wholesalePC + financePC + constructionPC + 
+               manufacturingPC + pro.scientificPC, data = industry.model)
+summary(mod.02)
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+# -39.178  -7.129  -0.707   7.176  35.668 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      27.1591208 20.4280659   1.330  0.19054    
+wholesalePC      -0.0099197  0.0098619  -1.006  0.31998    
+financePC        -0.0079997  0.0034765  -2.301  0.02618 *  
+constructionPC    0.0251843  0.0050696   4.968 1.07e-05 ***
+manufacturingPC  -0.0001537  0.0013427  -0.114  0.90939    
+pro.scientificPC -0.0078592  0.0021692  -3.623  0.00075 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 13.56 on 44 degrees of freedom
+Multiple R-squared:  0.6459,	Adjusted R-squared:  0.6057 
+F-statistic: 16.05 on 5 and 44 DF,  p-value: 5.451e-09
+```
+
+`pro.scientificPC` and `construction` come to the fore as strongest predictors now. The adjusted R-squared does suffer a significant decrease because of this too though. 
+
+
 ## Robust Regression 01
 
-Robust linear model using 
+Robust linear model using per capita population data from the following industries:
 
 - agriculture
 - wholesale
@@ -234,8 +265,11 @@ industry.01 <- rlm(perCapitaFFL ~ agriculturePC + wholesalePC + financePC +
 
 summary(industry.01)
 ```
+The diagnostic plot shows strong influence of **North Dakota**, **Montana**, and **Delaware**. In the Q-Q plot, **Montana**, **Alaska**, and **New Hampshire** (in addition to states on the low end) appear to be skewing the distribution of residuals away from normal.
 
-Weights assigned by the model:
+![robust-01-diagnostics](R_plots/04-model-building-industry/robust-01-diagnostics.png)
+
+How did the robust regression handle the more severe outliers? A look at the weights assigned by the model:
 
 ```{R}
 huber.01 <- data.frame(.rownames = industryPerCapita$NAME, 
@@ -257,6 +291,87 @@ huber.01 <- data.frame(.rownames = industryPerCapita$NAME,
 11  North Dakota  -9.890754 0.8525111
 12    Washington  -9.435684 0.8938027
 ```
+
+Overall, 13 states were given weight less than 1 in the robust model. 
+
+![](R_plots/04-model-building-industry/industry01-weight-comparison.jpg)
+
+#### How does each industry's observed vs. fitted values appear?
+
+First to create a "long" dataframe in order to create a facetted plot by industry:
+
+```{R}
+# create long dataframe
+industry.huber02 <- industry.huber01 %>%
+  gather("industry", "ind.perCapita", 2:8)
+
+# append perCapitaFFL data
+ffl$.rownames <- ffl$NAME
+
+industry.huber02 <- ffl %>%
+  dplyr::select(.rownames, perCapitaFFL) %>%
+  left_join(industry.huber02) %>%
+  filter(industry != "perCapitaFFL")
+
+# rename and clean up industry categories
+industry.huber02$industry <- gsub("PC", "", industry.huber02$industry)
+industry.huber02$industry <- capwords(industry.huber02$industry)
+
+# factor industry categories
+industry.huber02$industry <- factor(industry.huber02$industry)
+```
+
+And then to plot observed vs. fitted values, by industry:
+
+```{R}
+# create facetted plot
+industry.huber02 %>%
+  group_by(industry) %>%
+  ggplot(aes(ind.perCapita, perCapitaFFL, label = .rownames)) +
+  geom_point(size = 0.75, alpha = 0.75) +
+  geom_point(aes(ind.perCapita, weighted.fit),
+             color = "firebrick3", alpha = 0.8,
+             shape = 23, size = 2.5,
+             data = industry.huber02) +
+  geom_text(size = 2.5, alpha = 0.7,
+            position = "jitter",
+            check_overlap = T,
+            hjust = 1, 
+            vjust = 1) +
+  geom_errorbar(aes(x = ind.perCapita, 
+                    ymin = weighted.fit, 
+                    ymax = perCapitaFFL), 
+                linetype = "dotted") +
+  geom_smooth(method = "loess", se = F, size = 0.2, 
+              color = "deepskyblue4", 
+              linetype = "longdash") +
+  facet_wrap(~ industry, scales = "free_x", nrow = 3) +
+  pd.theme +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black")) +
+  labs(x = "per capita population by industry",
+       y = "per capita Federal Firearms Licenses")
+```
+
+![](R_plots/04-model-building-industry/facet-robust01-fitted-vs-observed.png)
+
+**Montana** and **Alaska** consistently have their fitted values adjusted by the model, while **Wyoming** remains constant.
+
+ `Agriculture` appears closest showing a linear relationship.
+ 
+![](R_plots/04-model-building-industry/robust-01-fit-v-obs-agriculture.png) 
+
+In the diagnostic plots of the robust regression model (and bar plots of model weights), **New Hampshire** appeared to throw off the normality of errors. Taking a subset of the above facetted plots might show why, more clearly. This might also reveal how other outliers were accounted for more clearly.
+
+```{R}
+# subset for residuals > 5 or residuals < -9
+industry.outliers <- industry.huber02 %>%
+  group_by(industry) %>%
+  filter(.resid > 5 | .resid < -9) 
+```
+
+![](R_plots/04-model-building-industry/facet-robust01-fitted-vs-observed-subset.png)
+
 
 # Notes
 
