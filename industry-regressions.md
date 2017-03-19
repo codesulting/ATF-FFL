@@ -1,10 +1,13 @@
-# Industry Regressions
+# The American Workforce - by Industry
 
-The United States Census provides information by state, on the total population in the workforce by broad industry category. Can certain characteristics be observed from state to state? And can any trends in workforce associated with a particular state or region have an association with the number of Federal Firearms Licenses for that state? 
+The [United States Census](https://www.census.gov/acs/www/data/data-tables-and-tools/subject-tables/) provides information on the total population in the workforce by broad industry category<sup>1</sup>. 
+
+- Can certain characteristics be observed from state to state? 
+- Can any trends observed have association with the number of Federal Firearms Licenses for that state or region?
 
 ## Exploratory Plots
 
-A look at the total workforce population by state:
+Who's got the largest workforce in the United States? 
 
 ![](R_plots/04-model-building-industry/EDA-total-workforce-by-state.png)
 
@@ -12,16 +15,85 @@ This is a bit misleading, as it takes raw totals and doesn't normalize populatio
 
 ![](R_plots/04-model-building-industry/EDA-workforce-per-capita.png)
 
-There's much less variance once adjusted per capita - a range of about 10,000 separates the min and max values, as opposed to a range of millions as seen in the raw counts. 
+There's much less variance once adjusted per capita - a range of about 10,000 separates the min and max values, as opposed to a range of millions as seen in the raw counts. Of course, this also can be a result of the polling sample conducted by the US Census.
 
 ## Industry Categories
 
 There are several broad industries the US Census groups the workforce into:
 
 - Agriculture, Forestry, Mining, Hunting & Fishing
-- 
+- Construction
+- Manufacturing
+- Wholesale trade
+- Retail trade
+- Transportation and warehousing, and utilities
+- Information
+- Finance and insurance, and real estate, rental, and leasing
+- Professional, scientific, management, and administrative and waste management services
+- Educational services, health care, and social assistance
+- Arts, entertainment, recreation, accomodation and food services
+- Other services, excluding public administration
+- Public Administration
 
-## Baseline Model - all variables
+The original dataset provided raw counts; per capita numbers for each industry and state were created. Given that there are 13 categories, a facetted scatterplot of each gave only a cursory sense. 
+
+Looking at a few specific industries, some potential trends appear to emerge.
+
+```{R}
+# select per capita observations &
+# create a long dataframe
+indPC <- industryPerCapita %>%
+  select(NAME, Pop2015, contains("PC"), perCapitaFFL) %>%
+  gather(key = Industry, value = PerCapIndustry, 3:16)
+
+# filter for industries of interest
+# scatterplot against per capita FFLs
+indPC %>% group_by(Industry) %>%
+  filter(Industry == "Agriculture" | 
+           Industry == "Construction" | 
+           Industry == "Finance" |
+           Industry == "Sciences" | 
+           Industry == "Public Administration" |
+           Industry == "Wholesale") %>%
+  ggplot(aes(PerCapIndustry, perCapitaFFL, label = NAME)) +
+  geom_point(size = 1, alpha = 0.65) +
+  geom_text(size = 2.5, position = "jitter", 
+            alpha = 0.85, hjust = 1.075, vjust = 1,
+            check_overlap = T, family = "Gill Sans") +
+  facet_wrap(~ Industry, scales = "free_x", nrow = 5) + 
+  pd.theme +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black"),
+        axis.text = element_text(size = 8),
+        axis.title = element_text(size = 10)) +
+  labs(title = "Federal Firearms Licenses ~ Workforce Industry Population, per 100k",
+       y = "FFLs per capita", x = "workforce population")
+```
+
+![](R_plots/04-model-building-industry/facet-workforce-FFL-PC-01.png)
+
+- `Agriculture` (_Agriculture, Forestry, Hunting & Fishing, and Mining_) appears to show strong positive linear trend. `Construction` may have a weak positive linear relationship.
+- `Finance` and `Sciences` appear to have a weak linear relationship with FFLs
+- `Wholesale` appears vague.
+- `Public Administration` has a few very large outliers in FFL count and per capita workforce.
+
+It might be worth noting that **Alaska**, **Montana**, and **Wyoming** consistently appear as outliers because of their high per capita FFL counts. A closer look at few specific industries before model building: 
+`Agriculture`: the more workers, the more firearms licenses? 
+
+![](R_plots/04-model-building-industry/scatter-FFL-agriculture.png)
+
+`Sciences`: a vaguely negative linear trend?
+
+![](R_plots/04-model-building-industry/scatter-FFL-science.png)
+
+`Finance`: another vaguely negative linear trend? 
+
+![](R_plots/04-model-building-industry/scatter-FFL-finance.png)
+
+## Baseline Maximal Model
+
+To get some sense of the variables and their effects and interactions, an all-inclusive maximal model is fit.
+
 ```{R}
 industry.model <- industry %>%
   dplyr::select(perCapitaFFL, 24:37)
@@ -64,9 +136,16 @@ A diagnostic plot of this first maximal model:
 
 ![](R_plots/04-model-building-industry/industry-mod00.png)
 
-Montana, Alaska, and Nevada appear to be influential outliers. 
+- Montana 
+- Alaska 
+- Nevada 
 
-Hawaii and Louisiana also appear. 
+appear to be influential outliers. 
+
+- Hawaii
+- Louisiana 
+
+also appear. 
 
 ## Reduction of the Baseline Model
 
@@ -179,3 +258,6 @@ huber.01 <- data.frame(.rownames = industryPerCapita$NAME,
 12    Washington  -9.435684 0.8938027
 ```
 
+# Notes
+
+<sup>1</sup> [American Community Survey](https://www.census.gov/acs/www/data/data-tables-and-tools/subject-tables/), **Table S2407**: _Industry by Class of Worker for the Civilian Employed Population 16 Years and Over_	
