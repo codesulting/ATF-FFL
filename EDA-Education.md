@@ -239,12 +239,53 @@ F-statistic: 13.51 on 4 and 45 DF,  p-value: 2.602e-07
 
 ![](R_plots/05-model-building-education/EDA-edu-mod04-diagnostics.png)
 
+
 # High School and College Graduate Ratios
 
+Would the ratio of High Schooll and College Graduates to the Total Population be useful for modeling? 
+
 ```{R}
+edu.pc3 <- edu.pc3 %>%
+  mutate(ratio.HS = total.HS/total.pop,
+         ratio.BA = total.BA/total.pop,
+         ratio.18to24 = Total.18to24/total.pop,
+         ratio.25to34 = Total.25to34/total.pop,
+         ratio.35to44 = Total.35to44/total.pop,
+         ratio.45to64 = Total.45to64/total.pop,
+         ratio.65plus = Total.65plus/total.pop)
 
-
+rownames(edu.pc3) <- edu.pc3$NAME
 ```
+
+```{R}
+mod05 <- lm(perCapitaFFL ~ ratio.HS + ratio.BA + ratio.18to24 + ratio.25to34 +
+              ratio.35to44 + ratio.45to64 + ratio.65plus, data = edu.pc3)
+              
+summary(mod05)
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+# -27.811  -6.724  -0.665   8.153  50.769 
+
+Coefficients: (1 not defined because of singularities)
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   -551.50     157.08  -3.511  0.00106 ** 
+ratio.HS       537.00     105.81   5.075 7.92e-06 ***
+ratio.BA      -291.88      56.51  -5.165 5.89e-06 ***
+ratio.18to24   828.65     266.06   3.115  0.00327 ** 
+ratio.25to34   195.36     270.42   0.722  0.47394    
+ratio.35to44   -67.60     323.27  -0.209  0.83535    
+ratio.45to64   309.93     249.67   1.241  0.22121    
+ratio.65plus       NA         NA      NA       NA    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 15.41 on 43 degrees of freedom
+Multiple R-squared:  0.5532,	Adjusted R-squared:  0.4909 
+F-statistic: 8.874 on 6 and 43 DF,  p-value: 2.607e-06
+```
+
+![](R_plots/05-model-building-education/EDA-edu-mod05-diagnostics.png)
+
 
 
 

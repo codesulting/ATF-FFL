@@ -286,6 +286,7 @@ mod05 <- lm(perCapitaFFL ~ ratio.HS + ratio.BA + ratio.18to24 + ratio.25to34 +
 summary(mod05)
 plot(mod05)
 
+# where do the age brackets fall? 
 edu.pc3 %>%
   select(NAME, total.pop, Total.18to24, Total.25to34, Total.35to44, Total.45to64, Total.65plus) %>%
   mutate(perCapita.18to24 = (Total.18to24/total.pop) * 100000,
@@ -302,6 +303,7 @@ edu.pc3 %>%
         axis.text.y = element_text(size = 6)) +
   labs(x = "", y = "")
 
+# would age only make a good predictor? 
 age <- edu.pc3 %>%
   select(NAME, perCapitaFFL, total.pop, Total.18to24, Total.25to34, Total.35to44, Total.45to64, Total.65plus) %>%
   mutate(perCapita.18to24 = (Total.18to24/total.pop) * 100000,
