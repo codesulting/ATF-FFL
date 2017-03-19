@@ -39,9 +39,11 @@ Residual standard error: 10.12 on 36 degrees of freedom
 Multiple R-squared:  0.8387,	Adjusted R-squared:  0.7804 
 F-statistic: 14.39 on 13 and 36 DF,  p-value: 1.508e-10
 ```
-```
-plot(mod.00)
-```
+Given the exploratory scatterplots, there was an expectation that `agriculturalPC`, `pro.scientificPC`, and perhaps `financePC` would carry more weight in the model. 
+
+`PublicAdminPC` went asymptotic; that could be expected given the presence of very large outliers in this particular category. 
+
+A diagnostic plot of this first maximal model:
 
 ![](R_plots/04-model-building-industry/industry-mod00.png)
 
@@ -49,10 +51,9 @@ Montana, Alaska, and Nevada appear to be influential outliers.
 
 Hawaii and Louisiana also appear. 
 
-## Baseline Model - reduced
+## Reduction of the Baseline Model
 
 ```{R}
-
 mod.01 <- lm(perCapitaFFL ~ agriculturePC + wholesalePC + financePC +
                constructionPC + manufacturingPC + pro.scientificPC, data = industry.model)
 summary(mod.01)
@@ -76,7 +77,7 @@ Residual standard error: 10.5 on 43 degrees of freedom
 Multiple R-squared:  0.7926,	Adjusted R-squared:  0.7636 
 F-statistic: 27.38 on 6 and 43 DF,  p-value: 3.494e-13
 ```
-p-value and adjusted r-squared both look pleasant.
+**_p-value_** and _**adjusted r-squared**_ both look pleasant. It appears that by removing some of the 'noisier' variables, interactions between the remanining variables has become more clear.
 
 Diagnostics:
 ![](R_plots/04-model-building-industry/industry-mod01.png)
@@ -86,17 +87,17 @@ Influential Outliers:
 - Montana
 - Delaware
 
+Montana and North Dakota tend to appear as outliers in many models because of their relatively high Firearms License counts. Delaware might appear influential here because of its leading status in the finance industry. 
+
 Other Outliers:
 - Montana
 - Alaska
 - Louisiana
 
-## 
-
-## Minimal Adequate Model
+## Minimal Adequate Model Candidate
 
 ```{R}
-# agricultre, science, construction
+# agriculture, science, construction
 mod.06 <- lm(perCapitaFFL ~ agriculturePC + constructionPC + 
                pro.scientificPC, data = industry.model)
                
@@ -118,7 +119,6 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 Residual standard error: 11.68 on 46 degrees of freedom
 Multiple R-squared:  0.7257,	Adjusted R-squared:  0.7078 
 F-statistic: 40.56 on 3 and 46 DF,  p-value: 5.688e-13
-
 ```
 ## Robust Regression 01
 
