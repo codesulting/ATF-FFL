@@ -18,8 +18,6 @@ library(ggplot2)
 acs <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-all-data.csv", stringsAsFactors = F)
 
 # individual datasets to explore
-education <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-education.csv", stringsAsFactors = F)
-finance <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-finance.csv", stringsAsFactors = F)
 industry <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-industry.csv", stringsAsFactors = F)
 working.class <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-working-class.csv", stringsAsFactors = F)
 
@@ -58,6 +56,7 @@ write.csv(pop, file = "~/GitHub/ATF-FFL/data/population-compact.csv", row.names 
 # EDA: Industry ---------------------------------------------------------------
 
 industry <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-industry.csv", stringsAsFactors = F)
+pop <- read.csv("~/GitHub/ATF-FFL/data/population-compact.csv", stringsAsFactors = F)
 str(industry)
 summary(industry)
 
@@ -149,7 +148,7 @@ ggplot(industryPerCapita,
        y = "per capita Federal Firearms Licenses", 
        x = "per capita workforce population", 
        fill = "") +
-  pd.classic
+  pd.scatter
 
 # This appears to be significant - 
 # an upward trend, positive correlation.
@@ -166,7 +165,7 @@ ggplot(industryPerCapita,
   labs(title = "FFLs ~ Industry Type: Construction per 100k", 
        y = "per capita FFLs", 
        x = "per capita workforce population", fill = "") +
-  pd.classic
+  pd.scatter
 
 # FFLs ~ Public Administration
 ggplot(industryPerCapita, aes(publicAdminPC, perCapitaFFL, label = NAME)) +
@@ -177,7 +176,7 @@ ggplot(industryPerCapita, aes(publicAdminPC, perCapitaFFL, label = NAME)) +
   labs(title = "FFLs ~ Industry Type: Public Administration per 100k", 
        y = "per capita FFLs", 
        x = "per capita workforce population", fill = "") +
-  pd.classic
+  pd.scatter
 
 # FFLs ~ Manufacturing
 ggplot(industryPerCapita, aes(manufacturingPC, perCapitaFFL, label = NAME)) +
@@ -188,7 +187,7 @@ ggplot(industryPerCapita, aes(manufacturingPC, perCapitaFFL, label = NAME)) +
   labs(title = "FFLs ~ Industry Type: Manufacturing per 100k", 
        y = "per capita FFLs", 
        x = "per capita workforce population", fill = "") +
-  pd.classic
+  pd.scatter
 
 # FFLs ~ Finance
 ggplot(industryPerCapita, aes(financePC, perCapitaFFL, label = NAME)) +
@@ -199,7 +198,7 @@ ggplot(industryPerCapita, aes(financePC, perCapitaFFL, label = NAME)) +
   labs(title = "FFLs ~ Industry Type: Finance per 100k", 
        y = "per capita FFLs", 
        x = "per capita workforce population", fill = "") +
-  pd.classic
+  pd.scatter
 
 # FFLs ~ Scientific
 ggplot(industryPerCapita, aes(pro.scientificPC, perCapitaFFL, label = NAME)) +
@@ -210,7 +209,7 @@ ggplot(industryPerCapita, aes(pro.scientificPC, perCapitaFFL, label = NAME)) +
   labs(title = "FFLs ~ Industry Type: Sciences per 100k", 
        y = "per capita FFLs", 
        x = "per capita workforce population", fill = "") +
-  pd.classic
+  pd.scatter
 
 # FACET plot for all variables ------------------------------------------------
 
