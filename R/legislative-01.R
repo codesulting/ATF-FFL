@@ -143,8 +143,7 @@ ggplot(legislature.stack, aes(Year, fill = Party)) +
   labs(x = "", y = "number of states")
 
 
-
-# Map Controls by State -------------------------------------------------------
+# Map Parties by State --------------------------------------------------------
 
 # merge spatial data
 colnames(legislature)[1] <- "NAME"
@@ -269,7 +268,6 @@ leg.map %>%
   ggplot(aes(lon, lat, group = group)) +
   geom_polygon(aes(fill = Governing.Party)) + 
   scale_fill_manual(values = c("deepskyblue4",
-                               "gray23",
                                "firebrick4",
                                "antiquewhite2")) +
   coord_map("polyconic") +
@@ -293,17 +291,118 @@ leg.ffl <- leg.14 %>%
 
 # clean Nebraska
 str(leg.ffl)
-leg.ffl$Total.House <- as.numeric(leg.ffl$Total.House)
-leg.ffl[27, c(4, 5, 8, 9, 10)] <- 0
+leg.ffl[27, c(4, 5, 7, 8, 9, 10)] <- "0"
 
+leg.ffl$Total.House <- as.numeric(levels(leg.ffl$Total.House))[leg.ffl$Total.House]
 rownames(leg.ffl) <- leg.ffl$NAME
+leg.ffl$Total.House <- as.integer(leg.ffl$Total.House)
+leg.ffl$Total.House
 
 leg.model <- leg.ffl %>%
-  dplyr::select(1:9, 11, 12, 13, 20)
+  dplyr::select(1:9, 11, 12, 13, 20) %>%
+  filter(NAME != "Nebraska")
 
+rownames(leg.model) <- leg.model$NAME
+
+# Model 01 --------------------------------------------------------------------
 mod01 <- lm(perCapitaFFL ~ Total.Seats + Total.Senate + Senate.Dem + Senate.Rep +
-              Total.House + House.Dem + House.Rep, data = leg.ffl)
+              Total.House + House.Dem + House.Rep, data = leg.model)
 summary(mod01)
 
 par(mfrow = c(2, 2), family = "GillSans")
 plot(mod01)
+
+# Model 02 --------------------------------------------------------------------
+mod02 <- lm(perCapitaFFL ~ Senate.Dem + Senate.Rep + House.Dem + House.Rep, data = leg.model)
+summary(mod02)
+
+par(mfrow = c(2, 2), family = "GillSans")
+plot(mod01)
+
+# Model 03 --------------------------------------------------------------------
+# proportions
+
+leg.model$Senate.Dem <- as.integer(leg.model$Senate.Dem)
+leg.model$Senate.Rep <- as.integer(leg.model$Senate.Rep)
+leg.model$House.Dem <- as.integer(leg.model$House.Dem)
+leg.model$House.Rep <- as.integer(leg.model$House.Rep)
+
+leg.model <- leg.model %>%
+  mutate(ratio.senate.Dems = Senate.Dem/Total.Senate,
+         ratio.senate.Reps = Senate.Rep/Total.Senate,
+         ratio.house.Dems = House.Dem/Total.House,
+         ratio.house.Reps = House.Rep/Total.House,
+         ratio.Dems = (Senate.Dem + House.Dem)/Total.Seats,
+         ratio.Reps = (Senate.Rep + House.Rep)/Total.Seats)
+
+leg.model.ratio <- leg.model %>%
+  dplyr::select(NAME, perCapitaFFL, contains("ratio"))
+
+rownames(leg.model.ratio) <- leg.model.ratio$NAME
+
+mod03 <- lm(perCapitaFFL ~ .-NAME, data = leg.model.ratio)
+summary(mod03)
+
+# Model 04 --------------------------------------------------------------------
+
+legislature.ffl <- legislature %>%
+  left_join(ffl) %>%
+  dplyr::select(1:14, perCapitaFFL)
+
+legislature2$House.Dem <- as.integer(legislature2$House.Dem)
+legislature2$House.Rep <- as.integer(legislature2$House.Rep)
+rownames(legislature2) <- legislature2$NAME
+
+mod04<- lm(perCapitaFFL ~ .-NAME, data = legislature2)
+summary(mod04)
+
+
+# Model 05 --------------------------------------------------------------------
+
+mod05 <- lm(perCapitaFFL ~ Legislative.Control + Governing.Party + State.Control, 
+           data = legislature.ffl)
+summary(mod05)
+anova(mod05)
+
+# Model 06 --------------------------------------------------------------------
+
+mod06 <- lm(perCapitaFFL ~ Legislative.Control + Governing.Party, data = legislature.ffl)
+summary(mod06)
+anova(mod06)
+
+# Model 07 --------------------------------------------------------------------
+
+mod07 <- lm(perCapitaFFL ~ Legislative.Control, data = legislature.ffl)
+summary(mod07)
+anova(mod07)
+plot(mod07)
+
+# Robust Regression 01 --------------------------------------------------------
+
+rr.leg.01 <- rlm(perCapitaFFL ~ Legislative.Control, data = legislature.ffl)
+summary(rr.leg.01)
+
+weights.rr01 <- data.frame(.rownames = legislature.ffl$NAME, 
+                           .resid = rr.leg.01$resid,
+                           weight = rr.leg.01$w,
+                           year = legislature.ffl$Year) %>% arrange(weight)
+
+weights.rr01 %>% filter(year == "2014")
+#         .rownames        .resid    weight year
+# 1         Wyoming  7.255818e+01 0.2597453 2014
+# 2         Montana  7.164401e+01 0.2630597 2014
+# 3          Alaska  4.965067e+01 0.3795889 2014
+# 4         Vermont  3.311714e+01 0.5690920 2014
+# 5   West Virginia  3.229100e+01 0.5836522 2014
+# 6    South Dakota  2.747420e+01 0.6860015 2014
+# 7           Idaho  2.458215e+01 0.7667139 2014
+# 8           Maine  2.229809e+01 0.8452263 2014
+# 9    North Dakota  2.227802e+01 0.8460180 2014
+# 10        Alabama -6.873761e+00 1.0000000 2014
+
+# join with fitted and observed data
+rr.huber01 <- augment(rr.leg.01) %>%
+  left_join(weights.rr01) %>%
+  arrange(weight) %>%
+  mutate(weighted.resid = .resid * weight,
+         weighted.fit = .fitted + weighted.resid)
