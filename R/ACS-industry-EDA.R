@@ -214,19 +214,12 @@ ggplot(industryPerCapita, aes(pro.scientificPC, perCapitaFFL, label = NAME)) +
 
 # FACET plot for all variables ------------------------------------------------
 
-# select only per capita observations
-industryPerCapita <- industryPerCapita %>%
-  select(ind.GEO.id2, NAME, Pop2015, 
-         workforcePC, agriculturePC, constructionPC, manufacturingPC,
-         wholesalePC, retailPC, transportationPC, informationPC,
-         financePC, pro.scientificPC, educationPC, artsPC, otherPC, 
-         publicAdminPC, perCapitaFFL)
-
+# select per capita observations
 # create a long dataframe
 indPC <- industryPerCapita %>%
-  gather(key = Industry, value = Pop2015, 4:17)
+  select(NAME, Pop2015, contains("PC"), perCapitaFFL) %>%
+  gather(key = Industry, value = PerCapIndustry, 3:16)
 
-colnames(indPC)[6] <- "PerCapIndustry"
 indPC$Industry <- gsub("PC", "", indPC$Industry)
 indPC$Industry <- gsub("publicAdmin", "Public Administration", indPC$Industry)
 
@@ -244,7 +237,9 @@ write.csv(indPC, file = "~/GitHub/ATF-FFL/data/2015-ACS-industryPerCapita.csv", 
 write.csv(industryPerCapita, file = "~/GitHub/ATF-FFL/data/2015-ACS-industryPerCapita-full.csv",
           row.names = F)
 
-# Facetted Plot for all variables ---------------------------------------------
+# Facetted Plots --------------------------------------------------------------
+
+# Facet for all variables
 indPC %>% group_by(Industry) %>%
   filter(Industry != "Workforce") %>%
   ggplot(aes(PerCapIndustry, perCapitaFFL, label = NAME)) +
@@ -259,12 +254,6 @@ indPC %>% group_by(Industry) %>%
         axis.title = element_text(size = 12)) +
   labs(title = "Federal Firearms Licenses ~ Workforce Industry Population, per 100k",
        y = "FFLs per capita", x = "workforce population")
-
-library(extrafont)
-font_import()
-fonttable()
-fonts()
-loadfonts(device="postscript", quiet = T)
 
 # Facetted Plot for Variables of Interest - Edit 01
 indPC %>% group_by(Industry) %>%
@@ -314,15 +303,16 @@ indPC %>% group_by(Industry) %>%
            Industry == "Wholesale") %>%
   ggplot(aes(PerCapIndustry, perCapitaFFL, label = NAME)) +
   geom_point(size = 1, alpha = 0.65) +
-  geom_text(size = 2.25, position = "jitter", 
+  geom_text(size = 2.5, position = "jitter", 
             alpha = 0.85, hjust = 1.075, vjust = 1,
             check_overlap = T, family = "Gill Sans") +
-  facet_wrap(~ Industry, scales = "free_x", nrow = 5) + pd.theme +
+  facet_wrap(~ Industry, scales = "free_x", nrow = 5) + 
+  pd.theme +
   theme(strip.background = element_rect(fill = NA, color = "black"),
         panel.background = element_rect(fill = NA, color = "black"),
         axis.text = element_text(size = 8),
         axis.title = element_text(size = 10)) +
-  labs(title = "FFLs ~ Workforce Industry Population, per 100k",
+  labs(title = "Federal Firearms Licenses ~ Workforce Industry Population, per 100k",
        y = "FFLs per capita", x = "workforce population")
 
 # Facetted Plot for Variables of Interest - Edit 04
