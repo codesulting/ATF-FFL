@@ -348,3 +348,7 @@ rpart.plot(all.tree, type = 1, extra = 1,
            split.family = "GillSans", split.cex = 1.1,
            nn.family = "GillSans", nn.cex = 0.85,
            fallen.leaves = T)
+
+source("https://bioconductor.org/biocLite.R")
+biocLite("ggtree")
+library(ggtree)
