@@ -5,7 +5,7 @@ The [United States Census](https://www.census.gov/acs/www/data/data-tables-and-t
 - Can certain characteristics be observed from state to state? 
 - Can any trends observed have association with the number of Federal Firearms Licenses for that state or region?
 
-## Exploratory Plots
+## Total Workforce by Industry
 
 Who's got the largest workforce in the United States? 
 
