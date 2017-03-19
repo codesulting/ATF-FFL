@@ -8,8 +8,10 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(broom)
+library(MASS)
 
 source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
+source("~/GitHub/ATF-FFL/R/capwords.R")
 
 # dataset containing data by state for:
 # - population by sex, race/origin
@@ -73,7 +75,8 @@ mod.00 <- lm(perCapitaFFL ~ ., industry.model)
 summary(mod.00)
 plot(mod.00)
 
-mod.01 <- lm(perCapitaFFL ~ agriculturePC + wholesalePC + financePC +
+mod.01 <- lm(perCapitaFFL ~ 
+               agriculturePC + wholesalePC + financePC +
                constructionPC + manufacturingPC + pro.scientificPC, data = industry.model)
 summary(mod.01)
 plot(mod.01)
@@ -87,20 +90,16 @@ plot(mod.02)
 ## Single Predictor Regressions ----------------------------------------------=
 
 # agriculture
-mod.03 <- tidy(lm(perCapitaFFL ~ agriculturePC, data = industry.model))
+mod.03 <- lm(perCapitaFFL ~ agriculturePC, data = industry.model)
+summary(mod.03)
 
 # science
-mod.04 <- tidy(lm(perCapitaFFL ~ pro.scientificPC, data = industry.model))
+mod.04 <- lm(perCapitaFFL ~ pro.scientificPC, data = industry.model)
+summary(mod.04)
 
 # construction
-mod.05 <- tidy(lm(perCapitaFFL ~ constructionPC, data = industry.model))
-
-
-regressions <- rbind(mod.03, mod.04, mod.05)
-regressions
-
-regressions <- lapply(industry.model[, -c(1, 16)],
-                       function(x) rbind(tidy(lm(industry.model$perCapitaFFL ~ x))))
+mod.05 <- lm(perCapitaFFL ~ constructionPC, data = industry.model)
+summary(mod.05)
 
 
 # Minimal Adequate Model ------------------------------------------------------
@@ -118,6 +117,7 @@ industry.01 <- rlm(perCapitaFFL ~ agriculturePC + wholesalePC + financePC +
                        constructionPC + manufacturingPC + pro.scientificPC, data = industry.model)
 
 summary(industry.01)
+plot(industry.01)
 
 huber.01 <- data.frame(.rownames = industryPerCapita$NAME, 
                        .resid = industry.01$resid,
@@ -145,8 +145,40 @@ ggplot(industry.huber01, aes(weighted.resid)) +
 
 summary(industry.huber01$weighted.fit)
 
-# plot
-ggplot(industry.huber01, aes(agriculturePC, perCapitaFFL, fill = weighted.fit, label = .rownames)) + 
+# which states were reduced in weight by the model? 
+ggplot(industry.huber01, 
+       aes(reorder(.rownames, desc(weight)), 
+           weight, fill = weight)) +
+  geom_bar(stat = "identity") + 
+  scale_fill_gradient2(low = "coral4",
+                       mid = "antiquewhite1",
+                       high = "deepskyblue4",
+                       midpoint = 0.5, guide = F) +
+  pd.theme + coord_flip() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  labs(x = "", y = "weight")
+
+# specific look at states w/ reduced weights
+industry.huber01 %>%
+  filter(weight < 1) %>%
+  arrange(desc(weight)) %>%
+  ggplot(aes(reorder(.rownames, desc(weight)), 
+             weight, 
+             fill = weight)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient2(low = "coral4",
+                       mid = "antiquewhite1",
+                       high = "deepskyblue4",
+                       midpoint = 0.5, guide = F) +
+  pd.theme + coord_flip() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14)) +
+  labs(x = "", y = "weight")
+  
+
+# Agriculture per capita vs per capita FFL
+ggplot(industry.huber01, aes(agriculturePC, perCapitaFFL, label = .rownames)) + 
   geom_point(size = 1.5) +
   geom_point(aes(agriculturePC, weighted.fit), color = "firebrick3", 
              shape = 23, size = 4, alpha = 0.8, data = industry.huber01) +
@@ -154,25 +186,101 @@ ggplot(industry.huber01, aes(agriculturePC, perCapitaFFL, fill = weighted.fit, l
             size = 3, hjust = 1, vjust = -0.65, 
             check_overlap = T, family = "GillSans") +
   geom_smooth(method = "loess", se = F, color = "deepskyblue4", 
-              size = 0.25, linetype = "longdash") +
+              size = 0.2, linetype = "longdash") +
   geom_errorbar(aes(x = agriculturePC, 
                     ymin = weighted.fit, 
                     ymax = perCapitaFFL), 
                 linetype = "dotted") +
-  scale_fill_gradient2(low = "deepskyblue4", 
-                       mid = "antiquewhite1", 
-                       high = "firebrick4",
-                       midpoint = 30, guide = F) +
-  labs(x = "percentage of population: Agriculture, Hunting & Fishing, Mining Industry",
-       title = "Robust Model 01: Observed vs. Fitted Values, Huber Weighting") +
+  labs(x = "per capita population: Agriculture, Hunting & Fishing, Mining Industry",
+       y = "per capita Federal Firearms Licenses",
+       title = "Robust Regression 01: Observed vs. Fitted Values") +
   pd.scatter
 
+# facetted plot of all variables in model - fitted vs observed ----------------
+
+# create long dataframe
+industry.huber02 <- industry.huber01 %>%
+  gather("industry", "ind.perCapita", 2:8)
+
+# append perCapitaFFL data
+ffl$.rownames <- ffl$NAME
+
+industry.huber02 <- ffl %>%
+  dplyr::select(.rownames, perCapitaFFL) %>%
+  left_join(industry.huber02) %>%
+  filter(industry != "perCapitaFFL")
+
+# rename and clean up industry categories
+industry.huber02$industry <- gsub("PC", "", industry.huber02$industry)
+industry.huber02$industry <- capwords(industry.huber02$industry)
+
+# factor industry categories
+industry.huber02$industry <- factor(industry.huber02$industry)
+
+# create facetted plot
+industry.huber02 %>%
+  group_by(industry) %>%
+  ggplot(aes(ind.perCapita, perCapitaFFL, label = .rownames)) +
+  geom_point(size = 0.75, alpha = 0.75) +
+  geom_point(aes(ind.perCapita, weighted.fit),
+             color = "firebrick3", alpha = 0.8,
+             shape = 23, size = 2.5,
+             data = industry.huber02) +
+  geom_text(size = 2.5, alpha = 0.7,
+            position = "jitter",
+            check_overlap = T,
+            hjust = 1, 
+            vjust = 1) +
+  geom_errorbar(aes(x = ind.perCapita, 
+                    ymin = weighted.fit, 
+                    ymax = perCapitaFFL), 
+                linetype = "dotted") +
+  geom_smooth(method = "loess", se = F, size = 0.2, 
+              color = "deepskyblue4", 
+              linetype = "longdash") +
+  facet_wrap(~ industry, scales = "free_x", nrow = 3) +
+  pd.theme +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black")) +
+  labs(x = "per capita population by industry",
+       y = "per capita Federal Firearms Licenses")
+
+# facetted plot of select variables in model - --------------------------------
+
+# subset for residuals > 5 or residuals < -9
+industry.outliers <- industry.huber02 %>%
+  group_by(industry) %>%
+  filter(.resid > 5 | .resid < -9)
+
+# create facetted plot
+industry.outliers %>%
+  group_by(industry) %>%
+  ggplot(aes(ind.perCapita, perCapitaFFL, label = .rownames)) +
+  geom_point(size = 0.75, alpha = 0.75) +
+  geom_point(aes(ind.perCapita, weighted.fit),
+             color = "firebrick3", alpha = 0.8,
+             shape = 23, size = 2.5,
+             data = industry.outliers) +
+  geom_text(size = 2.5, alpha = 0.7,
+            position = "jitter",
+            check_overlap = T,
+            hjust = 1, 
+            vjust = 1) +
+  geom_errorbar(aes(x = ind.perCapita, 
+                    ymin = weighted.fit, 
+                    ymax = perCapitaFFL), 
+                linetype = "dotted") +
+  geom_smooth(method = "loess", se = F, size = 0.2, 
+              color = "deepskyblue4", 
+              linetype = "longdash") +
+  facet_wrap(~ industry, scales = "free_x", nrow = 3) +
+  pd.theme +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black")) +
+  labs(x = "per capita population by industry",
+       y = "per capita Federal Firearms Licenses")
 
 
 
 
-
-
-
-
-
+  
