@@ -1,4 +1,4 @@
-# Legislative Control
+# Legislatures by State
 
 Legislative data by state for the years 2014-2016. Structure of the data:
 
@@ -21,7 +21,7 @@ str(legislature)
  $ Year         : chr  "2014" "2014" "2014" "2014" ...
 ```
 
-# Political Party Totals - 2014-2016
+# Party Totals 2014-2016
 
 ![](R_plots/06-model-building-legislature/EDA-facet-bar-party-by-year.png)
 
@@ -34,7 +34,7 @@ There might be a popular notion that Republicans are 'gaining' seats on Democrat
 
 ![](R_plots/06-model-building-legislature/EDA-facet-bar-by-area.png)
 
-
+![](R_plots/06-model-building-legislature/legislative-map-2014.jpg)
 
 
 
