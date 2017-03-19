@@ -1,6 +1,9 @@
-# Educational Attainment EDA
+# Educational Attainment
 
-Educational attainment data from the US Census/American Community Survey. Variables derived are per capita- population numbers for educational attainment by age bracket; e.g. per capita population 18-24 years old with High School diploma, per capita population 35-44 with Bachelor's Degree or higher. 
+Educational attainment data from the US Census/American Community Survey. Variables derived are per capita- population numbers for educational attainment by age bracket; _for example_: 
+
+- per capita population 18-24 years old with High School diploma, 
+- per capita population 35-44 with Bachelor's Degree or higher, &c.
 
 A look at the structure:
 
@@ -26,7 +29,7 @@ str(edu.pc2)
  $ pc.65plus.BA: num  4008 2936 5219 4047 3463 ...
 ```
 
-# Baseline linear model
+# Baseline Linear Model
 
 Baseline linear model fit, using all variables, to get a general sense of the data:
 
