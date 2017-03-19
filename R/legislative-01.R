@@ -6,6 +6,7 @@
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(MASS)
 
 # plot themes
 source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
@@ -14,17 +15,12 @@ source("~/GitHub/ATF-FFL/R/usa-map-prep.R")
 # dataset containing data by state for:
 # - state legislature - control
 # - state legislature - compensation      
+pop <- read.csv("~/GitHub/ATF-FFL/data/population-compact.csv", stringsAsFactors = F)
+ffl <- read.csv("~/GitHub/ATF-FFL/data/ffl-2016-perCapita-compact.csv", stringsAsFactors = F)
 
 leg.14 <- read.csv("~/GitHub/ATF-FFL/data/02-state-legislatures/control/2014.csv")
 leg.15 <- read.csv("~/GitHub/ATF-FFL/data/02-state-legislatures/control/2015.csv")
 leg.16 <- read.csv("~/GitHub/ATF-FFL/data/02-state-legislatures/control/2016.csv")
-pop <- read.csv("~/GitHub/ATF-FFL/data/population-compact.csv", stringsAsFactors = F)
-ffl <- read.csv("~/GitHub/ATF-FFL/data/ffl-2016-perCapita-compact.csv", stringsAsFactors = F)
-
-str(leg.14)
-summary(leg.14)
-
-# cleanse data ----------------------------------------------------------------
 
 # add year variable and merge dataframes
 leg.14$Year <- "2014"
@@ -33,6 +29,8 @@ leg.16$Year <- "2016"
 
 legislature <- rbind(leg.14, leg.15, leg.16)
 
+# cleanse data ----------------------------------------------------------------
+
 # replace "Dem*" with "Dem"
 levels(legislature$Legis.Control)
 levels(legislature$State.Control)
@@ -40,6 +38,8 @@ legislature$Legis.Control <- gsub("Dem\\*", "Dem", legislature$Legis.Control)
 legislature$State.Control <- gsub("Dem\\*", "Dem", legislature$State.Control)
 legislature$Legis.Control <- factor(legislature$Legis.Control)
 legislature$State.Control <- factor(legislature$State.Control)
+
+str(legislature)
 
 # Which Party controls more States, 2014-2016?
 ggplot(legislature, aes(State.Control)) +
@@ -53,7 +53,8 @@ ggplot(legislature, aes(State.Control, fill = State.Control)) +
                                "gray23", "firebrick4"), guide = F) +
   theme(strip.background = element_rect(fill = NA, color = "black"),
         panel.border = element_rect(fill = NA, color = "black")) +
-  labs(y = "", x = "State Control")
+  labs(y = "seats", x = "party", 
+       title = "2014-2016: State Control by Party")
 
 # Which Party controls more Legislature, in each year? 
 ggplot(legislature, aes(Legis.Control, fill = Legis.Control)) +
@@ -65,7 +66,8 @@ ggplot(legislature, aes(Legis.Control, fill = Legis.Control)) +
                                "antiquewhite2"), guide = F) +
   theme(strip.background = element_rect(fill = NA, color = "black"),
         panel.border = element_rect(fill = NA, color = "black")) +
-  labs(y = "", x = "Legislative Control")
+  labs(y = "seats", x = "party",
+       title = "2014-2016: Legislative Control by Party")
 
 
 # Which is the Governing Party, in each year? 
@@ -77,7 +79,8 @@ ggplot(legislature, aes(Gov.Party, fill = Gov.Party)) +
                                "antiquewhite2"), guide = F) +
   theme(strip.background = element_rect(fill = NA, color = "black"),
         panel.border = element_rect(fill = NA, color = "black")) +
-  labs(y = "", x = "Governing Party")
+  labs(y = "seats", x = "party",
+       title = "2014-2016: Governing Party")
 
 # Republicans dominate both years. Democrats make a very small portion,
 # with there being nearly as many "Divided" as there are "Republican". 
@@ -92,6 +95,8 @@ legislature %>%
                                "antiquewhite2")) +
   theme(strip.background = element_rect(fill = NA, color = "black"),
         panel.border = element_rect(fill = NA, color = "black"))
+
+# Facet Party Totals ----------------------------------------------------------
 
 # Map Controls by State -------------------------------------------------------
 
@@ -175,18 +180,22 @@ leg.map %>%
 
 # merge ffl data
 colnames(leg.14)[1] <- "NAME"
+
 leg.ffl <- leg.14 %>%
-  left_join(ffl) %>%
-  select(NAME, 2:5, 7:9, perCapitaFFL)
+  left_join(ffl)
 
 # clean Nebraska
 str(leg.ffl)
 leg.ffl$Total.House <- as.numeric(leg.ffl$Total.House)
-leg.ffl[27, 4:8] <- 0
+leg.ffl[27, c(4, 5, 8, 9, 10)] <- 0
 
 rownames(leg.ffl) <- leg.ffl$NAME
 
-mod01 <- lm(perCapitaFFL ~ .-NAME, data = leg.ffl)
+leg.model <- leg.ffl %>%
+  dplyr::select(1:9, 11, 12, 13, 20)
+
+mod01 <- lm(perCapitaFFL ~ Total.Seats + Total.Senate + Senate.Dem + Senate.Rep +
+              Total.House + House.Dem + House.Rep, data = leg.ffl)
 summary(mod01)
 
 par(mfrow = c(2, 2), family = "GillSans")
