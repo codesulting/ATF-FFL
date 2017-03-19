@@ -1,8 +1,25 @@
-# ACS Industry Regressions
+# Industry Regressions
+
+The United States Census provides information by state, on the total population in the workforce by broad industry category. Can certain characteristics be observed from state to state? And can any trends in workforce associated with a particular state or region have an association with the number of Federal Firearms Licenses for that state? 
 
 ## Exploratory Plots
 
-TODO: Add Scatterplot Facets
+A look at the total workforce population by state:
+
+![](R_plots/04-model-building-industry/EDA-total-workforce-by-state.png)
+
+This is a bit misleading, as it takes raw totals and doesn't normalize population across a single metric, i.e. California has the largest population, therefore it's expected to have the largest workforce population. Here are the figures, adjusted per 100k:
+
+![](R_plots/04-model-building-industry/EDA-workforce-per-capita.png)
+
+There's much less variance once adjusted per capita - a range of about 10,000 separates the min and max values, as opposed to a range of millions as seen in the raw counts. 
+
+## Industry Categories
+
+There are several broad industries the US Census groups the workforce into:
+
+- Agriculture, Forestry, Mining, Hunting & Fishing
+- 
 
 ## Baseline Model - all variables
 ```{R}
