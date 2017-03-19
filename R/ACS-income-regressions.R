@@ -181,7 +181,6 @@ full.weight <- income.huber.01 %>%
   dplyr::select(2:13) %>%
   do(tidy(lm(perCapitaFFL ~ ., data = .)))
   
-
 full.weight <- income.huber.01 %>% 
   filter(weight == 1) %>%
   dplyr::select(1:13)
@@ -189,4 +188,3 @@ full.weight <- income.huber.01 %>%
 fw00 <- lm(perCapitaFFL ~ .-.rownames, full.weight)
 summary(fw00)
 plot(fw00)
-
