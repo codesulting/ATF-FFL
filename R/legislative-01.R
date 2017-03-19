@@ -98,6 +98,52 @@ legislature %>%
 
 # Facet Party Totals ----------------------------------------------------------
 
+# clean up variable names
+colnames(legislature)[11:13] <- c("Legislative.Control", 
+                                  "Governing.Party", 
+                                  "State.Control")
+
+legislature.stack <- legislature %>%
+  dplyr::select(STATE, Legislative.Control, Governing.Party, State.Control, Year) %>%
+  gather("Area", "Party", 2:4)
+
+
+ggplot(legislature.stack, aes(Party, fill = Party)) +
+  geom_bar(stat = "count", position = "dodge") +
+  facet_wrap(~ Year) + 
+  pd.scatter + 
+  scale_fill_manual(values = c("deepskyblue4",
+                               "antiquewhite2",
+                               "cadetblue4",
+                               "gray23",
+                               "firebrick4",
+                               "antiquewhite4"), guide = F) +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black"),
+        axis.text.x = element_text(angle = 45, size = 11,
+                                   hjust = 1, vjust = 1),
+        axis.title = element_text(size = 12)) +
+  labs(x = "", y = "number of seats")
+
+ggplot(legislature.stack, aes(Year, fill = Party)) +
+  geom_bar(stat = "count") +
+  facet_wrap(~ Area) + 
+  pd.scatter + 
+  scale_fill_manual(values = c("deepskyblue4",
+                               "antiquewhite2",
+                               "cadetblue4",
+                               "gray23",
+                               "firebrick4",
+                               "antiquewhite4")) +
+  theme(strip.background = element_rect(fill = NA, color = "black"),
+        panel.background = element_rect(fill = NA, color = "black"),
+        axis.text = element_text(size = 11),
+        axis.title = element_text(size = 12),
+        legend.position = "bottom") + 
+  labs(x = "", y = "number of states")
+
+
+
 # Map Controls by State -------------------------------------------------------
 
 # merge spatial data
@@ -109,7 +155,7 @@ leg.map <- legislature %>%
 leg.map %>%
   filter(State.Control == "Divided" & Year == "2014") %>%
   ggplot(aes(lon, lat, group = group)) +
-  geom_polygon(aes(fill = Legis.Control)) + 
+  geom_polygon(aes(fill = Legislative.Control)) + 
   scale_fill_manual(values = c("deepskyblue4",
                                "firebrick4",
                                "antiquewhite2")) +
@@ -126,7 +172,7 @@ leg.map %>%
 leg.map %>%
   filter(Year == "2014") %>%
   ggplot(aes(lon, lat, group = group)) +
-  geom_polygon(aes(fill = Legis.Control), 
+  geom_polygon(aes(fill = Legislative.Control), 
                color = "white", size = 0.025) + 
   scale_fill_manual(values = c("deepskyblue4",
                                "gray23",
@@ -145,7 +191,7 @@ leg.map %>%
 leg.map %>%
   filter(Year == "2014") %>%
   ggplot(aes(lon, lat, group = group)) +
-  geom_polygon(aes(fill = Gov.Party), 
+  geom_polygon(aes(fill = Governing.Party), 
                color = "white", size = 0.025) + 
   scale_fill_manual(values = c("deepskyblue4",
                                "firebrick4")) +
@@ -156,7 +202,7 @@ leg.map %>%
         axis.title = element_blank(),
         legend.title = element_text(size = 12)) +
   labs(title = "2014: by Governing Party",
-       fill = "governing\nparty")
+       fill = "")
 
 # map all states by State Control
 leg.map %>%
@@ -175,6 +221,67 @@ leg.map %>%
         legend.title = element_text(size = 12)) +
   labs(title = "2014: by Party in State Control",
        fill = "governing\nparty")
+
+# Facetted Maps ---------------------------------------------------------------
+# facet map - state control
+leg.map %>% 
+  group_by(Year) %>%
+  ggplot(aes(lon, lat, group = group)) +
+  geom_polygon(aes(fill = State.Control)) + 
+  scale_fill_manual(values = c("deepskyblue4",
+                               "antiquewhite2",
+                               "gray23",
+                               "firebrick4")) +
+  coord_map("polyconic") +
+  facet_wrap(~ Year, ncol = 1) +
+  pd.theme +
+  theme(panel.grid = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        legend.title = element_text(size = 12),
+        legend.position = "bottom") +
+  labs(title = "State Control by Year",
+       fill = "")
+
+# facet map - legislative control
+leg.map %>% 
+  group_by(Year) %>%
+  ggplot(aes(lon, lat, group = group)) +
+  geom_polygon(aes(fill = Legislative.Control)) + 
+  scale_fill_manual(values = c("deepskyblue4",
+                               "gray23",
+                               "firebrick4",
+                               "antiquewhite2")) +
+  coord_map("polyconic") +
+  facet_wrap(~ Year, ncol = 1) +
+  pd.theme +
+  theme(panel.grid = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        legend.title = element_text(size = 12),
+        legend.position = "bottom") +
+  labs(title = "Legislative Control by Year",
+       fill = "")
+
+# facet map - governing control
+leg.map %>% 
+  group_by(Year) %>%
+  ggplot(aes(lon, lat, group = group)) +
+  geom_polygon(aes(fill = Governing.Party)) + 
+  scale_fill_manual(values = c("deepskyblue4",
+                               "gray23",
+                               "firebrick4",
+                               "antiquewhite2")) +
+  coord_map("polyconic") +
+  facet_wrap(~ Year, ncol = 1) +
+  pd.theme +
+  theme(panel.grid = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        legend.title = element_text(size = 12),
+        legend.position = "bottom") +
+  labs(title = "Governing Party by Year",
+       fill = "")
 
 # Model -----------------------------------------------------------------------
 
