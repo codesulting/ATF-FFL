@@ -1,4 +1,4 @@
-# The American Workforce - by Industry
+# The American Workforce by Industry
 
 The [United States Census](https://www.census.gov/acs/www/data/data-tables-and-tools/subject-tables/) provides information on the total population in the workforce by broad industry category<sup>[1](#notes)</sup>. 
 
@@ -9,13 +9,13 @@ The [United States Census](https://www.census.gov/acs/www/data/data-tables-and-t
 
 Who's got the largest workforce in the United States? 
 
-![](R_plots/04-model-building-industry/EDA-total-workforce-by-state.png)
+![](R_plots/04-model-building-industry/industry-workforce-total-perCapita.jpg)
 
-This is a bit misleading, as it takes raw totals and doesn't normalize population across a single metric, i.e. California has the largest population, therefore it's expected to have the largest workforce population. Here are the figures, adjusted per 100k:
-
-![](R_plots/04-model-building-industry/EDA-workforce-per-capita.png)
+This is a bit misleading, as it takes raw totals and doesn't normalize population across a single metric, **i.e.** California has the _largest population_, therefore it's expected to have the _largest workforce population_.
 
 There's much less variance once adjusted per capita - a range of about 10,000 separates the min and max values, as opposed to a range of millions as seen in the raw counts. Of course, this also can be a result of the polling sample conducted by the US Census.
+
+Adjusted per capita, **New Hampshire** has the most population engaged in the workforce, while **West Virginia** has the least.
 
 ## Industry Categories
 
@@ -26,12 +26,12 @@ There are several broad industries the US Census groups the workforce into:
 - Manufacturing
 - Wholesale trade
 - Retail trade
-- Transportation and warehousing, and utilities
+- Transportation and Warehousing, and Utilities
 - Information
-- Finance and insurance, and real estate, rental, and leasing
-- Professional, scientific, management, and administrative and waste management services
-- Educational services, health care, and social assistance
-- Arts, entertainment, recreation, accomodation and food services
+- Finance and Insurance, and Real Estate, Rental, and Leasing
+- Professional, Scientific, Management, and Administrative and Waste Management services
+- Educational services, Health Care, and Social Assistance
+- Arts, Entertainment, Recreation, Accomodation and Food Service
 - Other services, excluding public administration
 - Public Administration
 
@@ -72,7 +72,8 @@ indPC %>% group_by(Industry) %>%
 
 ![](R_plots/04-model-building-industry/facet-workforce-FFL-PC-01.png)
 
-- `Agriculture` (_Agriculture, Forestry, Hunting & Fishing, and Mining_) appears to show strong positive linear trend. `Construction` may have a weak positive linear relationship.
+- `Agriculture` (_Agriculture, Forestry, Hunting & Fishing, and Mining_) appears to show strong positive linear trend. 
+- `Construction` may have a weak positive linear relationship.
 - `Finance` and `Sciences` appear to have a weak linear relationship with FFLs
 - `Wholesale` appears vague.
 - `Public Administration` has a few very large outliers in FFL count and per capita workforce.
@@ -89,6 +90,16 @@ It might be worth noting that **Alaska**, **Montana**, and **Wyoming** consisten
 `Finance`: another vaguely negative linear trend? 
 
 ![](R_plots/04-model-building-industry/scatter-FFL-finance.png)
+
+# Exploratory Model Building
+
+Although a linear model will likely not have predictive power given the diversity and number of variables, fitting a few with different parameters might shed some light on how these variables describe the data and interact. 
+
+The process is outlined as follows, with observations made at each step:
+
+- Baseline Maximal Model
+- Reduction of the Baseline Model
+- Candidate for a Minimal Adequate Model
 
 ## Baseline Maximal Model
 
@@ -244,10 +255,10 @@ Multiple R-squared:  0.6459,	Adjusted R-squared:  0.6057
 F-statistic: 16.05 on 5 and 44 DF,  p-value: 5.451e-09
 ```
 
-`pro.scientificPC` and `construction` come to the fore as strongest predictors now. The adjusted R-squared does suffer a significant decrease because of this too though. 
+`pro.scientificPC` and `construction` come to the fore as strongest predictors now. The adjusted R-squared does suffer a significant decrease because of this though. 
 
 
-## Robust Regression 01
+# Robust Regression 01
 
 Robust linear model using per capita population data from the following industries:
 
@@ -371,6 +382,8 @@ industry.outliers <- industry.huber02 %>%
 ```
 
 ![](R_plots/04-model-building-industry/facet-robust01-fitted-vs-observed-subset.png)
+
+
 
 
 # Notes
