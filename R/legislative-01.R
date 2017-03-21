@@ -221,6 +221,58 @@ leg.map %>%
   labs(title = "2014: by Party in State Control",
        fill = "governing\nparty")
 
+# House Democrat count --------------------------------------------------------
+leg.map$House.Dem <- as.integer(leg.map$House.Dem)
+legislature$House.Dem <- as.integer(legislature$House.Dem)
+summary(leg.map$House.Dem)
+summary(legislature$House.Dem)
+hist(legislature$House.Dem)
+
+leg.map %>%
+  filter(Year == "2014" & NAME != "New Hampshire") %>%
+  ggplot(aes(lon, lat, group = group)) +
+  geom_polygon(aes(fill = House.Dem), 
+               color = "white", size = 0.025) + 
+  scale_fill_gradient2(low = "firebrick4",
+                       mid = "antiquewhite2",
+                       high = "deepskyblue4",
+                       midpoint = 44) +
+  coord_map("polyconic") +
+  pd.theme +
+  theme(panel.grid = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        legend.title = element_text(size = 12)) +
+  labs(title = "2014: by number of House Democrats",
+       fill = "")
+
+
+# House Republican count ------------------------------------------------------
+leg.map$House.Rep <- as.integer(leg.map$House.Rep)
+legislature$House.Rep <- as.integer(legislature$House.Rep)
+summary(leg.map$House.Rep)
+summary(legislature$House.Rep)
+hist(legislature$House.Rep)
+
+leg.map %>%
+  filter(Year == "2014" & NAME != "New Hampshire") %>%
+  ggplot(aes(lon, lat, group = group)) +
+  geom_polygon(aes(fill = House.Rep), 
+               color = "white", size = 0.025) + 
+  scale_fill_gradient2(low = "firebrick4",
+                       mid = "antiquewhite2",
+                       high = "deepskyblue4",
+                       midpoint = 59) +
+  coord_map("polyconic") +
+  pd.theme +
+  theme(panel.grid = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        legend.title = element_text(size = 12)) +
+  labs(title = "2014: by number of House Republicans",
+       fill = "")
+
+
 # Facetted Maps ---------------------------------------------------------------
 # facet map - state control
 leg.map %>% 
