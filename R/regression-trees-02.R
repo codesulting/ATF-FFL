@@ -1,5 +1,5 @@
-# ATF- FFL - ACS Financial Characteristics Data
-# Feature Selection + Engineering
+# ATF- FFL
+# Regression Trees on Federal Firearms License Data
 # Census Electorate Characteristics & American Community Survey data
 
 # load data -------------------------------------------------------------------
@@ -72,6 +72,9 @@ industry <- industryPerCapita %>%
 
 rownames(industry) <- industry$NAME
 
+# write.csv(industry.perCapita, file = "~/GitHub/federal-firearms-licenses/data/per-capita-industry.csv", 
+#           row.names = T)
+
 # Regression Trees: Industry Data ---------------------------------------------
 
 industry.perCapita <- industry %>%
@@ -112,6 +115,9 @@ income.perCapita <- income %>%
 
 rownames(income.perCapita) <- income$NAME
 summary(income.perCapita)
+
+# write.csv(income.perCapita, file = "~/GitHub/federal-firearms-licenses/data/per-capita-income.csv",
+#           row.names = T)
 
 # Regression Trees: Income data -----------------------------------------------
 str(income.perCapita)
@@ -169,10 +175,15 @@ edu.pc2 <- edu.pc %>%
 
 rownames(edu.pc2) <- edu.pc2$NAME
 
-# Regression Trees: Education data --------------------------------------------
-
 edu.perCapita <- edu.pc2 %>%
   select(-c(NAME, Pop2015, Pop2016))
+
+str(edu.perCapita)
+
+# write.csv(edu.perCapita, file = "~/GitHub/federal-firearms-licenses/data/per-capita-education.csv",
+#           row.names = T)
+
+# Regression Trees: Education data --------------------------------------------
 
 str(edu.perCapita)
 
@@ -191,14 +202,19 @@ print(edu.tree)
 # cleansed dataframe with FFL & Rural-Urban data
 rural.urban <- read.csv("~/GitHub/ATF-FFL/data/rural-urban-compact.csv")
 str(rural.urban)
-names(rural.urban)
 
 rownames(rural.urban) <- rural.urban$NAME
 
-# Regression Trees: Rural-Urban data  -----------------------------------------
-
 rural.urban.perCapita <- rural.urban %>%
   select(perCapitaFFL, 7:38)
+
+# write.csv(rural.urban.perCapita,
+#           file = "~/GitHub/federal-firearms-licenses/data/per-capita-rural-urban.csv",
+#           row.names = T)
+
+# Regression Trees: Rural-Urban data  -----------------------------------------
+
+str(rural.urban.perCapita)
 
 rural.urban.tree <- rpart(perCapitaFFL ~ ., data = rural.urban.perCapita)
 
@@ -255,6 +271,9 @@ colnames(legislative.perCapita)[9:11] <- c("Legislative.Control",
                                "Governing.Party",
                                "State.Control")
 
+# write.csv(legislative.perCapita, 
+#           file = "~/GitHub/federal-firearms-licenses/data/per-capita-legislative.csv",
+#           row.names = T)
 
 # Regression Trees: Legislature data  -----------------------------------------
 
@@ -277,6 +296,10 @@ all.features <- legislative.perCapita %>%
   left_join(income.perCapita) %>%
   left_join(industry.perCapita) %>%
   left_join(rural.urban.perCapita)
+
+# write.csv(all.features, 
+#           file = "~/GitHub/federal-firearms-licenses/data/per-capita-all.csv",
+#           row.names = T)
 
 # Regression Tree: All Features -----------------------------------------------
 
