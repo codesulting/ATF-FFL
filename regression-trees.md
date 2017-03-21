@@ -10,7 +10,7 @@ Carrying out regression trees on different datasets:
 
 ## dataframes
 
-- incomePerCapita
+- income.perCapita
 - industry.model
 - edu.perCapita
 - rural.urban
@@ -18,9 +18,13 @@ Carrying out regression trees on different datasets:
 
 ## Income Features
 
+This data comes from the United States Census, and classifies US households into 11 annual income brackets ranging from **Less than $5000** to **$150,000 or more**. 
+
+What's the distribution across these categories? 
+
 Structure of the data:
 ```{R}
-str(incomePerCapita)
+str(income.perCapita)
 'data.frame':	50 obs. of  12 variables:
  $ perCapita.LessThan5000  : num  1712 610 1445 1576 959 ...
  $ perCapita.5000to9999    : num  1902 746 1264 1922 860 ...
@@ -39,7 +43,7 @@ str(incomePerCapita)
 Regression tree: 
 
 ```{R}
-income.tree01 <- rpart(perCapitaFFL ~ ., data = incomePerCapita)
+income.tree01 <- rpart(perCapitaFFL ~ ., data = income.perCapita)
 rpart.plot(income.tree01, type = 1, extra = 1,
            digits = 4, cex = 0.75, 
            split.family = "GillSans", split.cex = 1.1,
