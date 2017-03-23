@@ -30,3 +30,13 @@ pd.facet <- theme_minimal(base_size = 12, base_family = "GillSans") +
         axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
         panel.background = element_rect(fill = NA, color = "black"),
         strip.background = element_rect(fill = NA, color = "black"))
+
+pd.hires <- theme_minimal(base_size = 18, base_family = "GillSans") +
+  theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm"),
+        axis.title = element_text(family = "Times", face = "italic", size = 32),
+        axis.title.x = element_text(margin = margin(20, 0, 0, 0), size = 28),
+        axis.title.y = element_text(margin = margin(0, 20, 0, 0), size = 28),
+        legend.title = element_text(size = 28),
+        panel.grid = element_blank(),
+        panel.background = element_rect(fill = NA, color = "black"),
+        strip.background = element_rect(fill = NA, color = "black"))
