@@ -67,6 +67,7 @@ all.features$X <- NULL
 
 # rpart - tree 01a
 all.tree.a <- rpart(perCapitaFFL ~ ., data = all.features)
+
 rpart.plot(all.tree.a, type = 1, extra = 1,
            digits = 4, cex = 0.75, 
            split.family = "GillSans", split.cex = 1.1,
@@ -102,8 +103,9 @@ edu.pc <- edu.perCapita %>%
 
 # rpart - education tree a
 edu.tree.a <- rpart(perCapitaFFL ~ ., data = edu.pc)
+
 rpart.plot(edu.tree.a, type = 1, extra = 1,
-           digits = 4, cex = 0.75, 
+           digits = 4, cex = 0.85, 
            split.family = "GillSans", split.cex = 1.1,
            nn.family = "GillSans", nn.cex = 0.85, 
            fallen.leaves = T)
@@ -196,7 +198,6 @@ ggplot(segment(edu.hs.b.vis)) +
             vjust = 0.5, size = 4) +
   coord_flip() + 
   scale_y_reverse(expand = c(0.2, 0))
-
 
 # Income features -------------------------------------------------------------
 
@@ -344,8 +345,7 @@ industry.perCapita %>%
   labs(y = "population per 100k", x = "industry",
        title = "Distribution of Population by Industry: Tree Split Variables")
 
-# scatter of tree-split varibles
-
+# scatterplot of tree-split varibles
 industry.perCapita$.rownames <- rownames(industry.perCapita)
 
 ggplot(industry.perCapita, aes(agriculturePC, manufacturingPC, label = .rownames)) +
@@ -425,6 +425,8 @@ legislative.perCapita %>%
   pd.facet + 
   labs(y = "count", x = "number",
        title = "")
+
+
 
 
 
