@@ -259,9 +259,9 @@ leg.map %>%
   ggplot(aes(lon, lat, group = group)) +
   geom_polygon(aes(fill = House.Rep), 
                color = "white", size = 0.025) + 
-  scale_fill_gradient2(low = "firebrick4",
+  scale_fill_gradient2(high = "firebrick4",
                        mid = "antiquewhite2",
-                       high = "deepskyblue4",
+                       low = "deepskyblue4",
                        midpoint = 59) +
   coord_map("polyconic") +
   pd.theme +
@@ -273,7 +273,7 @@ leg.map %>%
        fill = "")
 
 
-# Facetted Maps ---------------------------------------------------------------
+# Faceted Maps ---------------------------------------------------------------
 # facet map - state control
 leg.map %>% 
   group_by(Year) %>%
