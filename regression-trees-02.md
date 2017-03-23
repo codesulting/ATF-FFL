@@ -8,6 +8,10 @@ Carrying out regression trees on different datasets:
 - legislation
 - population
 
+**_Why do this?_** It was initially observed that the number of Federal Firearms Licenses is roughly _inversely proportional_ to a state's population. With that in mind, what characteristics of a given state's population might influence the number of FFLs? 
+
+United States Census data was gathered in these fields, to build general 'profiles' of state populations. From there, robust regression models and regression trees were fit to the data to further understand trends and outliers in these features as they relate to Federal Firearms Licenses. 
+
 ## Income Features
 
 This data comes from the United States Census, and stratifies US households into _11 annual income brackets_ ranging from **Less than $5000** to **$150,000 or more**. Below are each of the brackets, from which per 100,000 totals were derived. 
@@ -42,7 +46,9 @@ income.perCapita %>%
 ```
 ![](R_plots/00-regression-trees/income-pop-by-category.png)
 
-Appears that across the United States, most of the households in the population have an annual income between $50,000 to $74,999. Relatively fewer households earn less than $25,000 annually. Interestingly enough, households making $150,000 or more spread widely across the distribution. 
+Appears that across the United States, most of the households in the population have an annual income between _$50,000 to $74,999_. Relatively fewer households earn less than $25,000 annually. 
+
+Interestingly enough, households making _$150,000 or more_ spread widely across the distribution - suggesting that in most states, there is generally the presence of wealth. 
 
 Fitting a regression tree to all income variables: 
 
@@ -140,7 +146,7 @@ industry.outliers <- industry.huber02 %>%
   group_by(industry) %>%
   filter(.resid > 5 | .resid < -9)
 
-# create facetted plot
+# create faceted plot
 industry.outliers %>%
   group_by(industry) %>%
   ggplot(aes(ind.perCapita, perCapitaFFL, label = .rownames)) +
