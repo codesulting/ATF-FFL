@@ -1,0 +1,51 @@
+NAME, ffa.introduced, ffa.enacted, ffa.strenghtened, no.action, nullified
+Idaho, T, T, T, F, F
+Utah, T, T, F, F, F
+Arizona, T, T, F, F, F
+Wyoming, T, T, F, F, F
+South Dakota, T, T, F, F, F
+Kansas, T, T, F, F, F
+Tennessee, T, T, F, F, F
+Alaska, T, T, F, F, F
+Minnesota, T, F, F, F, F
+Iowa, T, F, F, F, F
+Nebraska, T, F, F, F, F
+Oklahoma, T, F, F, F, F
+Texas, T, F, F, F, F
+Missouri, T, F, F, F, F
+Kentucky, T, F, F, F, F
+Alabama, T, F, F, F, F
+Mississippi, T, F, F, F, F
+Georgia, T, F, F, F, F
+West Virginia, T, F, F, F, F
+Virginia, T, F, F, F, F
+Maryland, T, F, F, F, F
+Vermont, T, F, F, F, F
+Montana, T, T, F, T, T
+California, F, F, F, T, F
+Oregon, F, F, F, T, F
+Washington, F, F, F, T, F
+Colorado, F, F, F, T, F
+New Mexico, F, F, F, T, F
+North Dakota, F, F, F, T, F
+Wisconsin, F, F, F, T, F
+Nevada, F, F, F, T, F
+Illinois, F, F, F, T, F
+Arkansas, F, F, F, T, F
+Louisiana, F, F, F, T, F
+Indiana, F, F, F, T, F
+Michigan, F, F, F, T, F
+Ohio, F, F, F, T, F
+Pennsylvania, F, F, F, T, F
+New York, F, F, F, T, F
+New Jersey, F, F, F, T, F
+Delaware, F, F, F, T, F
+Connecticut, F, F, F, T, F
+Rhode Island, F, F, F, T, F
+Massachusetts, F, F, F, T, F
+New Hampshire, F, F, F, T, F
+Maine, F, F, F, T, F
+North Carolina, F, F, F, T, F
+South Carolina, F, F, F, T, F
+Florida, F, F, F, T, F
+Hawaii, F, F, F, T, F
