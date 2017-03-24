@@ -77,12 +77,45 @@ ggplot(edu.perCapita, aes(pc.18to24.BA, pc.25to34.BA,
   geom_point(aes(color = perCapitaFFL)) +
   scale_color_gradient2(low = "deepskyblue4",
                         mid = "antiquewhite2",
-                        high = "firebrick4", midpoint = 52) +
-  scale_size(name = "per capita FFLs", range = c(1, 14)) +
+                        high = "firebrick4", 
+                        midpoint = 52, guide = F) +
+  scale_size(name = "per capita FFLs", range = c(1, 14), guide = F) +
   geom_text(aes(pc.18to24.BA, pc.25to34.BA, label = .rownames),
             size = 3, hjust = -0.01, vjust = -0.55, 
-            check_overlap = T, family = "GillSans", data = edu.perCapita) +
+            check_overlap = T, family = "GillSans", 
+            data = edu.perCapita) +
+  expand_limits(x = c(400, 2000)) +
   pd.facet +
+  theme(legend.position = "right",
+        legend.title = element_text(size = 10),
+        panel.grid = element_blank()) +
+  labs(x = "per capita population: 18 to 24 year olds with BA", 
+       y = "per capita population: 25 to 34 year olds with BA",
+       color = "per capita FFLs")
+
+# scatterplot with labels and decision-tree splits:
+# high-resolution version
+ggplot(edu.perCapita, aes(pc.18to24.BA, pc.25to34.BA, 
+                          label = .rownames, 
+                          size = perCapitaFFL)) +
+  geom_segment(x = 717, xend = 717, y = 0, yend = 10000,
+               linetype = "dashed", color = "red3", size = 1) +
+  geom_segment(x = 717, xend = 10000, y = 4765, yend = 4765, 
+               linetype = "dashed", color = "red3", size = 1) +
+  geom_segment(x = 966, xend = 966, y = 0, yend = 4765, 
+               linetype = "dotted", color = "red3", size = 1) +
+  geom_point(aes(color = perCapitaFFL)) +
+  scale_color_gradient2(low = "deepskyblue4",
+                        mid = "antiquewhite2",
+                        high = "firebrick4", 
+                        midpoint = 52, guide = F) +
+  scale_size(name = "per capita FFLs", range = c(1, 42), guide = F) +
+  geom_text(aes(pc.18to24.BA, pc.25to34.BA, label = .rownames),
+            size = 10, hjust = -0.01, vjust = -0.55, 
+            check_overlap = T, family = "GillSans", 
+            data = edu.perCapita) +
+  expand_limits(x = c(400, 2000)) +
+  pd.hires +
   theme(legend.position = "right",
         legend.title = element_text(size = 10),
         panel.grid = element_blank()) +
