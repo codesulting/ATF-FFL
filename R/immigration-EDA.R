@@ -21,8 +21,8 @@ pop <- read.csv("data/nst-est2016-alldata.csv")
 pop <- pop %>%
   dplyr::select(NAME, contains("2012"), contains("2013"), contains("2014"))
 
+# remove US total, regions, DC, PR, 
 pop <- pop[-c(1:5, 14, 57), ]
-
 
 # FFA data --------------------------------------------------------------------
 # Firearms Freedom Act
@@ -33,13 +33,24 @@ ffa <- read.csv("data/ffa-2014.csv")
 # merge with ffl
 ffa <- ffa %>%
   left_join(ffl) %>%
-  dplyr::select(-LicCount, -Pop2016, -LicCountMonthly, -perCapFFLyear)
+  dplyr::select(-LicCount, -Pop2016, -LicCountMonthly, -perCapFFLyear, -ATF.Region)
 
 rownames(ffa) <- ffa$NAME
+ffa$NAME <- NULL
+str(ffa)
 
+# fit baseline linear model
 ffa.model <- lm(perCapitaFFL ~ .-NAME, data = ffa)
 summary(ffa.model)
+
+# diagnotic plot of baseline lm model
+par(mfrow = c(2, 2), family = "GillSans")
 plot(ffa.model)
+
+# ANOVA
+ffa.anova <- aov(perCapitaFFL ~ ., data = ffa)
+summary(ffa.anova)
+
 
 # Immigration Data ------------------------------------------------------------
 # Department of Homeland Security Immigration Yearbooks
