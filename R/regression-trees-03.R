@@ -35,7 +35,7 @@ ffl <- ffl %>%
 all.features.2015 <- all.features %>%
   left_join(ffl)
 
-all.features.2015 <- all.features.2015[, -c(53:61)]
+all.features.2015 <- all.features.2015[, -c(86:90)]
 
 rownames(all.features.2015) <- all.features.2015$NAME
 all.features.2015$NAME <- NULL
