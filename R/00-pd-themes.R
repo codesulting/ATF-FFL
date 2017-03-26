@@ -38,6 +38,5 @@ pd.hires <- theme_minimal(base_size = 18, base_family = "GillSans") +
         axis.title.y = element_text(margin = margin(0, 20, 0, 0), size = 32),
         axis.text = element_text(size = 30),
         legend.title = element_text(size = 28),
-        panel.grid = element_blank(),
         panel.background = element_rect(fill = NA, color = "black"),
         strip.background = element_rect(fill = NA, color = "black"))
