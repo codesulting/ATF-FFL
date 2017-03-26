@@ -24,34 +24,6 @@ pop <- pop %>%
 # remove US total, regions, DC, PR, 
 pop <- pop[-c(1:5, 14, 57), ]
 
-# FFA data --------------------------------------------------------------------
-# Firearms Freedom Act
-# http://gunwars.news21.com/interactives/nullification.html
-
-ffa <- read.csv("data/ffa-2014.csv")
-
-# merge with ffl
-ffa <- ffa %>%
-  left_join(ffl) %>%
-  dplyr::select(-LicCount, -Pop2016, -LicCountMonthly, -perCapFFLyear, -ATF.Region)
-
-rownames(ffa) <- ffa$NAME
-ffa$NAME <- NULL
-str(ffa)
-
-# fit baseline linear model
-ffa.model <- lm(perCapitaFFL ~ .-NAME, data = ffa)
-summary(ffa.model)
-
-# diagnotic plot of baseline lm model
-par(mfrow = c(2, 2), family = "GillSans")
-plot(ffa.model)
-
-# ANOVA
-ffa.anova <- aov(perCapitaFFL ~ ., data = ffa)
-summary(ffa.anova)
-
-
 # Immigration Data ------------------------------------------------------------
 # Department of Homeland Security Immigration Yearbooks
 # https://www.dhs.gov/immigration-statistics/yearbook/2014
@@ -98,35 +70,39 @@ immigration <- immigration %>%
          logFFL = log10(perCapitaFFL),
          intl.migration.perCapita = (INTERNATIONALMIG2014/POPESTIMATE2014) * 100000)
 
+# Exploratory Plots -----------------------------------------------------------
+
 # plot FFL vs immigration w/ lm and rlm lines
 ggplot(immigration, aes(y2014.perCapita, perCapitaFFL, label = NAME)) +
   geom_point(alpha = 0.75) +
   geom_smooth(method = "lm", se = F, size = 0.5, 
               linetype = "dashed", color = "steelblue") +
-  geom_smooth(method = "rlm", se = F, size = 0.5, 
-              linetype = "dashed", color = "firebrick3") +
-  geom_text(hjust = -0.1, vjust = 1.1, 
-            size = 3.25, alpha = 1, 
+  geom_smooth(method = "rlm", se = F, size = 0.75, 
+              linetype = "dotted", color = "firebrick3") +
+  geom_text(hjust = -0.08, vjust = 1.05, 
+            size = 3.25, alpha = 0.9, 
             check_overlap = T) +
   expand_limits(x = c(0, 800)) +
   pd.scatter +
-  labs(x = "per capita immigration", 
+  labs(x = "net immigration per capita", 
        y = "per capita Federal Firearms Licenses")
 
+# The robust line shows a slightly gentler slope.
+
 # plot FFL vs immigration on log scale w/ lm and rlm lines
-ggplot(immigration, aes(log2014.perCapita, logFFL, label = NAME)) +
+ggplot(immigration, aes(log2014.perCapita, perCapitaFFL, label = NAME)) +
   geom_point() +
   geom_smooth(method = "lm", se = F, size = 0.5,
               linetype = "dashed", color = "steelblue4") +
-  geom_smooth(method = "rlm", se = F, size = 0.5, 
-              linetype = "dashed", color = "firebrick3") +
-  geom_text(hjust = -0.10, vjust = 1.05, 
-            size = 3.25, alpha = 0.85,
+  geom_smooth(method = "rlm", se = F, size = 1.1, 
+              linetype = "dotted", color = "firebrick3") +
+  geom_text(hjust = -0.08, vjust = 1.025, 
+            size = 3.25, alpha = 0.9,
             check_overlap = T) +
   scale_x_log10() + scale_y_log10() +
-  expand_limits(x = c(2, 3), y = c(2, 3)) +
+  expand_limits(x = c(2, 3), y = c(10, 150)) +
   pd.scatter +
-  labs(x = "per capita immigration", 
+  labs(x = "(log) net immigration per capita", 
        y = "per capita Federal Firearms Licenses")
 
 # Regression Tree Model -------------------------------------------------------
@@ -141,15 +117,20 @@ rownames(immigration) <- immigration$NAME
 immigration <- immigration %>%
   dplyr::select(-NAME, -logFFL)
 
-# subset of immigration-related variables
-immigration.sub <- immigration %>%
-  mutate(.rownames = rownames(immigration),
-         logIntlMigration = log10(INTERNATIONALMIG2014),
-         log2014 = log10(y2014)) %>%
-  dplyr::select(.rownames, perCapitaFFL, y2014, y2014.perCapita, 
-                logIntlMigration, log2014,
-                intl.migration.perCapita, INTERNATIONALMIG2014)
+########
+#### The log/per capita/total derivations are probably too correlated to be useful 
+#### on their own.
+########
+# subset of 2014 immigration-related variables
+# immigration.sub <- immigration %>%
+#   mutate(.rownames = rownames(immigration),
+#          logIntlMigration = log10(INTERNATIONALMIG2014),
+#          log2014 = log10(y2014)) %>%
+#   dplyr::select(.rownames, perCapitaFFL, y2014, y2014.perCapita, 
+#                 logIntlMigration, log2014,
+#                 intl.migration.perCapita, INTERNATIONALMIG2014)
 
+# Regression Trees on Full Immigration Data -----------------------------------
 
 # `rpart` model on full immigration data
 immigration.tree.a <- rpart(perCapitaFFL ~ ., data = immigration)
@@ -165,12 +146,26 @@ par(mfrow = c(1, 1), family = "GillSans")
 plot(immigration.tree.a2)
 text(immigration.tree.a2, pretty = 0)
 
+# Regression Trees on  Immigration Data Subset---------------------------------
+# the subset includes only data from the year 2014,
+# and remove rate variables
+
+# subset of 2014 immigration-related variables,
+# with per capita transformation applied
+immigration.sub <- immigration %>%
+  mutate(.rownames = rownames(immigration)) %>%
+  dplyr::select(.rownames, perCapitaFFL, contains("2014"), -starts_with("R"), 
+                -y2014.perCapita, -y2014.ratio, -log2014.perCapita, -POPESTIMATE2014) %>%
+  mutate_each(funs(perCapita2014), 3:10)
+
+str(immigration.sub)
+
 # `rpart` model on immigration data subset
 immigration.tree.b <- rpart(perCapitaFFL ~ .-.rownames, data = immigration.sub)
 rpart.plot(immigration.tree.b, type = 1, extra = 1,
-           digits = 4, cex = 0.85, 
+           digits = 4, cex = 0.8, 
            split.family = "GillSans", split.cex = 1.1,
-           nn.family = "GillSans", nn.cex = 0.85, 
+           nn.family = "GillSans", nn.cex = 0.8,
            fallen.leaves = T)
 
 # `tree` model on immigration data subset
@@ -182,16 +177,52 @@ text(immigration.tree.b2, pretty = 0)
 
 summary(immigration.sub$INTERNATIONALMIG2014)
 #    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#     516    2741    7169   19480   21650  138800 
+#     516    2741    7169   19480   21650  138800
+
+summary(immigration.sub$NATURALINC2014)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#   -58.91  259.80  368.80  396.30  533.60 1181.00
+
+summary(immigration.sub$y2014)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#   42.36  122.60  183.00  222.80  305.50  717.10
+
+# plot Natural Increase (Births - Deaths)
+ggplot(immigration.sub, 
+       aes(reorder(.rownames, NATURALINC2014), 
+           NATURALINC2014, 
+           fill = NATURALINC2014)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite2",
+                       high = "firebrick4",
+                       midpoint = 396, guide = F) +
+  coord_flip() + pd.theme +
+  labs(x = "", y = "per capita natural population increase")
+
+# plot natural increase < 509
+immigration.sub %>%
+  filter(NATURALINC2014 > 509) %>%
+  ggplot(aes(reorder(.rownames, NATURALINC2014), 
+             NATURALINC2014, 
+             fill = NATURALINC2014)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient2(low = "deepskyblue4",
+                       mid = "antiquewhite2",
+                       high = "firebrick4",
+                       midpoint = 396, guide = F) +
+  coord_flip() + pd.theme +
+  labs(x = "", y = "per capita natural population increase")
 
 # per capita immigration histograms
 immigration.sub %>%
-  dplyr::select(.rownames, perCapitaFFL, y2014.perCapita, intl.migration.perCapita) %>%
-  gather(type, value, 3:4) %>%
+  dplyr::select(.rownames, perCapitaFFL, INTERNATIONALMIG2014, DEATHS2014, y2014) %>%
+  gather(type, value, 3:5) %>%
   group_by(type) %>%
   ggplot(aes(value)) + 
-  geom_histogram(binwidth = 20, color = "black", fill = "white") +
-  facet_wrap(~ type, scales = "free", ncol = 1)
+  geom_histogram(binwidth = 25, color = "black", fill = "white") +
+  facet_wrap(~ type, scales = "free", ncol = 1) +
+  pd.facet
 
 # total immigration histograms
 immigration.sub %>%
@@ -199,68 +230,65 @@ immigration.sub %>%
   gather(type, value, 3:4) %>%
   group_by(type) %>%
   ggplot(aes(value)) + 
-  geom_histogram(binwidth = 1000, color = "black", fill = "white") +
+  geom_histogram(binwidth = 25, color = "black", fill = "white") +
   facet_wrap(~ type, scales = "free", ncol = 1)
 
+# Decision Tree Splits --------------------------------------------------------
+
 # scatterplot with labels and decision-tree splits: rpart model
-ggplot(immigration.sub, aes(logIntlMigration, intl.migration.perCapita, 
-                           label = .rownames, size = perCapitaFFL)) +
-  geom_segment(x = 3.348, xend = 3.348, y = 0, yend = 1000,
-               linetype = "dashed", color = "red3", size = 1) +
-  geom_segment(x = 3.348, xend = 10000, y = 220.5, yend = 220.5, 
-               linetype = "dashed", color = "red3", size = 1) +
-  geom_segment(x = 3.841, xend = 3.841, y = 220.5, yend = 0, 
-               linetype = "dotted", color = "red3", size = 1) +
+ggplot(immigration.sub, 
+       aes(y2014, NATURALINC2014, 
+           label = .rownames, 
+           size = perCapitaFFL)) +
+  geom_segment(x = 216.3, xend = 216.3, y = -200, yend = 1400,
+               linetype = "dashed", color = "red3", size = 0.25) +
+  geom_segment(x = 0, xend = 216.3, y = 509.8, yend = 509.8, 
+               linetype = "dashed", color = "red3", size = 0.3) +
   geom_point(aes(color = perCapitaFFL)) +
   scale_color_gradient2(low = "deepskyblue4",
                         mid = "antiquewhite2",
                         high = "firebrick4", 
                         midpoint = 52, guide = F) +
   scale_size(name = "per capita FFLs", range = c(1, 20), guide = F) +
-  scale_x_log10(breaks = seq(2, 6, by = 0.5)) +
-  geom_text(aes(logIntlMigration,intl.migration.perCapita),
-            position = "jitter", size = 3, 
+  geom_text(aes(y2014, NATURALINC2014), size = 3, 
             hjust = -0.1, vjust = 1.15,
-            check_overlap = T, family = "GillSans") +
-  pd.facet +
-  expand_limits(x = c(2.5, 5.5)) +
-  theme(panel.grid = element_blank()) +
-  labs(x = "(log10) net international migration", 
-       y = "per capita international migration",
+            check_overlap = T, family = "GillSans", 
+            data = immigration.sub) +
+  pd.facet + expand_limits(x = c(75, 750)) +
+  labs(x = "foreign-born immigrants per capita", 
+       y = "per capita natural population increase",
        color = "per capita FFLs")
 
-ggplot(immigration.sub, aes(logIntlMigration, perCapitaFFL, 
-                            label = .rownames, size = perCapitaFFL)) +
-  geom_segment(x = 3.348, xend = 3.348, y = 0, yend = 1000,
+# scatterplot with labels and decision-tree splits: rpart model
+ggplot(immigration.sub, 
+       aes(y2014, NATURALINC2014, 
+           label = .rownames, 
+           size = perCapitaFFL)) +
+  geom_segment(x = 216.3, xend = 216.3, y = -200, yend = 1400,
                linetype = "dashed", color = "red3", size = 1) +
-  geom_segment(x = 3.348, xend = 6, y = 220.5, yend = 220.5, 
+  geom_segment(x = 0, xend = 216.3, y = 509.8, yend = 509.8, 
                linetype = "dashed", color = "red3", size = 1) +
-  geom_segment(x = 3.841, xend = 3.841, y = 220.5, yend = 0, 
-               linetype = "dotted", color = "red3", size = 1) +
   geom_point(aes(color = perCapitaFFL)) +
   scale_color_gradient2(low = "deepskyblue4",
                         mid = "antiquewhite2",
                         high = "firebrick4", 
                         midpoint = 52, guide = F) +
-  scale_size(name = "per capita FFLs", range = c(1, 20), guide = F) +
-  scale_x_log10(breaks = seq(2, 6, by = 0.5)) +
-  geom_text(aes(logIntlMigration, perCapitaFFL),
-            position = "jitter", size = 3, 
+  scale_size(name = "per capita FFLs", range = c(1, 44), guide = F) +
+  geom_text(aes(y2014, NATURALINC2014), size = 9.5, 
             hjust = -0.1, vjust = 1.15,
-            check_overlap = T, family = "GillSans") +
-  pd.facet +
-  expand_limits(x = c(2.5, 5.5)) +
-  theme(panel.grid = element_blank()) +
-  labs(x = "(log10) net international migration", 
-       y = "per capita Federal Firearms Licenses")
-
+            check_overlap = T, family = "GillSans", 
+            data = immigration.sub) +
+  pd.hires + expand_limits(x = c(75, 750)) +
+  labs(x = "foreign-born immigrants per capita", 
+       y = "per capita natural population increase",
+       color = "per capita FFLs")
 
 # Single Linear Regressions on Immigration Variables --------------------------
 
 im01 <- tidy(lm(perCapitaFFL ~ y2014, data = immigration.sub))
-im02 <- tidy(lm(perCapitaFFL ~ y2014.perCapita, data = immigration.sub))
-im03 <- tidy(lm(perCapitaFFL ~ intl.migration.perCapita, data = immigration.sub))
-im04 <- tidy(lm(perCapitaFFL ~ INTERNATIONALMIG2014, data = immigration.sub))
+im02 <- tidy(lm(perCapitaFFL ~ INTERNATIONALMIG2014, data = immigration.sub))
+im03 <- tidy(lm(perCapitaFFL ~ NATURALINC2014, data = immigration.sub))
+im04 <- tidy(lm(perCapitaFFL ~ DEATHS2014, data = immigration.sub))
 
 single.immigrations <- bind_rows(im01, im02, im03, im04) %>%
   filter(term != "(Intercept)") %>%
@@ -268,12 +296,51 @@ single.immigrations <- bind_rows(im01, im02, im03, im04) %>%
 
 single.immigrations
 #                       term      estimate    std.error statistic      p.value
-# 1          y2014.perCapita -0.0839143551 0.0169882558 -4.939551 9.901620e-06
-# 2 intl.migration.perCapita -0.0850352876 0.0176028836 -4.830759 1.431094e-05
-# 3     INTERNATIONALMIG2014 -0.0003056767 0.0000907178 -3.369534 1.492890e-03
-# 4                    y2014 -0.0002259620 0.0000756239 -2.987971 4.415590e-03
+#      1                y2014 -0.083914355 0.01698826 -4.9395510 0.00000990162
+#      2 INTERNATIONALMIG2014 -0.085035288 0.01760288 -4.8307589 0.00001431094
+#      3       NATURALINC2014  0.013249795 0.01313756  1.0085432 0.31825098157
+#      4           DEATHS2014  0.009657999 0.02468805  0.3912014 0.69737952716
 
-# Although the regression tree splits the data according first based on International Migration,
-# single regressions show the highest p-value in 2014 per capita Immigrant data.
+im.all <- lm(perCapitaFFL ~ .-.rownames, data = immigration.sub)
+summary(im.all)
 
+# Robust Regressions - Outlier Detection --------------------------------------
 
+rownames(immigration.sub) <- immigration.sub$.rownames
+
+immigration.robust <- immigration.sub %>%
+  dplyr::select(-.rownames, -NETMIG2014, -NATURALINC2014)
+
+str(immigration.robust)
+
+# Robust Regression 02
+im.rr01 <- rlm(perCapitaFFL ~ ., data = immigration.robust)
+summary(im.rr01)
+fortify(im.rr01)
+
+im.weights <- data.frame(.rownames = rownames(immigration.sub),
+                         resid = im.rr01$resid, 
+                         weight = im.rr01$w) %>% arrange(weight)
+
+im.weights
+
+# Robust Regression 02
+im.rr02 <- rlm(perCapitaFFL ~ NATURALINC2014, data = immigration.sub)
+summary(im.rr02)
+
+im.weights.02 <- data.frame(.rownames = rownames(immigration.sub),
+                         resid = im.rr02$resid, 
+                         weight = im.rr02$w) %>% arrange(weight)
+
+im.weights.02
+
+# Robust Regression 03
+im.rr03 <- rlm(perCapitaFFL ~ y2014 + NATURALINC2014 + INTERNATIONALMIG2014,
+                data = immigration.sub)
+summary(im.rr03)
+
+im.weights03 <- data.frame(.rownames = rownames(immigration.sub),
+                           resid = im.rr03$resid,
+                           weight = im.rr03$w) %>% arrange(weight)
+
+im.weights03
