@@ -1,4 +1,4 @@
-- [Exploratory Data Analysis](ffl-2016-EDA.md)
+- [Exploratory Data Analysis](EDA-FFLs.md)
 
 # What is a Federal Firearms License?
 
