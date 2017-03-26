@@ -42,8 +42,8 @@ summary(perCapitaMap$perCapitaFFL)
 # Bar Plot FFLs by state with population mapped to color ----------------------
 
 perCap16 %>% 
-  arrange(desc(POPESTIMATE2016)) %>%
   mutate(perCapPop = POPESTIMATE2016/100000) %>%
+  arrange(desc(perCapPop)) %>%
   ggplot(aes(reorder(NAME, perCapitaFFL), perCapitaFFL, fill = perCapPop)) +
   geom_bar(stat = "identity") + 
   scale_fill_gradient2(low = "deepskyblue4",
@@ -51,10 +51,12 @@ perCap16 %>%
                        high = "coral4", midpoint = 200) +
   scale_y_discrete(limits = c(0, 10, 25, 50, 75, 100, 125)) +
   labs(title = "2016: Federal Firearms Licenses by State (per 100,000 residents)",
-       x = "", y = "number of licenses per 100k residents", fill = "Population / 100k") +
+       x = "", y = "number of licenses per 100k residents", fill = "") +
   pd.theme + 
-  theme(legend.position = "right") +
+  theme(legend.position = "right",
+        panel.background = element_blank()) +
   coord_flip()
+
 
 # Map: FFL Per 100k -----------------------------------------------------------
 ggplot(perCapitaMap, aes(lon, lat, group = group, fill = perCapitaFFL)) +
