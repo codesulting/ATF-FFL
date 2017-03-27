@@ -33,8 +33,11 @@ source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
 
 # cleanse and bind ------------------------------------------------------------
 
+# remove DC, PR, and unused variable
 education <- education[-c(9, 52), ]
 education$edu.GEO.id2 <- NULL
+
+# rename columns
 colnames(education) <- gsub("edu.[0-9][0-9].", "", colnames(education))
 colnames(education)[1] <- "NAME"
 rownames(education) <- education$NAME
@@ -99,6 +102,7 @@ rownames(edu.pc2) <- edu.pc2$NAME
 mod01 <- lm(perCapitaFFL ~ pop.per.capita + hs.per.capita + ba.per.capita, data = edu.pc2)
 summary(mod01)
 
+par(mfrow = c(2, 2), family = "GillSans")
 plot(mod01)
 
 # plot education across states: High School -----------------------------------
@@ -117,9 +121,10 @@ ggplot(edu.pc2, aes(reorder(NAME, hs.per.capita), hs.per.capita,
                      labels = c(55000, 60000, 65000, 70000),
                      limits = c(0, 70000),
                      expand = c(0.025, 0)) +
-  theme(axis.text.x = element_text(angle = 45, size = 11.25,
+  theme(axis.text.x = element_text(angle = 45, size = 9,
                                    hjust = 1, vjust = 1),
-        axis.text = element_text(size = 11.25)) +
+        axis.text.y = element_text(size = 8.5),
+        legend.position = "left") +
   labs(x = "", y = "high school graduates, per capita",
        fill = "")
 
@@ -135,7 +140,11 @@ ggplot(edu.pc2, aes(reorder(NAME, ba.per.capita), ba.per.capita,
                        mid = "antiquewhite1", 
                        high = "deepskyblue4",
                        midpoint = 20490) +
-  labs(x = "", y = "college graduates (BA), per capita")
+  theme(axis.text.x = element_text(angle = 45, size = 9,
+                                   hjust = 1, vjust = 1),
+        axis.text.y = element_text(size = 8.5),
+        legend.position = "left") +
+  labs(x = "", y = "college graduates (BA), per capita", fill = "")
 
 # plot education across states: Surveyed Population ---------------------------
 summary(edu.pc2$pop.per.capita)
@@ -284,6 +293,7 @@ rownames(edu.pc3) <- edu.pc3$NAME
 mod05 <- lm(perCapitaFFL ~ ratio.HS + ratio.BA + ratio.18to24 + ratio.25to34 +
               ratio.35to44 + ratio.45to64 + ratio.65plus, data = edu.pc3)
 summary(mod05)
+par(mfrow = c(2, 2))
 plot(mod05)
 
 # where do the age brackets fall? 
