@@ -1,7 +1,6 @@
 # Regression Trees 03
 # Federal Firearms License data
 
-
 # load data -------------------------------------------------------------------
 
 library(dplyr)
@@ -11,7 +10,6 @@ library(rpart)
 library(rpart.plot)
 library(tree)
 library(ggplot2)
-library(ggdendro)
 
 # load themes and functions
 source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
