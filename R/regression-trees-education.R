@@ -11,7 +11,6 @@ library(rpart)
 library(rpart.plot)
 library(tree)
 library(ggplot2)
-library(ggdendro)
 
 # load themes and functions
 source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
@@ -31,6 +30,7 @@ edu.pc <- edu.perCapita %>%
 # rpart - education tree a
 edu.tree.a <- rpart(perCapitaFFL ~ ., data = edu.pc)
 
+par(mfrow = c(1, 1), family = "GillSans")
 rpart.plot(edu.tree.a, type = 1, extra = 1,
            digits = 4, cex = 0.85, 
            split.family = "GillSans", split.cex = 1.1,
@@ -38,17 +38,6 @@ rpart.plot(edu.tree.a, type = 1, extra = 1,
            fallen.leaves = T)
 
 print(edu.tree.a)
-
-# vis with ggdendro
-edu.tree.a.vis <- dendro_data(edu.tree.a)
-
-ggplot(segment(edu.tree.a.vis)) +
-  geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) +
-  geom_text(data = edu.tree.a.vis$labels, 
-            aes(x = x, y = y - 0.015, label = label), vjust = -0.5, size = 3) +
-  geom_text(data = edu.tree.a.vis$leaf_labels, 
-            aes(x = x, y = y, label = label), vjust = 0.5, size = 3) +
-  pd.theme
 
 # the more BAs, the less FFLs
 
