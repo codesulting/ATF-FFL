@@ -12,6 +12,45 @@ Carrying out regression trees on different datasets:
 
 United States Census data was gathered in these fields, to build general 'profiles' of state populations. From there, robust regression models and regression trees were fit to the data to further understand trends and outliers in these features as they relate to Federal Firearms Licenses. 
 
+## All Features
+
+Using all features mentioned above, combined into a dataframe of 50 observations of 86 variables - a regression tree is grown. As noted in The R Book, `rpart` tends to anticipate pruning and calculates analysis of variance at each split - resulting in simpler trees than those from `tree`. Both methods are used for here for comparison, and to examine potential variable interactions.
+
+### rpart 
+
+```{R}
+# rpart - tree 01a
+all.tree.a <- rpart(perCapitaFFL ~ ., data = all.features.2015)
+
+rpart.plot(all.tree.a, type = 1, extra = 1,
+           digits = 4, cex = 0.75, 
+           split.family = "GillSans", split.cex = 1.1,
+           nn.family = "GillSans", nn.cex = 0.85, 
+           fallen.leaves = T)
+```
+
+![](R_plots/00-regression-trees/all-features-rpart-01.png)
+
+Interestingly, **_net international migration_** comes up as the first split in this model. 
+
+- 10 states have low numbers for this, and those states create a split with the highest per capita FFL totals. There can be a number of reasons for this: no international airports,  stricter laws regarding immigration and naturalization, simply not being a destination for the foreign-born. 
+- After **_net international migration_**, the next split is made based on the percentage of land area devoted to Urbanized Areas. While the rural-urban divide in America is quite lopsided - the tree points to states with more than 2.67% Urbanized Areas as generally moving towards less FFLs. For those with less than that, the average number of FFLs per 100,000 residents is 32.97. 
+- Finally, Democratic legislative control in state goverment decides the final split. Of the remaining 24 states in the tree, the 11 that do have Democratic legislative control see an average of just over 10 FFLs per 100,000 residents - while those that don't see an average of near 22. 
+
+### tree
+
+```{R}
+# tree- tree 01b
+all.tree.b <- tree(perCapitaFFL ~ ., data = all.features.2015)
+par(family = "GillSans", cex = 0.85)
+plot(all.tree.b)
+text(all.tree.b, pretty = 0)
+```
+
+
+![](R_plots/00-regression-trees/all-features-tree-01.png)
+
+
 ## Income Features
 
 This data comes from the United States Census, and stratifies US households into _11 annual income brackets_ ranging from **Less than $5000** to **$150,000 or more**. Below are each of the brackets, from which per 100,000 totals were derived. 
@@ -248,6 +287,8 @@ Spatially, how does this look?
 * Median was chosen for color gradient scale midpoint.
 
 ![](R_plots/00-regression-trees/legislative-map-house-reps.png)
+
+
 
 
 
