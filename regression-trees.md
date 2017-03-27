@@ -118,8 +118,6 @@ quantile(income.perCapita$h.50000to74999)
 
 It appears the split at 7291 occurs above the 3rd quantile in the distribution. How are each of the splits distributed? 
 
-![](R_plots/00-regression-trees/income-50-75-hist.png)
-
 ![](R_plots/00-regression-trees/income-split-distributions.png)
 
 
