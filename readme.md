@@ -17,6 +17,12 @@ The ATF considers 9 __types__ of FFLs:
 - Manufacturer of Destructive Devices
 - Importer of Destructive Devices
 
+The ATF [publishes data on this FFL holders](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) monthly, from 2013 to present. Additionally, an [annual commerce report](https://www.atf.gov/resource-center/data-statistics) is released, which contains numbers on weapons registrations, imports and taxes, and historical FFL data. With historical FFL data, we can broadly see how license counts have changed over time - from 1975-2015. 
+
+#### Destructive Devices
+
+While most firearms (pistols, rifles, shotguns) can generally be identified, _"Destructive Devices"_ is a class I felt unfamiliar with. 
+
 'Destructive Devices' constitute their own class, and are [defined by the National Firearms Act](https://www.atf.gov/firearms/firearms-guides-importation-verification-firearms-national-firearms-act-definitions-1), [26 U.S.C. § 5845(F) (page 82)](https://www.atf.gov/firearms/docs/guide/atf-guidebook-importation-verification-firearms-ammunition-and-implements-war/download). Three examples, as shown in an illustration from the ATF Guidebook:
 
 ![destructive devices](indd/assets/dd-definition.png)
@@ -27,7 +33,6 @@ The ATF bullet points defining Destructive Device are:
 - Any type of weapon by whatever name known which will, or which may readily be converted to expel a projectile, by the action of an explosive or other propellant, the barrel or barrels of which have a bore greater than one-half inch in diameter. (**1/2" bore**)
 - A combination of parts designed and intended for use in converting a device into a destructive device and from which a destructive device can be readily assembled.
 
-The ATF [publishes data on this FFL holders](https://www.atf.gov/firearms/listing-federal-firearms-licensees-ffls-2016) monthly, from 2013 to present. Additionally, an [annual commerce report](https://www.atf.gov/resource-center/data-statistics) is released, which contains numbers on weapons registrations, imports and taxes, and historical FFL data. With historical FFL data, we can broadly see how license counts have changed over time - from 1975-2015. 
 
 # A Brief History in Numbers
 
