@@ -125,7 +125,7 @@ F-statistic: 13.42 on 3 and 46 DF,  p-value: 2.015e-06
 
 Each variable is significant in this model, with High School education carrying the most influence. But the R-squared values leave something to be desired. 
 
-![](R_plots/05-model-building-education/EDA-hs-perCapita.png)
+![](R_plots/05-model-building-education/edu-percapita.jpg)
 
 Where do the observed outliers in the model sit compared to the rest of the country? 
 
