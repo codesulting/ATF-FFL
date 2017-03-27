@@ -171,123 +171,34 @@ Residuals again appear to be approaching a Gaussian distribution; outliers on th
 
 Using ratios seems to lessen the influence of outliers. 
 
-# Per Capita, re-calculated
-
-To feel assured about the data, new per capita figures were calculated from the total data. 
+## Regression Trees
 
 ```{R}
-# Accurate Age and Education Brackets -----------------------------------------
+# Education features ----------------------------------------------------------
 
-# create total pop, HS, BA, male, female variables
-edu.pc3 <- education %>%
-  select(NAME, 
-         Total.18to24, Total.25to34, Total.35to44, Total.45to64, Total.65plus,
-         Total.1824.HS.Male, Total.25to34.HS, Total.35to44.HS, Total.45to64.HS, Total.65plus.HS,
-         Total.18to24.BA, Total.25to34.BA, Total.35to44.BA, Total.45to64.BA, Total.65plus.BA,
-         Total.18.to24.Male, Total.25to34.Male, Total.35to44.Male, Total.45to64.Male, Total.65plus.Male,
-         Total.18to24.Female, Total.25to34.Female, Total.35to44.Female, Total.45to64.Female, Total.65plus.Female) %>%
-  mutate(total.pop = Total.18to24 + Total.25to34 + Total.35to44 + Total.45to64 + Total.65plus,
-         total.HS = Total.1824.HS.Male + Total.25to34.HS + Total.35to44.HS + Total.45to64.HS + Total.65plus.HS,
-         total.BA = Total.18to24.BA + Total.25to34.BA + Total.35to44.BA + Total.45to64.BA + Total.65plus.BA,
-         total.male = Total.18.to24.Male + Total.25to34.Male + Total.35to44.Male + Total.45to64.Male + Total.65plus.Male,
-         total.female = Total.18to24.Female + Total.25to34.Female + Total.35to44.Female + Total.45to64.Female + Total.65plus.Female)
+# subset for only HS and BA data
+edu.pc <- edu.perCapita %>%
+  select(perCapitaFFL, contains("HS"), contains("BA"))
 
-# merge FFL data
-edu.pc3 <- ffl.pop %>%
-  left_join(edu.pc3) 
+# rpart - education tree a
+edu.tree.a <- rpart(perCapitaFFL ~ ., data = edu.pc)
 
-# compute population estimate error
-edu.pc3 <- edu.pc3 %>%
-  mutate(pop.err.2015 = Pop2015 - total.pop,
-         pop.err.2016 = Pop2016 - total.pop)
+par(mfrow = c(1, 1), family = "GillSans")
+rpart.plot(edu.tree.a, type = 1, extra = 1,
+           digits = 4, cex = 0.85, 
+           split.family = "GillSans", split.cex = 1.1,
+           nn.family = "GillSans", nn.cex = 0.85, 
+           fallen.leaves = T)
+           
+print(edu.tree.a)
 
-# compute per capita for 5 totals
-edu.pc3 <- edu.pc3 %>%
-  mutate(perCap.pop = Pop2015 / 100000,
-         perCap.HS = (total.HS/Pop2015) * 100000,
-         perCap.BA = (total.BA/Pop2015) * 100000,
-         perCap.male = (total.male/Pop2015) * 100000,
-         perCap.female = (total.female/Pop2015) * 100000)
-
-rownames(edu.pc3) <- edu.pc3$NAME
+# the more BAs, the less FFLs
 ```
+![](R_plots/00-regression-trees/education-rpart-01.png)
 
-![](R_plots/05-model-building-education/EDA-edu-perCapitaHS-BA.png)
-
-And a model: 
-
-```{R}
-mod04 <- lm(perCapitaFFL ~ perCap.HS + perCap.BA + perCap.male + perCap.female,
-            data = edu.pc3)
-summary(mod04)
-
-# Residuals:
-#     Min      1Q  Median      3Q     Max 
-# -45.998  -6.701   0.723   5.188  47.374 
-
-Coefficients:
-                Estimate Std. Error t value Pr(>|t|)    
-(Intercept)    7.189e+01  1.053e+02   0.683 0.498390    
-perCap.HS      4.589e-03  1.419e-03   3.234 0.002292 ** 
-perCap.BA     -2.706e-03  6.832e-04  -3.961 0.000263 ***
-perCap.male    1.999e-03  3.429e-03   0.583 0.562703    
-perCap.female -8.653e-03  1.748e-03  -4.949 1.09e-05 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-
-Residual standard error: 15.2 on 45 degrees of freedom
-Multiple R-squared:  0.5456,	Adjusted R-squared:  0.5052 
-F-statistic: 13.51 on 4 and 45 DF,  p-value: 2.602e-07
-```
-
-![](R_plots/05-model-building-education/EDA-edu-mod04-diagnostics.png)
+![](R_plots/00-regression-trees/education-rpart-splits.jpg)
 
 
-# High School and College Graduate Ratios
-
-Would the ratio of High Schooll and College Graduates to the Total Population be useful for modeling? 
-
-```{R}
-edu.pc3 <- edu.pc3 %>%
-  mutate(ratio.HS = total.HS/total.pop,
-         ratio.BA = total.BA/total.pop,
-         ratio.18to24 = Total.18to24/total.pop,
-         ratio.25to34 = Total.25to34/total.pop,
-         ratio.35to44 = Total.35to44/total.pop,
-         ratio.45to64 = Total.45to64/total.pop,
-         ratio.65plus = Total.65plus/total.pop)
-
-rownames(edu.pc3) <- edu.pc3$NAME
-```
-
-```{R}
-mod05 <- lm(perCapitaFFL ~ ratio.HS + ratio.BA + ratio.18to24 + ratio.25to34 +
-              ratio.35to44 + ratio.45to64 + ratio.65plus, data = edu.pc3)
-              
-summary(mod05)
-# Residuals:
-#     Min      1Q  Median      3Q     Max 
-# -27.811  -6.724  -0.665   8.153  50.769 
-
-Coefficients: (1 not defined because of singularities)
-             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)   -551.50     157.08  -3.511  0.00106 ** 
-ratio.HS       537.00     105.81   5.075 7.92e-06 ***
-ratio.BA      -291.88      56.51  -5.165 5.89e-06 ***
-ratio.18to24   828.65     266.06   3.115  0.00327 ** 
-ratio.25to34   195.36     270.42   0.722  0.47394    
-ratio.35to44   -67.60     323.27  -0.209  0.83535    
-ratio.45to64   309.93     249.67   1.241  0.22121    
-ratio.65plus       NA         NA      NA       NA    
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-
-Residual standard error: 15.41 on 43 degrees of freedom
-Multiple R-squared:  0.5532,	Adjusted R-squared:  0.4909 
-F-statistic: 8.874 on 6 and 43 DF,  p-value: 2.607e-06
-```
-
-![](R_plots/05-model-building-education/EDA-edu-mod05-diagnostics.png)
 
 
 
