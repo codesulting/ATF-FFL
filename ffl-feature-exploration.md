@@ -6,9 +6,9 @@ To investigate the question, different fields of data from the US Census & Ameri
 
 # Financial Characteristics
 
-![5kmap](R_plots/ACS-EDA/ACS-Finance-Map-5k.jpg)
+![5kmap](R_plots/ACS-EDA/ACS-Finance-Map-5k.png)
 
-![150kmap](R_plots/ACS-EDA/ACS-Finance-Map-150k.jpg)
+![150kmap](R_plots/ACS-EDA/ACS-Finance-Map-150k.png)
 
 ![](R_plots/ACS-EDA/ACS-Finance-Facet-Edit-00.png)
 
