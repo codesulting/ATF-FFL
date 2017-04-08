@@ -130,7 +130,7 @@ Given the observation of an inverse relationship between FFLs vs Population by s
 
 After joining Rural-Urban Proportions data with Per Capita FFL data from earlier, we can look for correlations between per capita License Counts and other variables. ([higher-resolution plot](R_plots/rural-urban-corr-matrix-01-hires.png), [annotated printout](R_plots/rural-urban-corr-matrix-annotated.jpg))
 
-![rural-urban-corr-matrix-01](R_plots/rural-urban-corr-matrix-01.png)
+![rural-urban-corr-matrix-01](R_plots/rural-urban-plots/rural-urban-corr-matrix-01.png)
 
 
 ## Which variables correlate strongly with license counts? 
