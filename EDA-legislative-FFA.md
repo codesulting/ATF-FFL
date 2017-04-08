@@ -38,7 +38,7 @@ F-statistic:   8.6 on 5 and 44 DF,  p-value: 9.596e-06
 
 The introduction of the FFA bill appears to be the strongest predictor for per capita FFLs - followed by states taking no action on the bill, and states that enact the bill. 
 
-![](R_plots/net-international-migration/ffa-lm-01.png)
+![](R_plots/FFA-EDA/ffa-lm-01.png)
 There are the usual high outliers Wyoming and Alaska in the QQ plots,  and other signs that linear regression assumptions are violated in the Residuals vs. Fitted plot. It could be because the explanatory variables are binary/boolean, and on top of that not normally distributed. 
 
 How was each variable distributed? 
