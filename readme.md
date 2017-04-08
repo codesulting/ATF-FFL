@@ -56,6 +56,6 @@ Generally across all firearm types, it appears production has increased overall,
 It appears that in the class of Handguns, Pistol manufacturing has risen over time - while Revolver production has remained (relatively) steady. For Long Guns, Rifles also increased dramatically - from under 1 million produced in 1986 to 4 million in 2013. Shotguns, by comparison, remain (relatively) stable in production numbers.
 
 
-# Works Cited
+# Notes
 
 <sup>1</sup>Tufte-style sparkline plot originally translated to R by [Lukasz Piwek](http://motioninsocial.com/tufte/)
