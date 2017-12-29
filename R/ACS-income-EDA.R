@@ -1,6 +1,8 @@
-# ATF- FFL - ACS Financial Characteristics Data
-# Feature Selection + Engineering
-# Census Electorate Characteristics & American Community Survey data
+# EDA - Income
+# "Finanacial Characteristics"
+# US Census - American Community Survey, table S2503.
+# https://www.census.gov/acs/www/data/data-tables-and-tools/subject-tables/
+# Federal Firearms License data
 
 # load data -------------------------------------------------------------------
 
@@ -9,27 +11,16 @@ library(tidyr)
 library(ggplot2)
 
 # dataset containing data by state for:
-# - population by sex, race/origin
-# - industry
-# - working class
-# - educational attainment
 # - financial characteristics
-# acs <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-all-data.csv", stringsAsFactors = F)
-
-# ACS Financial Characteristics data, FFL data, Total Population data
-finance <- read.csv("~/GitHub/ATF-FFL/data/2015-ACS-finance.csv", stringsAsFactors = F)
-ffl <- read.csv("~/GitHub/ATF-FFL/data/ffl-2016-perCapita-compact.csv", stringsAsFactors = F)
-pop <- read.csv("~/GitHub/ATF-FFL/data/population-compact.csv", stringsAsFactors = F)
-
-# Per Capita function
-perCap2015 <- function (x) {
-  x <- (x / pop$Pop2015) * 100000
-  x
-}
 
 # custom plot themes and maps
 source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
 source("~/GitHub/ATF-FFL/R/usa-map-prep.R")
+
+# ACS Financial Characteristics data, FFL data
+ffl <- read.csv("data/ffl-per-capita.csv", stringsAsFactors = F)
+income <- read.csv("data/04-per-capita-clean/per-capita-finance.csv", stringsAsFactors = F)
+
 
 # Cleanse and Bind Finance and FFL data ---------------------------------------
 
