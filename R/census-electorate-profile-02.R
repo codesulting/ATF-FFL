@@ -22,19 +22,51 @@ library(ggplot2)
 library(corrplot)
 library(zoo)
 
+
+# Cleanse: ACS Race data ------------------------------------------------------
+race <- read.csv("~/GitHub/ATF-FFL/data/01-census/2014-electorate/2014-table4b-race.csv")
+str(race)
+
+# Cleanse: 
+
+# convert blank to NA; carry last observation forward
+race$State[race$State == ""] <- NA
+race$State <- na.locf(race$State)
+
+# remove commas - columns 3:5, 10
+# replace dashes with zero
+# replace '(B)' with NA
+race <- as.data.frame(apply(race, 2, function(x) gsub(",", "", x)))
+race <- as.data.frame(apply(race, 2, function(x) gsub("-", 0, x)))
+race <- as.data.frame(apply(race, 2, function(x) gsub("\\(B\\)", NA, x)))
+
+# rename column and levels of race.and.Hispanic.origin
+colnames(race)[2] <- "Race"
+levels(race$Race)[levels(race$Race) == ".White non0Hispanic alone"] <- "White non-Hispanic alone"
+race$Race <- factor(race$Race)
+levels(race$Race)
+
+# rename 'Margin of Error' variables to void confusion
+colnames(race)[c(7, 9, 12, 14)] <- c("MarginError1", "MarginError2", "MarginError3", "MarginError4")
+
+# rename levels of race
+levels(race$Race)[1:11]
+levels(race$Race)[1:11] <- c("White.NonHispanic", "Asian", "Asian.combination", "Black", "Black.combination",
+                                "Female", "Hispanic", "Male", "Total", "White", "White.combination")
+
+race$Race <- factor(race$Race)
+levels(race$Race)
+
+write.csv(race, file = "~/GitHub/ATF-FFL/data/01-census/2014-electorate/V1-2014-table4b-race.01.csv",
+          row.names = F)
+
 # Cleansed Data:
 # Table 4b: Electorate by Sex, Race, and Hispanic Origin
 race <- read.csv("~/GitHub/ATF-FFL/data/01-census/2014-electorate/V1-2014-table4b-race.01.csv",
                  stringsAsFactors = F)
 str(race)
 
-# Explore: --------------------------------------------------------------------
 
-ggplot(race, aes(reorder(State, Percent.voted..Total.), Percent.voted..Total.)) +
-  geom_bar(stat = "identity") +
-  coord_flip()
-
-# Cleanse ---------------------------------------------------------------------
 
 # The Race Column might need to be spread.
 race$Race <- factor(race$Race)
@@ -58,14 +90,49 @@ race.population <- race %>%
   select(State, Race, Total.Population) %>%
   spread(key = Race, value = Total.Population, fill = 0)
 
+# reorder columns
 race.population <- race.population[, c(1, 8, 6, 9, 2, 3, 4, 5, 7, 10:12)]
 
-write.csv(race.population, file = "~/GitHub/ATF-FFL/data/01-census/2014-electorate/V1-race-pop.csv",
+# populations are reported in thousands
+# calculate totals, so per capita 100k can be calculated
+
+# function to multiply by 1000
+one.k <- function (x) {
+  x <- x * 1000
+  x
+}
+
+# apply function to all variables but state name
+race.pop <- race.population %>%
+  mutate_each(funs(one.k), 2:12)
+
+# remove Total US and DC
+race.pop <- race.pop[-c(9, 45), ]
+
+write.csv(race.pop, file = "~/GitHub/ATF-FFL/data/01-census/2014-electorate/V1-race-pop.csv",
+          row.names = F)
+
+# compute per capita racial population by state
+# function to calculate per capita totals
+perCapita.race <- function (x) {
+  x <- (x / race.pop$Total) * 100000
+  x
+}
+
+# test
+perCapita.race(race.pop$Asian)
+
+# apply function to all variables but state name
+race.perCapita <- race.pop %>%
+  mutate_each(funs(perCapita.race), 2:12)
+
+write.csv(race.perCapita, file = "~/GitHub/ATF-FFL/data/per-capita-clean/per-capita-race.csv",
           row.names = F)
 
 # Cleanse: ACS Industry data --------------------------------------------------
 
 industry <- read.csv("~/GitHub/ATF-FFL/data/01-census/ACS_15_1YR_industry/ACS_15_1YR_S2407.csv")
+# 53 obs off 183 variables
 
 # select total estimate data for each industry
 # for each industry there is finer grain data
