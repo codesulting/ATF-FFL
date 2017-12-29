@@ -14,11 +14,22 @@ library(ggdendro)
 
 # load themes and functions
 source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
-
+setwd("~/GitHub/ATF-FFL")
 edu.perCapita <- read.csv("data/per-capita-clean/per-capita-education.csv")
 income.perCapita <- read.csv("data/per-capita-clean/per-capita-income.csv")
 industry.perCapita <- read.csv("data/per-capita-clean/per-capita-industry.csv")
 legislative.perCapita <- read.csv("data/per-capita-clean/per-capita-legislative.csv")
+
+pop <- read.csv("data/rural-urban-compact.csv")
+
+all.features <- pop %>%
+  left_join(edu.perCapita) %>%
+  left_join(income.perCapita) %>%
+  left_join(industry.perCapita) %>%
+  left_join(legislative.perCapita)
+
+
+write.csv(all.features, file = "data/per-capita-all.csv", row.names = F)
 
 # clean up rownames -----------------------------------------------------------
 
