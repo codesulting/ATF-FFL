@@ -14,9 +14,8 @@ library(ggplot2)
 # load themes and functions
 source("~/GitHub/ATF-FFL/R/00-pd-themes.R")
 
-all.features.2016 <- read.csv("data/per-capita-clean/per-capita-all.csv")
-rownames(all.features.2016) <- all.features.2016$X
-all.features.2016$X <- NULL
+all.features.2016 <- read.csv("~/GitHub/ATF-FFL/data/per-capita-all.csv")
+rownames(all.features.2016) <- all.features.2016$NAME
 
 # 2015 population data --------------------------------------------------------
 pop.2015 <- read.csv("~/GitHub/ATF-FFL/data/per-capita-clean/pop-2015.csv", stringsAsFactors = F)
@@ -29,11 +28,15 @@ ffl <- ffl %>%
 all.features.2015 <- all.features.2016 %>%
   left_join(ffl)
 
-all.features.2015 <- all.features.2015[, -c(53:61, 97:100)]
-all.features.2015 <- all.features.2015[, -c(88:89)]
+# remove 2016
+all.features.2015 <- all.features.2015 %>%
+  select(-contains("2016"))
+
+all.features.2015 <- all.features.2015[, -c(2:4, 6, 7)]
 
 rownames(all.features.2015) <- all.features.2015$NAME
 all.features.2015$NAME <- NULL
+all.features.2015$X <- NULL
 
 # Regression Trees ------------------------------------------------------------
 
