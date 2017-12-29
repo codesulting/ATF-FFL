@@ -1,4 +1,3 @@
-
 - [What is a Federal Firearms License?](#what-is-a-federal-firearms-license)
 - [License Counts by State](#license-counts-by-state)
 - [Rural-Urban Proportions](#rural-urban-proportions)
