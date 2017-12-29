@@ -9,14 +9,12 @@ library(ggplot2)
 library(data.table)
 library(scales)
 
-# 2016 data -------------------------------------------------------------------
-
-# data: Federal Firearms Licenses 2016 ----------------------------------------
+# data: Federal Firearms Licenses 2016 
 f16 <- fread("~/Documents/ATF-FFL/data/ffl-2016-V3.csv", stringsAsFactors = T)
 f16 <- as.data.frame(f16)
 str(f16)
 
-# data: US Census Population estimates 2010-2016 ------------------------------
+# data: US Census Population estimates 2010-2016
 pop <- fread("~/Documents/ATF-FFL/data/census/nst-est2016-alldata.csv")
 pop <- as.data.frame(pop)
 str(pop)
@@ -30,6 +28,7 @@ p16 <- pop %>%
 
 # remove regional observations
 p16 <- p16[-c(1, 2, 3, 4, 5), ]
+str(p16)
 
 # data: US Census Congressional Apportionment ----------------------------------
 house <- read.csv("~/Documents/ATF-FFL/data/census/HouseSeats.csv")
@@ -113,4 +112,5 @@ f16u <- f16u[, c(1, 2, 7, 6, 8, 3, 4, 5)]
 perCapita.16 <- left_join(f16u, p16, by = as.character("NAME"))
 summary(perCapita.16)
 
-# write.csv(fp16, file = "~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv", row.names = F)
+# write CSV with per capita FFL data
+write.csv(fp16, file = "~/Documents/ATF-FFL/data/ffl-2016-perCapita.csv", row.names = F)
